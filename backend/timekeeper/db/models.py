@@ -12,6 +12,6 @@ class User(Base):
 class Timer(Base):
     __tablename__ = "timers"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(Integer)
+    name = Column(String)
     description = Column(String)
     duration_s = Column(Integer)

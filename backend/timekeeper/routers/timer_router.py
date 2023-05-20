@@ -13,5 +13,4 @@ async def add_timer(timer: timer_request.TimerRequest):
 
 @router.get("/")
 async def get_timers():
-    timer_service.get_timers()
     return {"test": "all timers"}
