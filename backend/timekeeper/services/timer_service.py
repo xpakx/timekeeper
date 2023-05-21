@@ -7,5 +7,4 @@ def add_timer(request: timer_schemas.TimerRequest):
 
 
 def get_timers():
-    add_timer({"name": "aaa", "description": "desc", "duration_s": 60})
-    print("fetching all requests")
+    return timer_repo.get_timers(0, 20)

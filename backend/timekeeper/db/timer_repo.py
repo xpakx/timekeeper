@@ -14,3 +14,9 @@ def create_timer(timer: TimerRequest):
     db.commit()
     db.refresh(new_timer)
     return new_timer
+
+
+def get_timers(page: int, size: int):
+    offset = page*size
+    db = next(get_db())
+    return db.query(Timer).offset(offset).limit(size).all()
