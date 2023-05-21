@@ -11,5 +11,5 @@ async def add_timer(timer: timer_schemas.TimerRequest):
 
 
 @router.get("/", response_model=list[timer_schemas.TimerResponse])
-async def get_timers():
-    return timer_service.get_timers()
+async def get_timers(page: int = 0, size: int = 20):
+    return timer_service.get_timers(page, size)

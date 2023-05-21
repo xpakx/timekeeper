@@ -6,5 +6,5 @@ def add_timer(request: timer_schemas.TimerRequest):
     return timer_repo.create_timer(request)
 
 
-def get_timers():
-    return timer_repo.get_timers(0, 20)
+def get_timers(page, size):
+    return timer_repo.get_timers(page, size)
