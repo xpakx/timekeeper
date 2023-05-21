@@ -1,8 +1,8 @@
-from ..routers.dto import timer_request
+from ..routers.dto import timer_schemas
 from ..db import timer_repo
 
 
-def add_timer(request: timer_request.TimerRequest):
+def add_timer(request: timer_schemas.TimerRequest):
     return timer_repo.create_timer(request)
 
 
