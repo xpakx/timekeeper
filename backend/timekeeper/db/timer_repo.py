@@ -20,3 +20,19 @@ def get_timers(page: int, size: int):
     offset = page*size
     db = next(get_db())
     return db.query(Timer).offset(offset).limit(size).all()
+
+
+def edit_timer(timer_id: int, timer: TimerRequest):
+    db = next(get_db())
+    db_timer = db.get(Timer, timer_id)
+    if db_timer:
+        db_timer = Timer(
+            name=timer.name,
+            description=timer.description,
+            duration_s=timer.duration_s
+            )
+        db.add(db_timer)
+        db.commit()
+        db.refresh(db_timer)
+    return db_timer
+
