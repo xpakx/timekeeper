@@ -18,3 +18,8 @@ async def get_timers(page: int = 0, size: int = 20):
 @router.put("/{id}", response_model=timer_schemas.TimerResponse)
 async def edit_timer(id: int, timer: timer_schemas.TimerRequest):
     return timer_service.edit_timer(id, timer)
+
+
+@router.post("/{id}/start")
+async def start_timer(id: int):
+    return timer_service.start_timer(id)

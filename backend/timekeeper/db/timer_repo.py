@@ -1,6 +1,7 @@
 from .manager import get_db
 from ..routers.dto.timer_schemas import TimerRequest
-from .models import Timer
+from .models import Timer, TimerInstance
+import datetime
 
 
 def create_timer(timer: TimerRequest):
@@ -36,3 +37,14 @@ def edit_timer(timer_id: int, timer: TimerRequest):
         db.refresh(db_timer)
     return db_timer
 
+
+def start_timer(timer_id: int):
+    db = next(get_db())
+    timer_instance = TimerInstance(
+            timer_id=timer_id,
+            start=datetime.datetime.utcnow
+            )
+    db.add(timer_instance)
+    db.commit()
+    db.refresh(timer_instance)
+    return timer_instance
