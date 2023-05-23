@@ -1,6 +1,6 @@
 from .manager import get_db
 from ..routers.dto.timer_schemas import TimerRequest
-from .models import Timer, TimerInstance
+from .models import Timer, TimerInstance, TimerState
 import datetime
 
 
@@ -38,13 +38,34 @@ def edit_timer(timer_id: int, timer: TimerRequest):
     return db_timer
 
 
-def start_timer(timer_id: int):
+def start_timer(timer_id: int) -> TimerInstance:
     db = next(get_db())
     timer_instance = TimerInstance(
             timer_id=timer_id,
-            start=datetime.datetime.utcnow
+            start=datetime.datetime.utcnow,
+            state=TimerState.running
             )
     db.add(timer_instance)
     db.commit()
     db.refresh(timer_instance)
     return timer_instance
+
+
+def change_timer_state(timer_id: int, timer_state: int) -> None:
+    db = next(get_db())
+    timer = db.get(TimerInstance, timer_id)
+    if timer:
+        timer.state = timer_state
+        db.commit()
+
+
+def finish_timer(timer_id: int) -> None:
+    change_timer_state(timer_id, TimerState.finished)
+
+
+def cancel_timer(timer_id: int) -> None:
+    change_timer_state(timer_id, TimerState.cancelled)
+
+
+def fail_timer(timer_id: int) -> None:
+    change_timer_state(timer_id, TimerState.failed)

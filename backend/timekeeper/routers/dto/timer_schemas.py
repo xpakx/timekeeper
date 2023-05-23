@@ -16,3 +16,7 @@ class TimerRequest(TimerBase):
 
 class TimerResponse(TimerBase):
     id: int
+
+
+class StateRequest(BaseModel):
+    state: int

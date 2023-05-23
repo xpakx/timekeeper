@@ -1,5 +1,6 @@
 from ..routers.dto import timer_schemas
 from ..db import timer_repo
+from ..db.models import TimerState
 
 
 def add_timer(request: timer_schemas.TimerRequest):
@@ -16,3 +17,12 @@ def edit_timer(timer_id: int, request: timer_schemas.TimerRequest):
 
 def start_timer(timer_id: int):
     return timer_repo.start_timer(timer_id)
+
+
+def finish_timer(timer_id: int, request: timer_schemas.StateRequest) -> None:
+    if request.state == TimerState.finished:
+        timer_repo.finish_timer(timer_id)
+    elif request.state == TimerState.cancelled:
+        timer_repo.cancel_timer(timer_id)
+    elif request.state == TimerState.failed:
+        timer_repo.fail_timer(timer_id)

@@ -20,6 +20,6 @@ async def edit_timer(id: int, timer: timer_schemas.TimerRequest):
     return timer_service.edit_timer(id, timer)
 
 
-@router.post("/{id}/start")
-async def start_timer(id: int):
-    return timer_service.start_timer(id)
+@router.post("/instance/{id}/state")
+async def cancel_timer(id: int, request: timer_schemas.StateRequest):
+    return timer_service.change_stere(id, request)
