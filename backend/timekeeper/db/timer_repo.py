@@ -27,12 +27,9 @@ def edit_timer(timer_id: int, timer: TimerRequest):
     db = next(get_db())
     db_timer = db.get(Timer, timer_id)
     if db_timer:
-        db_timer = Timer(
-            name=timer.name,
-            description=timer.description,
-            duration_s=timer.duration_s
-            )
-        db.add(db_timer)
+        db_timer.name = timer.name
+        db_timer.description = timer.description
+        db_timer.duration_s = timer.duration_s
         db.commit()
         db.refresh(db_timer)
     return db_timer
