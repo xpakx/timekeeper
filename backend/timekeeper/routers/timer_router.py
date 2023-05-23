@@ -23,3 +23,8 @@ async def edit_timer(id: int, timer: timer_schemas.TimerRequest):
 @router.post("/instance/{id}/state")
 async def cancel_timer(id: int, request: timer_schemas.StateRequest):
     return timer_service.change_stere(id, request)
+
+
+@router.get("/active", response_model=list[timer_schemas.TimerInstance])
+async def get_active_timers(page: int = 0, size: int = 20):
+    return timer_service.get_active(page, size)

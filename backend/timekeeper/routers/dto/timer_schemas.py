@@ -20,3 +20,11 @@ class TimerResponse(TimerBase):
 
 class StateRequest(BaseModel):
     state: int
+
+
+class TimerInstance(BaseModel):
+    id: int
+    start_time: str
+    end_time: str
+    state: int
+    timer_id: int

@@ -66,3 +66,9 @@ def cancel_timer(timer_id: int) -> None:
 
 def fail_timer(timer_id: int) -> None:
     change_timer_state(timer_id, TimerState.failed)
+
+
+def get_active_timers(page: int, size: int):
+    offset = page*size
+    db = next(get_db())
+    return db.query(TimerInstance).where(TimerInstance.state == TimerState.running).offset(offset).limit(size).all()

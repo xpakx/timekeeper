@@ -26,3 +26,7 @@ def finish_timer(timer_id: int, request: timer_schemas.StateRequest) -> None:
         timer_repo.cancel_timer(timer_id)
     elif request.state == TimerState.failed:
         timer_repo.fail_timer(timer_id)
+
+
+def get_active(page: int, size: int):
+    return timer_repo.get_active_timers(page, size)
