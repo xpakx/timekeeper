@@ -1,13 +1,15 @@
 from .manager import get_db
 from ..routers.dto.user_schemas import AuthRequest, RegistrationRequest
 from .models import User
+from bcrypt import hashpw, checkpw, gensalt
 
 
 def create_user(user: RegistrationRequest) -> User:
     db = next(get_db())
+    hashed_password = hashpw(user.password.encode('utf-8'), gensalt())
     new_user = User(
             name=user.username,
-            password=user.password
+            password=hashed_password
             )
     db.add(new_user)
     db.commit()
@@ -18,6 +20,6 @@ def create_user(user: RegistrationRequest) -> User:
 def check_user(user: AuthRequest) -> bool:
     db = next(get_db())
     db_user = db.query(User).where(User.username == user.username).first()
-    if db_user.password == user.password:
+    if checkpw(user.password.encode('utf-8'), db_user.password.encode('utf-8')):
         return True
     return False
