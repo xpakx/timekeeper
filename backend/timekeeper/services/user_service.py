@@ -9,7 +9,7 @@ from ..security.jwt import SECRET
 def login(request: user_schemas.AuthRequest) -> Optional[user_schemas.AuthResponse]:
     user = user_repo.check_user(request)
     if user:
-        token = create_token({"sub": request.username})
+        token = create_token({"sub": user.username, "id": user.id})
         response = user_schemas.AuthResponse()
         response.username = request.username
         response.token = token

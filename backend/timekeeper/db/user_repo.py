@@ -2,6 +2,7 @@ from .manager import get_db
 from ..routers.dto.user_schemas import AuthRequest, RegistrationRequest
 from .models import User
 from bcrypt import hashpw, checkpw, gensalt
+from typing import Optional
 
 
 def create_user(user: RegistrationRequest) -> User:
@@ -17,9 +18,9 @@ def create_user(user: RegistrationRequest) -> User:
     return new_user
 
 
-def check_user(user: AuthRequest) -> bool:
+def check_user(user: AuthRequest) -> Optional[User]:
     db = next(get_db())
     db_user = db.query(User).where(User.username == user.username).first()
     if checkpw(user.password.encode('utf-8'), db_user.password.encode('utf-8')):
-        return True
-    return False
+        return db_user
+    return None

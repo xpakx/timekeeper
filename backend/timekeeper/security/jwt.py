@@ -7,7 +7,12 @@ SECRET = "F8eTVCgV2ifLas"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> str:
+class CurrentUser():
+    username: str
+    id: int
+
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> CurrentUser:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -15,9 +20,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> str
     )
     try:
         payload = jwt.decode(token, SECRET, algorithms=["HS256"])
-        username: str = payload.get("sub")
-        if username is None:
+        user = CurrentUser()
+        user.username = payload.get("sub")
+        if user.username is None:
             raise credentials_exception
-        return username
+        user.id = int(payload.get("id"))
+        return user
     except JWTError:
         raise credentials_exception
