@@ -3,8 +3,7 @@ from ..db import user_repo
 from jose import jwt
 from datetime import datetime, timedelta
 from typing import Optional
-
-SECRET = "F8eTVCgV2ifLas"
+from ..security.jwt import SECRET
 
 
 def login(request: user_schemas.AuthRequest) -> Optional[user_schemas.AuthResponse]:
