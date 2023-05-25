@@ -12,6 +12,7 @@ uvicorn = {extras = ["standard"], version = "^0.22.0"}
 sqlalchemy = "^2.0.14"
 psycopg2-binary = "^2.9.6"
 bcrypt = "^4.0.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 
 
 [build-system]
