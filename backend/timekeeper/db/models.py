@@ -9,6 +9,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     password = Column(String)
+    timers = relationship("Timer", back_populates="owner")
 
 
 class Timer(Base):
@@ -18,6 +19,8 @@ class Timer(Base):
     description = Column(String)
     duration_s = Column(Integer)
     instances = relationship("TimerInstance", back_populates="timer")
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="timers")
 
 
 class TimerState(enum.Enum):
@@ -35,3 +38,5 @@ class TimerInstance(Base):
     state = Column(Enum(TimerState))
     timer_id = Column(Integer, ForeignKey("timers.id"))
     timer = relationship("Timer", back_populates="instances")
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User")

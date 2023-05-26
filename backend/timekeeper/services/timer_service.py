@@ -3,30 +3,34 @@ from ..db import timer_repo
 from ..db.models import TimerState
 
 
-def add_timer(request: timer_schemas.TimerRequest):
-    return timer_repo.create_timer(request)
+def add_timer(request: timer_schemas.TimerRequest, user_id: int):
+    return timer_repo.create_timer(request, user_id)
 
 
-def get_timers(page, size):
-    return timer_repo.get_timers(page, size)
+def get_timers(page, size, user_id: int):
+    return timer_repo.get_timers(page, size, user_id)
 
 
-def edit_timer(timer_id: int, request: timer_schemas.TimerRequest):
-    return timer_repo.edit_timer(timer_id, request)
+def edit_timer(timer_id: int,
+               request: timer_schemas.TimerRequest,
+               user_id: int):
+    return timer_repo.edit_timer(timer_id, request, user_id)
 
 
-def start_timer(timer_id: int):
-    return timer_repo.start_timer(timer_id)
+def start_timer(timer_id: int, user_id: int):
+    return timer_repo.start_timer(timer_id, user_id)
 
 
-def finish_timer(timer_id: int, request: timer_schemas.StateRequest) -> None:
+def change_state(timer_id: int,
+                 request: timer_schemas.StateRequest,
+                 user_id: int) -> None:
     if request.state == TimerState.finished:
-        timer_repo.finish_timer(timer_id)
+        timer_repo.finish_timer(timer_id, user_id)
     elif request.state == TimerState.cancelled:
-        timer_repo.cancel_timer(timer_id)
+        timer_repo.cancel_timer(timer_id, user_id)
     elif request.state == TimerState.failed:
-        timer_repo.fail_timer(timer_id)
+        timer_repo.fail_timer(timer_id, user_id)
 
 
-def get_active(page: int, size: int):
-    return timer_repo.get_active_timers(page, size)
+def get_active(page: int, size: int, user_id: int):
+    return timer_repo.get_active_timers(page, size, user_id)

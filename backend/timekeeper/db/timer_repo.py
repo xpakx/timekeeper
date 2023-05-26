@@ -2,14 +2,16 @@ from .manager import get_db
 from ..routers.dto.timer_schemas import TimerRequest
 from .models import Timer, TimerInstance, TimerState
 import datetime
+from fastapi import status, HTTPException
 
 
-def create_timer(timer: TimerRequest):
+def create_timer(timer: TimerRequest, user_id: int):
     db = next(get_db())
     new_timer = Timer(
             name=timer.name,
             description=timer.description,
-            duration_s=timer.duration_s
+            duration_s=timer.duration_s,
+            user_id=user_id
             )
     db.add(new_timer)
     db.commit()
@@ -17,13 +19,14 @@ def create_timer(timer: TimerRequest):
     return new_timer
 
 
-def get_timers(page: int, size: int):
+def get_timers(page: int, size: int, user_id: int):
     offset = page*size
     db = next(get_db())
-    return db.query(Timer).offset(offset).limit(size).all()
+    return db.query(Timer).where(Timer.user_id == user_id).offset(offset).limit(size).all()
 
 
-def edit_timer(timer_id: int, timer: TimerRequest):
+# TODO
+def edit_timer(timer_id: int, timer: TimerRequest, user_id: int):
     db = next(get_db())
     db_timer = db.get(Timer, timer_id)
     if db_timer:
@@ -35,12 +38,16 @@ def edit_timer(timer_id: int, timer: TimerRequest):
     return db_timer
 
 
-def start_timer(timer_id: int) -> TimerInstance:
+def start_timer(timer_id: int, user_id: int) -> TimerInstance:
     db = next(get_db())
+    ownership = db.query(Timer.query.where(Timer.id == timer_id and Timer.user_id == user_id).exists()).scalar()
+    if not ownership:
+        raise ownership_exception()
     timer_instance = TimerInstance(
             timer_id=timer_id,
             start=datetime.datetime.utcnow,
-            state=TimerState.running
+            state=TimerState.running,
+            user_id=user_id
             )
     db.add(timer_instance)
     db.commit()
@@ -48,7 +55,8 @@ def start_timer(timer_id: int) -> TimerInstance:
     return timer_instance
 
 
-def change_timer_state(timer_id: int, timer_state: int) -> None:
+# TODO
+def change_timer_state(timer_id: int, timer_state: int, user_id: int) -> None:
     db = next(get_db())
     timer = db.get(TimerInstance, timer_id)
     if timer:
@@ -56,19 +64,29 @@ def change_timer_state(timer_id: int, timer_state: int) -> None:
         db.commit()
 
 
-def finish_timer(timer_id: int) -> None:
-    change_timer_state(timer_id, TimerState.finished)
+def finish_timer(timer_id: int, user_id: int) -> None:
+    change_timer_state(timer_id, TimerState.finished, user_id)
 
 
-def cancel_timer(timer_id: int) -> None:
-    change_timer_state(timer_id, TimerState.cancelled)
+def cancel_timer(timer_id: int, user_id: int) -> None:
+    change_timer_state(timer_id, TimerState.cancelled, user_id)
 
 
-def fail_timer(timer_id: int) -> None:
-    change_timer_state(timer_id, TimerState.failed)
+def fail_timer(timer_id: int, user_id: int) -> None:
+    change_timer_state(timer_id, TimerState.failed), user_id
 
 
-def get_active_timers(page: int, size: int):
+def get_active_timers(page: int, size: int, user_id: int):
     offset = page*size
     db = next(get_db())
-    return db.query(TimerInstance).where(TimerInstance.state == TimerState.running).offset(offset).limit(size).all()
+    return db.query(TimerInstance).where(
+            TimerInstance.state == TimerState.running and TimerInstance.user_id == user_id
+            ).offset(offset).limit(size).all()
+
+
+def ownership_exception():
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )

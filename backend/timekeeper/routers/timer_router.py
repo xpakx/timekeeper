@@ -10,42 +10,42 @@ router = APIRouter(prefix="/timers")
 @router.post("/", response_model=timer_schemas.TimerResponse)
 async def add_timer(
         timer: timer_schemas.TimerRequest,
-        username: Annotated[CurrentUser, Depends(get_current_user)]
+        user: Annotated[CurrentUser, Depends(get_current_user)]
         ):
-    return timer_service.add_timer(timer)
+    return timer_service.add_timer(timer, user.id)
 
 
 @router.get("/", response_model=list[timer_schemas.TimerResponse])
 async def get_timers(
-        username: Annotated[CurrentUser, Depends(get_current_user)],
+        user: Annotated[CurrentUser, Depends(get_current_user)],
         page: int = 0,
         size: int = 20,
         ):
-    return timer_service.get_timers(page, size)
+    return timer_service.get_timers(page, size, user.id)
 
 
 @router.put("/{id}", response_model=timer_schemas.TimerResponse)
 async def edit_timer(
         id: int,
         timer: timer_schemas.TimerRequest,
-        username: Annotated[CurrentUser, Depends(get_current_user)]
+        user: Annotated[CurrentUser, Depends(get_current_user)]
         ):
-    return timer_service.edit_timer(id, timer)
+    return timer_service.edit_timer(id, timer, user.id)
 
 
 @router.post("/instance/{id}/state")
 async def cancel_timer(
         id: int,
         request: timer_schemas.StateRequest,
-        username: Annotated[CurrentUser, Depends(get_current_user)]
+        user: Annotated[CurrentUser, Depends(get_current_user)]
         ):
-    return timer_service.change_stere(id, request)
+    return timer_service.change_state(id, request, user.id)
 
 
 @router.get("/active", response_model=list[timer_schemas.TimerInstance])
 async def get_active_timers(
-        username: Annotated[CurrentUser, Depends(get_current_user)],
+        user: Annotated[CurrentUser, Depends(get_current_user)],
         page: int = 0,
         size: int = 20
         ):
-    return timer_service.get_active(page, size)
+    return timer_service.get_active(page, size, user.id)
