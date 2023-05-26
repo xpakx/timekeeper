@@ -25,11 +25,12 @@ def get_timers(page: int, size: int, user_id: int):
     return db.query(Timer).where(Timer.user_id == user_id).offset(offset).limit(size).all()
 
 
-# TODO
 def edit_timer(timer_id: int, timer: TimerRequest, user_id: int):
     db = next(get_db())
     db_timer = db.get(Timer, timer_id)
     if db_timer:
+        if db_timer.user_id != user_id:
+            raise ownership_exception()
         db_timer.name = timer.name
         db_timer.description = timer.description
         db_timer.duration_s = timer.duration_s
@@ -55,11 +56,12 @@ def start_timer(timer_id: int, user_id: int) -> TimerInstance:
     return timer_instance
 
 
-# TODO
 def change_timer_state(timer_id: int, timer_state: int, user_id: int) -> None:
     db = next(get_db())
     timer = db.get(TimerInstance, timer_id)
     if timer:
+        if timer.user_id != user_id:
+            raise ownership_exception()
         timer.state = timer_state
         db.commit()
 
