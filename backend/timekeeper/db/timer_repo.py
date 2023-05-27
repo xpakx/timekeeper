@@ -23,7 +23,7 @@ def create_timer(timer: TimerRequest, user_id: int):
 def get_timers(page: int, size: int, user_id: int):
     offset = page*size
     db = next(get_db())
-    return db.query(Timer).where(Timer.user_id == user_id).offset(offset).limit(size).all()
+    return db.query(Timer).where(Timer.user_id == user_id and Timer.deleted is False).offset(offset).limit(size).all()
 
 
 def edit_timer(timer_id: int, timer: TimerRequest, user_id: int):
