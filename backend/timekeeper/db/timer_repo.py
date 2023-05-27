@@ -11,6 +11,7 @@ def create_timer(timer: TimerRequest, user_id: int):
             name=timer.name,
             description=timer.description,
             duration_s=timer.duration_s,
+            deleted=False,
             user_id=user_id
             )
     db.add(new_timer)

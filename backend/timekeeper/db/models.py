@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from .base import Base
 import enum
@@ -18,6 +18,7 @@ class Timer(Base):
     name = Column(String)
     description = Column(String)
     duration_s = Column(Integer)
+    deleted = Column(Boolean)
     instances = relationship("TimerInstance", back_populates="timer")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="timers")
