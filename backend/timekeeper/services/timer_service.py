@@ -34,3 +34,7 @@ def change_state(timer_id: int,
 
 def get_active(page: int, size: int, user_id: int):
     return timer_repo.get_active_timers(page, size, user_id)
+
+
+def delete_timer(timer_id: int, user_id: int):
+    return timer_repo.delete_timer(timer_id, user_id)

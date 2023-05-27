@@ -49,3 +49,10 @@ async def get_active_timers(
         size: int = 20
         ):
     return timer_service.get_active(page, size, user.id)
+
+
+@router.delete("/{id}", response_model=timer_schemas.TimerResponse)
+async def delete_timer(id: int,
+                       user: Annotated[CurrentUser, Depends(get_current_user)]
+                       ):
+    return timer_service.delete_timer(id, user.id)

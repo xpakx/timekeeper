@@ -93,3 +93,15 @@ def ownership_exception():
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+def delete_timer(timer_id: int, user_id: int) -> Timer:
+    db = next(get_db())
+    db_timer = db.get(Timer, timer_id)
+    if db_timer:
+        if db_timer.user_id != user_id:
+            raise ownership_exception()
+        db_timer.deleted = True
+        db.commit()
+        db.refresh(db_timer)
+    return db_timer
