@@ -4,9 +4,10 @@ from jose import jwt
 from datetime import datetime, timedelta
 from typing import Optional
 from ..security.jwt import SECRET
+from sqlalchemy.orm import Session
 
 
-def login(request: user_schemas.AuthRequest) -> Optional[user_schemas.AuthResponse]:
+def login(request: user_schemas.AuthRequest, db: Session) -> Optional[user_schemas.AuthResponse]:
     user = user_repo.check_user(request)
     if user:
         token = create_token({"sub": user.username, "id": user.id})
@@ -17,7 +18,7 @@ def login(request: user_schemas.AuthRequest) -> Optional[user_schemas.AuthRespon
     return None
 
 
-def register(request: user_schemas.RegistrationRequest):
+def register(request: user_schemas.RegistrationRequest, db: Session):
     return user_repo.create_user(request)
 
 
