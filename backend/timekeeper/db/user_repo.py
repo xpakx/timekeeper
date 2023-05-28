@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 def create_user(user: RegistrationRequest, db: Session) -> User:
     hashed_password = hashpw(user.password.encode('utf-8'), gensalt())
     new_user = User(
-            name=user.username,
+            username=user.username,
             password=hashed_password
             )
     db.add(new_user)

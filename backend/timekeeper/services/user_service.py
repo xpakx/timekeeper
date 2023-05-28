@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 
 def login(request: user_schemas.AuthRequest, db: Session) -> Optional[user_schemas.AuthResponse]:
-    user = user_repo.check_user(request)
+    user = user_repo.check_user(request, db)
     if user:
         token = create_token({"sub": user.username, "id": user.id})
         response = user_schemas.AuthResponse()
@@ -19,7 +19,7 @@ def login(request: user_schemas.AuthRequest, db: Session) -> Optional[user_schem
 
 
 def register(request: user_schemas.RegistrationRequest, db: Session):
-    return user_repo.create_user(request)
+    return user_repo.create_user(request, db)
 
 
 def create_token(data: dict) -> str:
