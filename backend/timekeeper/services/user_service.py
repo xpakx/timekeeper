@@ -18,8 +18,15 @@ def login(request: user_schemas.AuthRequest, db: Session) -> Optional[user_schem
     return None
 
 
-def register(request: user_schemas.RegistrationRequest, db: Session):
-    return user_repo.create_user(request, db)
+def register(request: user_schemas.RegistrationRequest, db: Session) -> Optional[user_schemas.AuthResponse]:
+    user = user_repo.create_user(request, db)
+    if user:
+        token = create_token({"sub": user.username, "id": user.id})
+        response = user_schemas.AuthResponse()
+        response.username = request.username
+        response.token = token
+        return response
+    return None
 
 
 def create_token(data: dict) -> str:

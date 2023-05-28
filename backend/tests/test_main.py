@@ -10,7 +10,7 @@ from timekeeper.db.manager import get_db
 url = URL.create("postgresql", "root", "password", "localhost", 5432, "time_db_test")
 
 engine = create_engine(
-    url, connect_args={"check_same_thread": False}
+    url
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -21,6 +21,8 @@ def override_get_db():
         yield db
     finally:
         db.close()
+
+Base.metadata.create_all(bind=engine)
 
 
 @pytest.fixture()
