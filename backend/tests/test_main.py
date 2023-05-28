@@ -22,8 +22,6 @@ def override_get_db():
     finally:
         db.close()
 
-Base.metadata.create_all(bind=engine)
-
 
 @pytest.fixture()
 def test_db():
@@ -36,7 +34,7 @@ app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 
-def test_create_user():
+def test_create_user(test_db):
     response = client.post("/users/register",
                            json={
                                "username": "User1",
