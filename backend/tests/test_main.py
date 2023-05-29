@@ -74,7 +74,7 @@ def test_not_register_user_with_already_taken_username(test_db):
     create_user()
     response = client.post("/users/register",
                            json={
-                               "username": "User1",
+                               "username": "User",
                                "password": "password",
                                "repeated_password": "password1"
                                }
@@ -92,4 +92,5 @@ def test_add_user_to_db(test_db):
                 )
     db = TestingSessionLocal()
     users = db.query(User).count()
+    db.close()
     assert users == 1
