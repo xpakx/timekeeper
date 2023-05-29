@@ -21,6 +21,8 @@ def login(request: user_schemas.AuthRequest, db: Session) -> user_schemas.AuthRe
 
 
 def register(request: user_schemas.RegistrationRequest, db: Session) -> Optional[user_schemas.AuthResponse]:
+    if request.password != request.repeated_password:
+        raise wrong_repeated_password_exception()
     user = user_repo.create_user(request, db)
     if user:
         token = create_token({"sub": user.username, "id": user.id})
@@ -41,4 +43,11 @@ def no_user_exception():
     return HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="User not found",
+    )
+
+
+def wrong_repeated_password_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Passwords should be the same",
     )

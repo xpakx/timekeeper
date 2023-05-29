@@ -76,7 +76,7 @@ def test_not_register_user_with_already_taken_username(test_db):
                            json={
                                "username": "User",
                                "password": "password",
-                               "repeated_password": "password1"
+                               "repeated_password": "password"
                                }
                            )
     assert response.status_code == 400
