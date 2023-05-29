@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
+from timekeeper.db.models import User
 
 url = URL.create("postgresql", "root", "password", "localhost", 5432, "time_db_test")
 
@@ -30,6 +31,16 @@ def test_db():
     Base.metadata.drop_all(bind=engine)
 
 
+def create_user():
+    db = TestingSessionLocal()
+    new_user = User(
+            username="User",
+            password=""
+            )
+    db.add(new_user)
+    db.commit()
+
+
 app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
@@ -43,4 +54,42 @@ def test_create_user(test_db):
                                }
                            )
     assert response.status_code == 200
-    assert response.json() == {"msg200": "Hello World"}
+    result = response.json()
+    assert result['username'] == "User1"
+    assert result['token'] is not None
+
+
+def test_repeated_password_shuld_be_the_same(test_db):
+    response = client.post("/users/register",
+                           json={
+                               "username": "User1",
+                               "password": "password",
+                               "repeated_password": "password1"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_not_register_user_with_already_taken_username(test_db):
+    create_user()
+    response = client.post("/users/register",
+                           json={
+                               "username": "User1",
+                               "password": "password",
+                               "repeated_password": "password1"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_add_user_to_db(test_db):
+    client.post("/users/register",
+                json={
+                    "username": "User1",
+                    "password": "password",
+                    "repeated_password": "password"
+                    }
+                )
+    db = TestingSessionLocal()
+    users = db.query(User).count()
+    assert users == 1
