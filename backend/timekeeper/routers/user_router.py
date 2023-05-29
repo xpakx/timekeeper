@@ -3,6 +3,7 @@ from .dto import user_schemas
 from ..services import user_service
 from sqlalchemy.orm import Session
 from ..db.manager import get_db
+from typing import Optional
 
 router = APIRouter(prefix="/users")
 
