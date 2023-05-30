@@ -114,7 +114,7 @@ def test_authentication_for_nonexistent_user(test_db):
                                "password": "password",
                                }
                            )
-    assert response.status_code == 403
+    assert response.status_code == 404
 
 
 def test_authentication(test_db):
