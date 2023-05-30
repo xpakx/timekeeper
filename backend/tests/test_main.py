@@ -35,7 +35,7 @@ def create_user():
     db = TestingSessionLocal()
     new_user = User(
             username="User",
-            password=""
+            password="password"
             )
     db.add(new_user)
     db.commit()
@@ -94,3 +94,38 @@ def test_add_user_to_db(test_db):
     users = db.query(User).count()
     db.close()
     assert users == 1
+
+
+def test_authentication_with_wrong_password(test_db):
+    create_user()
+    response = client.post("/users/login",
+                           json={
+                               "username": "User",
+                               "password": "wrong_password",
+                               }
+                           )
+    assert response.status_code == 403
+
+
+def test_authentication_for_nonexistent_user(test_db):
+    response = client.post("/users/login",
+                           json={
+                               "username": "User",
+                               "password": "password",
+                               }
+                           )
+    assert response.status_code == 403
+
+
+def test_authentication(test_db):
+    create_user()
+    response = client.post("/users/login",
+                           json={
+                               "username": "User",
+                               "password": "password",
+                               }
+                           )
+    assert response.status_code == 200
+    result = response.json()
+    assert result['username'] == "User"
+    assert result['token'] is not None
