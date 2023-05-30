@@ -7,6 +7,7 @@ from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
 from timekeeper.db.models import User
+from bcrypt import hashpw, gensalt
 
 url = URL.create("postgresql", "root", "password", "localhost", 5432, "time_db_test")
 
@@ -33,9 +34,10 @@ def test_db():
 
 def create_user():
     db = TestingSessionLocal()
+    password = hashpw("password".encode('utf-8'), gensalt()).decode()
     new_user = User(
             username="User",
-            password="password"
+            password=password
             )
     db.add(new_user)
     db.commit()

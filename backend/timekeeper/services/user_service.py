@@ -12,9 +12,9 @@ def login(request: user_schemas.AuthRequest, db: Session) -> user_schemas.AuthRe
     user = user_repo.check_user(request, db)
     if user:
         token = create_token({"sub": user.username, "id": user.id})
-        response = user_schemas.AuthResponse()
-        response.username = request.username
-        response.token = token
+        response = user_schemas.AuthResponse(
+                username=request.username,
+                token=token)
         return response
     else:
         raise no_user_exception()
@@ -26,7 +26,9 @@ def register(request: user_schemas.RegistrationRequest, db: Session) -> Optional
     user = user_repo.create_user(request, db)
     if user:
         token = create_token({"sub": user.username, "id": user.id})
-        response = user_schemas.AuthResponse(username=request.username, token=token)
+        response = user_schemas.AuthResponse(
+                username=request.username,
+                token=token)
         return response
     return None
 

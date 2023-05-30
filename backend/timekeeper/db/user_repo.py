@@ -1,9 +1,9 @@
 from ..routers.dto.user_schemas import AuthRequest, RegistrationRequest
 from .models import User
-from bcrypt import hashpw, checkpw, gensalt
 from typing import Optional
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from bcrypt import hashpw, checkpw, gensalt
 
 
 def create_user(user: RegistrationRequest, db: Session) -> User:
@@ -27,11 +27,19 @@ def check_user(user: AuthRequest, db: Session) -> Optional[User]:
         return None
     if checkpw(user.password.encode('utf-8'), db_user.password.encode('utf-8')):
         return db_user
-    return None
+    else:
+        raise wrong_password()
 
 
 def username_taken():
     return HTTPException(
         status_code=400,
         detail="Username already taken",
+    )
+
+
+def wrong_password():
+    return HTTPException(
+        status_code=403,
+        detail="Wrong password",
     )
