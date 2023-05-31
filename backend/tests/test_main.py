@@ -131,3 +131,15 @@ def test_authentication(test_db):
     result = response.json()
     assert result['username'] == "User"
     assert result['token'] is not None
+
+
+def test_adding_timer_without_authentication(test_db):
+    create_user()
+    response = client.post("/timers/",
+                           json={
+                               "name": "New timer",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               }
+                           )
+    assert response.status_code == 401
