@@ -15,7 +15,7 @@ async def add_timer(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return timer_service.add_timer(timer, user.id)
+    return timer_service.add_timer(timer, user.id, db)
 
 
 @router.get("/", response_model=list[timer_schemas.TimerResponse])
