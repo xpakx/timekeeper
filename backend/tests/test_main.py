@@ -8,6 +8,7 @@ from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
 from timekeeper.db.models import User
 from bcrypt import hashpw, gensalt
+from timekeeper.services.user_service import create_token
 
 url = URL.create("postgresql", "root", "password", "localhost", 5432, "time_db_test")
 
@@ -41,6 +42,10 @@ def create_user():
             )
     db.add(new_user)
     db.commit()
+
+
+def get_token() -> str:
+    return create_token({"id": "1", "sub": "User"})
 
 
 app.dependency_overrides[get_db] = override_get_db
@@ -134,7 +139,6 @@ def test_authentication(test_db):
 
 
 def test_adding_timer_without_authentication(test_db):
-    create_user()
     response = client.post("/timers/",
                            json={
                                "name": "New timer",
@@ -143,3 +147,17 @@ def test_adding_timer_without_authentication(test_db):
                                }
                            )
     assert response.status_code == 401
+
+
+def test_adding_timer(test_db):
+    create_user()
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.post("/timers/",
+                           json={
+                               "name": "New timer",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                           headers=headers
+                           )
+    assert response.status_code == 200
