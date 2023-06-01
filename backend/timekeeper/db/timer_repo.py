@@ -23,7 +23,7 @@ def get_timers(page: int, size: int, user_id: int, db: Session):
     offset = page*size
     return db\
             .query(Timer)\
-            .where(Timer.user_id == user_id and Timer.deleted is False)\
+            .where(Timer.owner_id == user_id and Timer.deleted is False)\
             .offset(offset)\
             .limit(size)\
             .all()

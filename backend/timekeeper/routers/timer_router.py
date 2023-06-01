@@ -25,7 +25,7 @@ async def get_timers(
         size: int = 20,
         db: Session = Depends(get_db)
         ):
-    return timer_service.get_timers(page, size, user.id)
+    return timer_service.get_timers(page, size, user.id, db)
 
 
 @router.put("/{id}", response_model=timer_schemas.TimerResponse)
