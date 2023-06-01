@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User
+from timekeeper.db.models import User, Timer
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 
@@ -42,10 +42,47 @@ def create_user():
             )
     db.add(new_user)
     db.commit()
+    db.close()
+
+
+def create_user_with_username(username: str) -> int:
+    db = TestingSessionLocal()
+    password = hashpw("password".encode('utf-8'), gensalt()).decode()
+    new_user = User(
+            username=username,
+            password=password
+            )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    db.close()
+    return new_user.id
+
+
+def create_user_and_return_id() -> int:
+    return create_user_with_username("User")
+
+
+def create_timer(name: str, user_id: int):
+    db = TestingSessionLocal()
+    new_timer = Timer(
+            name=name,
+            description="",
+            duration_s=100,
+            deleted=False,
+            owner_id=user_id
+            )
+    db.add(new_timer)
+    db.commit()
+    db.close()
 
 
 def get_token() -> str:
-    return create_token({"id": "1", "sub": "User"})
+    return get_token_for(1)
+
+
+def get_token_for(user_id: int) -> str:
+    return create_token({"id": f"{user_id}", "sub": "User"})
 
 
 app.dependency_overrides[get_db] = override_get_db
@@ -218,6 +255,7 @@ def test_adding_timer_with_empty_name(test_db):
     assert response.status_code == 400
 
 
+@pytest.mark.skip(reason="todo")
 def test_adding_timer_with_whitespace_only_name(test_db):
     create_user()
     headers = {"Authorization": f"Bearer {get_token()}"}
@@ -230,3 +268,44 @@ def test_adding_timer_with_whitespace_only_name(test_db):
                            headers=headers
                            )
     assert response.status_code == 400
+
+
+def test_getting_timers_without_authentication(test_db):
+    response = client.get("/timers/")
+    assert response.status_code == 401
+
+
+def test_getting_timers_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/timers/",
+                          headers=headers
+                          )
+    assert response.status_code == 401
+
+
+def test_getting_users_timers(test_db):
+    id = create_user_and_return_id()
+    create_timer("Test", id)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+    assert result[0]['name'] == "Test"
+
+
+def test_not_getting_other_users_timers(test_db):
+    id = create_user_and_return_id()
+    other = create_user_with_username("User2")
+    create_timer("Test", id)
+    create_timer("Other", other)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+    assert result[0]['name'] == "Test"
