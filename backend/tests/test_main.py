@@ -309,3 +309,64 @@ def test_not_getting_other_users_timers(test_db):
     result = response.json()
     assert len(result) == 1
     assert result[0]['name'] == "Test"
+
+
+def test_getting_first_page_of_timers(test_db):
+    id = create_user_and_return_id()
+    create_timer("Test1", id)
+    create_timer("Test2", id)
+    create_timer("Test3", id)
+    create_timer("Test4", id)
+    create_timer("Test5", id)
+    create_timer("Test6", id)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/?page=0&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 5
+
+
+def test_getting_second_page_of_timers(test_db):
+    id = create_user_and_return_id()
+    create_timer("Test1", id)
+    create_timer("Test2", id)
+    create_timer("Test3", id)
+    create_timer("Test4", id)
+    create_timer("Test5", id)
+    create_timer("Test6", id)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/?page=1&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_getting_to_large_page_of_timers(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/?page=0&size=125",
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_getting_negative_page_of_timers(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/?page=-2&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_getting_negative_amount_of_timers(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/?page=0&size=-5",
+                          headers=headers
+                          )
+    assert response.status_code == 400
