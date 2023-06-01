@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TimerBase(BaseModel):
@@ -10,7 +10,13 @@ class TimerBase(BaseModel):
         orm_mode = True
 
 
-class TimerRequest(TimerBase):
+class TimerRequest(BaseModel):
+    name: str = Field(strip_whitespace=True, min_length=1)
+    description: str | None = None
+    duration_s: int = Field(gt=0)
+
+    class Config:
+        orm_mode = True
     pass
 
 
