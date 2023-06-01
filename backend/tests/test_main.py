@@ -149,6 +149,19 @@ def test_adding_timer_without_authentication(test_db):
     assert response.status_code == 401
 
 
+def test_adding_timer_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/timers/",
+                           json={
+                               "name": "New timer",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                           headers=headers
+                           )
+    assert response.status_code == 401
+
+
 def test_adding_timer(test_db):
     create_user()
     headers = {"Authorization": f"Bearer {get_token()}"}
@@ -161,3 +174,59 @@ def test_adding_timer(test_db):
                            headers=headers
                            )
     assert response.status_code == 200
+
+
+def test_adding_timer_with_negative_duration(test_db):
+    create_user()
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.post("/timers/",
+                           json={
+                               "name": "New timer",
+                               "description": "desc",
+                               "duration_s": "-1"
+                               },
+                           headers=headers
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_timer_with_zero_duration(test_db):
+    create_user()
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.post("/timers/",
+                           json={
+                               "name": "New timer",
+                               "description": "desc",
+                               "duration_s": "0"
+                               },
+                           headers=headers
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_timer_with_empty_name(test_db):
+    create_user()
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.post("/timers/",
+                           json={
+                               "name": "",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                           headers=headers
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_timer_with_whitespace_only_name(test_db):
+    create_user()
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.post("/timers/",
+                           json={
+                               "name": "   ",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                           headers=headers
+                           )
+    assert response.status_code == 400
