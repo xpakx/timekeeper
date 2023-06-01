@@ -21,7 +21,12 @@ def create_timer(timer: TimerRequest, user_id: int, db: Session):
 
 def get_timers(page: int, size: int, user_id: int, db: Session):
     offset = page*size
-    return db.query(Timer).where(Timer.user_id == user_id and Timer.deleted is False).offset(offset).limit(size).all()
+    return db\
+            .query(Timer)\
+            .where(Timer.user_id == user_id and Timer.deleted is False)\
+            .offset(offset)\
+            .limit(size)\
+            .all()
 
 
 def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
@@ -38,7 +43,14 @@ def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
 
 
 def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
-    ownership = db.query(Timer.query.where(Timer.id == timer_id and Timer.user_id == user_id).exists()).scalar()
+    ownership = db\
+            .query(
+                    Timer
+                    .query
+                    .where(Timer.id == timer_id and Timer.user_id == user_id)
+                    .exists()
+            )\
+            .scalar()
     if not ownership:
         raise ownership_exception()
     timer_instance = TimerInstance(
@@ -53,7 +65,11 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
     return timer_instance
 
 
-def change_timer_state(timer_id: int, timer_state: int, user_id: int, db: Session) -> None:
+def change_timer_state(
+        timer_id: int,
+        timer_state: int,
+        user_id: int,
+        db: Session) -> None:
     timer = db.get(TimerInstance, timer_id)
     if timer:
         if timer.user_id != user_id:
@@ -76,9 +92,15 @@ def fail_timer(timer_id: int, user_id: int, db: Session) -> None:
 
 def get_active_timers(page: int, size: int, user_id: int, db: Session):
     offset = page*size
-    return db.query(TimerInstance).where(
-            TimerInstance.state == TimerState.running and TimerInstance.user_id == user_id
-            ).offset(offset).limit(size).all()
+    return db\
+            .query(TimerInstance)\
+            .where(
+                    TimerInstance.state == TimerState.running and
+                    TimerInstance.user_id == user_id
+            )\
+            .offset(offset)\
+            .limit(size)\
+            .all()
 
 
 def ownership_exception():

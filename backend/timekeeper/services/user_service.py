@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session
 from fastapi import status, HTTPException
 
 
-def login(request: user_schemas.AuthRequest, db: Session) -> user_schemas.AuthResponse:
+def login(
+        request: user_schemas.AuthRequest,
+        db: Session) -> user_schemas.AuthResponse:
     user = user_repo.check_user(request, db)
     if user:
         token = create_token({"sub": user.username, "id": user.id})
@@ -20,7 +22,9 @@ def login(request: user_schemas.AuthRequest, db: Session) -> user_schemas.AuthRe
         raise no_user_exception()
 
 
-def register(request: user_schemas.RegistrationRequest, db: Session) -> Optional[user_schemas.AuthResponse]:
+def register(
+        request: user_schemas.RegistrationRequest,
+        db: Session) -> Optional[user_schemas.AuthResponse]:
     if request.password != request.repeated_password:
         raise wrong_repeated_password_exception()
     user = user_repo.create_user(request, db)
