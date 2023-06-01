@@ -64,12 +64,16 @@ def create_user_and_return_id() -> int:
 
 
 def create_timer(name: str, user_id: int):
+    create_timer_(name, user_id, False)
+
+
+def create_timer_(name: str, user_id: int, deleted: bool):
     db = TestingSessionLocal()
     new_timer = Timer(
             name=name,
             description="",
             duration_s=100,
-            deleted=False,
+            deleted=deleted,
             owner_id=user_id
             )
     db.add(new_timer)
@@ -370,3 +374,30 @@ def test_getting_negative_amount_of_timers(test_db):
                           headers=headers
                           )
     assert response.status_code == 400
+
+
+def test_getting_timers_with_default_values(test_db):
+    id = create_user_and_return_id()
+    for i in range(0, 30):
+        create_timer(f"Test{i}", id)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 20
+
+
+def test_not_getting_deleted_timers(test_db):
+    id = create_user_and_return_id()
+    create_timer("Test", id)
+    create_timer_("Deleted", id, True)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+    assert result[0]['name'] == "Test"

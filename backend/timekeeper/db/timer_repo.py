@@ -3,6 +3,8 @@ from .models import Timer, TimerInstance, TimerState
 import datetime
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import false
+from sqlalchemy import and_
 
 
 def create_timer(timer: TimerRequest, user_id: int, db: Session):
@@ -23,7 +25,9 @@ def get_timers(page: int, size: int, user_id: int, db: Session):
     offset = page*size
     return db\
             .query(Timer)\
-            .where(Timer.owner_id == user_id and Timer.deleted is False)\
+            .where(
+                    and_(Timer.owner_id == user_id, Timer.deleted == false())
+                    )\
             .offset(offset)\
             .limit(size)\
             .all()
