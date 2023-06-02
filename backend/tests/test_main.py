@@ -63,11 +63,11 @@ def create_user_and_return_id() -> int:
     return create_user_with_username("User")
 
 
-def create_timer(name: str, user_id: int):
-    create_timer_(name, user_id, False)
+def create_timer(name: str, user_id: int) -> int:
+    return create_timer_(name, user_id, False)
 
 
-def create_timer_(name: str, user_id: int, deleted: bool):
+def create_timer_(name: str, user_id: int, deleted: bool) -> int:
     db = TestingSessionLocal()
     new_timer = Timer(
             name=name,
@@ -78,7 +78,9 @@ def create_timer_(name: str, user_id: int, deleted: bool):
             )
     db.add(new_timer)
     db.commit()
+    db.refresh(new_timer)
     db.close()
+    return new_timer.id
 
 
 def get_token() -> str:
@@ -401,3 +403,123 @@ def test_not_getting_deleted_timers(test_db):
     result = response.json()
     assert len(result) == 1
     assert result[0]['name'] == "Test"
+
+
+# editing
+
+def test_editing_timer_without_authentication(test_db):
+    response = client.put("/timers/1",
+                          json={
+                               "name": "New timer",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               }
+                          )
+    assert response.status_code == 401
+
+
+def test_editing_timer_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.put("/timers/1",
+                          json={
+                               "name": "New timer",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                          headers=headers
+                          )
+    assert response.status_code == 401
+
+
+def test_editing_timer(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.put(f"/timers/{id}",
+                          json={
+                               "name": "Updated timer",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert result['name'] == "Updated timer"
+
+
+def test_editing_timer_with_negative_duration(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.put(f"/timers/{id}",
+                          json={
+                               "name": "Updated timer",
+                               "description": "desc",
+                               "duration_s": "-1"
+                               },
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_editing_timer_with_zero_duration(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.put(f"/timers/{id}",
+                          json={
+                               "name": "Updated timer",
+                               "description": "desc",
+                               "duration_s": "0"
+                               },
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_editing_timer_with_empty_name(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.put(f"/timers/{id}",
+                          json={
+                               "name": "",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+@pytest.mark.skip(reason="todo")
+def test_editing_timer_with_whitespace_only_name(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.put(f"/timers/{id}",
+                          json={
+                               "name": "  ",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_editing_other_users_timer(test_db):
+    user_id = create_user_and_return_id()
+    other_id = create_user_with_username("Other")
+    id = create_timer("Test", other_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.put(f"/timers/{id}",
+                          json={
+                               "name": "Updated timer",
+                               "description": "desc",
+                               "duration_s": "1500"
+                               },
+                          headers=headers
+                          )
+    assert response.status_code == 401
