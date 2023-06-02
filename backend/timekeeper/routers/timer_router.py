@@ -35,7 +35,7 @@ async def edit_timer(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return timer_service.edit_timer(id, timer, user.id)
+    return timer_service.edit_timer(id, timer, user.id, db)
 
 
 @router.post("/instance/{id}/state")
