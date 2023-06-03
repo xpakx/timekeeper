@@ -51,7 +51,9 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
             .query(
                     Timer
                     .query
-                    .where(Timer.id == timer_id and Timer.owner_id == user_id)
+                    .where(
+                        and_(Timer.id == timer_id, Timer.owner_id == user_id)
+                        )
                     .exists()
             )\
             .scalar()
@@ -99,8 +101,7 @@ def get_active_timers(page: int, size: int, user_id: int, db: Session):
     return db\
             .query(TimerInstance)\
             .where(
-                    TimerInstance.state == TimerState.running and
-                    TimerInstance.owner_id == user_id
+                    and_(TimerInstance.state == TimerState.running, TimerInstance.owner_id == user_id)
             )\
             .offset(offset)\
             .limit(size)\
