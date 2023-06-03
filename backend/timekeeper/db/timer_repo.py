@@ -51,7 +51,7 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
             .query(
                     Timer
                     .query
-                    .where(Timer.id == timer_id and Timer.user_id == user_id)
+                    .where(Timer.id == timer_id and Timer.owner_id == user_id)
                     .exists()
             )\
             .scalar()
@@ -61,7 +61,7 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
             timer_id=timer_id,
             start=datetime.datetime.utcnow,
             state=TimerState.running,
-            user_id=user_id
+            owner_id=user_id
             )
     db.add(timer_instance)
     db.commit()
@@ -76,7 +76,7 @@ def change_timer_state(
         db: Session) -> None:
     timer = db.get(TimerInstance, timer_id)
     if timer:
-        if timer.user_id != user_id:
+        if timer.owner_id != user_id:
             raise ownership_exception()
         timer.state = timer_state
         db.commit()
@@ -100,7 +100,7 @@ def get_active_timers(page: int, size: int, user_id: int, db: Session):
             .query(TimerInstance)\
             .where(
                     TimerInstance.state == TimerState.running and
-                    TimerInstance.user_id == user_id
+                    TimerInstance.owner_id == user_id
             )\
             .offset(offset)\
             .limit(size)\
