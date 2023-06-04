@@ -119,7 +119,7 @@ def ownership_exception():
 def delete_timer(timer_id: int, user_id: int, db: Session) -> Timer:
     db_timer = db.get(Timer, timer_id)
     if db_timer:
-        if db_timer.user_id != user_id:
+        if db_timer.owner_id != user_id:
             raise ownership_exception()
         db_timer.deleted = True
         db.commit()
