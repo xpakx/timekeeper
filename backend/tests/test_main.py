@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Timer
+from timekeeper.db.models import User, Timer, TimerInstance
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 
@@ -588,3 +588,14 @@ def test_starting_timer(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post(f"/timers/{id}/instances", headers=headers)
     assert response.status_code == 200
+
+
+def test_adding_started_timer_instance_to_db_with_owner(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    client.post(f"/timers/{id}/instances", headers=headers)
+    db = TestingSessionLocal()
+    timer: TimerInstance = db.query(TimerInstance).first()
+    db.close()
+    assert timer.owner_id == user_id
