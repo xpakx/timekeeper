@@ -552,3 +552,39 @@ def test_deleting_other_users_timer(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.delete(f"/timers/{id}", headers=headers)
     assert response.status_code == 401
+
+# starting
+
+def test_starting_timer_without_authentication(test_db):
+    response = client.post("/timers/1/instances")
+    assert response.status_code == 401
+
+
+def test_starting_timer_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/timers/1/instances", headers=headers)
+    assert response.status_code == 401
+
+
+def test_starting_other_users_timer(test_db):
+    user_id = create_user_and_return_id()
+    other_id = create_user_with_username("Other")
+    id = create_timer("Test", other_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/timers/{id}/instances", headers=headers)
+    assert response.status_code == 401
+
+
+def test_starting_non_existent_timer(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/timers/1/instances", headers=headers)
+    assert response.status_code == 401
+
+
+def test_starting_timer(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/timers/{id}/instances", headers=headers)
+    assert response.status_code == 200
