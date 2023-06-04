@@ -68,7 +68,7 @@ async def delete_timer(id: int,
 
 @router.post("/{id}/instances", response_model=timer_schemas.TimerInstance)
 async def start_timer(id: int,
-                      user_id: int,
+                      user: Annotated[CurrentUser, Depends(get_current_user)],
                       db: Session = Depends(get_db)
                       ):
-    return timer_service.start_timer(id, user_id, db)
+    return timer_service.start_timer(id, user.id, db)

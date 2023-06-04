@@ -49,8 +49,8 @@ def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
 def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
     ownership = db\
             .query(
-                    Timer
-                    .query
+                    db
+                    .query(Timer)
                     .where(
                         and_(Timer.id == timer_id, Timer.owner_id == user_id)
                         )
@@ -61,7 +61,7 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
         raise ownership_exception()
     timer_instance = TimerInstance(
             timer_id=timer_id,
-            start=datetime.datetime.utcnow,
+            start_time=datetime.datetime.utcnow,
             state=TimerState.running,
             owner_id=user_id
             )
