@@ -61,7 +61,7 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
         raise ownership_exception()
     timer_instance = TimerInstance(
             timer_id=timer_id,
-            start_time=datetime.datetime.utcnow,
+            start_time=datetime.datetime.utcnow(),
             state=TimerState.running,
             owner_id=user_id
             )

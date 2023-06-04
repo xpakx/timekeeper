@@ -1,4 +1,7 @@
 from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import datetime
+from ...db.models import TimerState
 
 
 class TimerBase(BaseModel):
@@ -30,7 +33,10 @@ class StateRequest(BaseModel):
 
 class TimerInstance(BaseModel):
     id: int
-    start_time: str
-    end_time: str
-    state: int
+    start_time: datetime
+    end_time: Optional[datetime]
+    state: TimerState
     timer_id: int
+
+    class Config:
+        orm_mode = True
