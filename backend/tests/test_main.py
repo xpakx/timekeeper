@@ -523,3 +523,32 @@ def test_editing_other_users_timer(test_db):
                           headers=headers
                           )
     assert response.status_code == 401
+
+# deleting
+
+def test_deleting_timer_without_authentication(test_db):
+    response = client.delete("/timers/1")
+    assert response.status_code == 401
+
+
+def test_deleting_timer_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.delete("/timers/1", headers=headers)
+    assert response.status_code == 401
+
+
+def test_deleting_timer(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token()}"}
+    response = client.delete(f"/timers/{id}", headers=headers)
+    assert response.status_code == 200
+
+
+def test_deleting_other_users_timer(test_db):
+    user_id = create_user_and_return_id()
+    other_id = create_user_with_username("Other")
+    id = create_timer("Test", other_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.delete(f"/timers/{id}", headers=headers)
+    assert response.status_code == 401
