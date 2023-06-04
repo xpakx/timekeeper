@@ -64,3 +64,11 @@ async def delete_timer(id: int,
                        db: Session = Depends(get_db)
                        ):
     return timer_service.delete_timer(id, user.id, db)
+
+
+@router.post("/{id}/instances", response_model=timer_schemas.TimerInstance)
+async def start_timer(id: int,
+                      user_id: int,
+                      db: Session = Depends(get_db)
+                      ):
+    return timer_service.start_timer(id, user_id, db)

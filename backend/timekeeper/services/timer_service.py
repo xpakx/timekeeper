@@ -1,6 +1,6 @@
 from ..routers.dto import timer_schemas
 from ..db import timer_repo
-from ..db.models import TimerState
+from ..db.models import TimerState, TimerInstance
 from sqlalchemy.orm import Session
 
 
@@ -19,7 +19,7 @@ def edit_timer(timer_id: int,
     return timer_repo.edit_timer(timer_id, request, user_id, db)
 
 
-def start_timer(timer_id: int, user_id: int, db: Session):
+def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
     return timer_repo.start_timer(timer_id, user_id, db)
 
 
