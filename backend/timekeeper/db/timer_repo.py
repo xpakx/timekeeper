@@ -24,13 +24,13 @@ def create_timer(timer: TimerRequest, user_id: int, db: Session):
 def get_timers(page: int, size: int, user_id: int, db: Session):
     offset = page*size
     return db\
-            .query(Timer)\
-            .where(
+        .query(Timer)\
+        .where(
                     and_(Timer.owner_id == user_id, Timer.deleted == false())
                     )\
-            .offset(offset)\
-            .limit(size)\
-            .all()
+        .offset(offset)\
+        .limit(size)\
+        .all()
 
 
 def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
@@ -89,13 +89,13 @@ def change_timer_state(
 def get_active_timers(page: int, size: int, user_id: int, db: Session):
     offset = page*size
     return db\
-            .query(TimerInstance)\
-            .where(
-                    and_(TimerInstance.state == TimerState.running, TimerInstance.owner_id == user_id)
+        .query(TimerInstance)\
+        .where(
+             and_(TimerInstance.state == TimerState.running, TimerInstance.owner_id == user_id)
             )\
-            .offset(offset)\
-            .limit(size)\
-            .all()
+        .offset(offset)\
+        .limit(size)\
+        .all()
 
 
 def ownership_exception():

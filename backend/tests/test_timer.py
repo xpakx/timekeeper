@@ -559,7 +559,7 @@ def test_changing_other_users_timer_state(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post(f"/timers/instances/{id}/state",
                            headers=headers,
-                           json={"state": 2})
+                           json={"state": "finished"})
     assert response.status_code == 401
 
 
@@ -568,7 +568,7 @@ def test_changing_non_existent_timer_state(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post("/timers/instances/1/state",
                            headers=headers,
-                           json={"state": 2})
+                           json={"state": "finished"})
     assert response.status_code == 401
 
 

@@ -25,10 +25,10 @@ class Timer(Base):
 
 
 class TimerState(enum.Enum):
-    running = 1
-    finished = 2
-    cancelled = 3
-    failed = 4
+    running = "running"
+    finished = "finished"
+    cancelled = "cancelled"
+    failed = "failed"
 
 
 class TimerInstance(Base):
