@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Timer, TimerInstance
+from timekeeper.db.models import User, Timer, TimerInstance, TimerState
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 
@@ -82,6 +82,20 @@ def create_timer_(name: str, user_id: int, deleted: bool) -> int:
             description="",
             duration_s=100,
             deleted=deleted,
+            owner_id=user_id
+            )
+    db.add(new_timer)
+    db.commit()
+    db.refresh(new_timer)
+    db.close()
+    return new_timer.id
+
+
+def create_timer_instance(user_id: int, timer_id: int) -> int:
+    db = TestingSessionLocal()
+    new_timer = TimerInstance(
+            state=TimerState.running,
+            timer_id=timer_id,
             owner_id=user_id
             )
     db.add(new_timer)
@@ -513,6 +527,52 @@ def test_starting_timer(test_db):
 
 
 def test_adding_started_timer_instance_to_db_with_owner(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    client.post(f"/timers/{id}/instances", headers=headers)
+    db = TestingSessionLocal()
+    timer: TimerInstance = db.query(TimerInstance).first()
+    db.close()
+    assert timer.owner_id == user_id
+
+
+# changing state
+
+
+def test_changing_timer_state_without_authentication(test_db):
+    response = client.post("/timers/instances/1/state")
+    assert response.status_code == 401
+
+
+def test_changing_timer_state_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/timers/instances/1/state", headers=headers)
+    assert response.status_code == 401
+
+
+def test_changing_other_users_timer_state(test_db):
+    user_id = create_user_and_return_id()
+    other_id = create_user_with_username("Other")
+    timer_id = create_timer("Test", other_id)
+    id = create_timer_instance(other_id, timer_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/timers/instances/{id}/state",
+                           headers=headers,
+                           json={"state": 2})
+    assert response.status_code == 401
+
+
+def test_changing_non_existent_timer_state(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/timers/instances/1/state",
+                           headers=headers,
+                           json={"state": 2})
+    assert response.status_code == 401
+
+
+def test_changing_timer_state_to_finished(test_db):
     user_id = create_user_and_return_id()
     id = create_timer("Test", user_id)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
