@@ -1,6 +1,6 @@
 from ..routers.dto import timer_schemas
 from ..db import timer_repo
-from ..db.models import TimerState, TimerInstance
+from ..db.models import TimerInstance
 from sqlalchemy.orm import Session
 
 
@@ -27,12 +27,7 @@ def change_state(timer_id: int,
                  request: timer_schemas.StateRequest,
                  user_id: int,
                  db: Session) -> None:
-    if request.state == TimerState.finished:
-        timer_repo.finish_timer(timer_id, user_id, db)
-    elif request.state == TimerState.cancelled:
-        timer_repo.cancel_timer(timer_id, user_id, db)
-    elif request.state == TimerState.failed:
-        timer_repo.fail_timer(timer_id, user_id, db)
+    timer_repo.change_timer_state(timer_id, request.state, user_id, db)
 
 
 def get_active(page: int, size: int, user_id: int, db: Session):

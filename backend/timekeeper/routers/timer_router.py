@@ -38,8 +38,8 @@ async def edit_timer(
     return timer_service.edit_timer(id, timer, user.id, db)
 
 
-@router.post("/instance/{id}/state")
-async def cancel_timer(
+@router.post("/instances/{id}/state")
+async def change_timer_state(
         id: int,
         request: timer_schemas.StateRequest,
         user: Annotated[CurrentUser, Depends(get_current_user)],

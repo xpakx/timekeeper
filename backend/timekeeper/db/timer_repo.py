@@ -82,18 +82,8 @@ def change_timer_state(
             raise ownership_exception()
         timer.state = timer_state
         db.commit()
-
-
-def finish_timer(timer_id: int, user_id: int, db: Session) -> None:
-    change_timer_state(timer_id, TimerState.finished, user_id, db)
-
-
-def cancel_timer(timer_id: int, user_id: int, db: Session) -> None:
-    change_timer_state(timer_id, TimerState.cancelled, user_id, db)
-
-
-def fail_timer(timer_id: int, user_id: int, db: Session) -> None:
-    change_timer_state(timer_id, TimerState.failed, user_id, db)
+    else:
+        raise ownership_exception()
 
 
 def get_active_timers(page: int, size: int, user_id: int, db: Session):

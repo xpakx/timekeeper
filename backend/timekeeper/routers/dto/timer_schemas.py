@@ -28,7 +28,7 @@ class TimerResponse(TimerBase):
 
 
 class StateRequest(BaseModel):
-    state: int
+    state: TimerState
 
 
 class TimerInstance(BaseModel):
