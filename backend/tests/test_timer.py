@@ -574,15 +574,15 @@ def test_changing_non_existent_timer_state(test_db):
     assert response.status_code == 401
 
 
-def test_changing_timer_state_to_finished(test_db):  # TODO
+def test_changing_timer_state(test_db):
     user_id = create_user_and_return_id()
-    id = create_timer("Test", user_id)
+    timer_id = create_timer("Test", user_id)
+    id = create_timer_instance(user_id, timer_id)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
-    client.post(f"/timers/{id}/instances", headers=headers)
-    db = TestingSessionLocal()
-    timer: TimerInstance = db.query(TimerInstance).first()
-    db.close()
-    assert timer.owner_id == user_id
+    response = client.post(f"/timers/instances/{id}/state",
+                           headers=headers,
+                           json={"state": "finished"})
+    assert response.status_code == 200
 
 # getting active timers
 
