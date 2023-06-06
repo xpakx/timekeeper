@@ -51,8 +51,8 @@ async def change_timer_state(
 @router.get("/active", response_model=list[timer_schemas.TimerInstance])
 async def get_active_timers(
         user: Annotated[CurrentUser, Depends(get_current_user)],
-        page: int = 0,
-        size: int = 20,
+        page: Annotated[int, Query(ge=0)] = 0,
+        size: Annotated[int, Query(ge=1, le=20)] = 20,
         db: Session = Depends(get_db)
         ):
     return timer_service.get_active(page, size, user.id, db)
