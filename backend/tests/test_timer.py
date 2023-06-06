@@ -9,6 +9,7 @@ from timekeeper.db.manager import get_db
 from timekeeper.db.models import User, Timer, TimerInstance, TimerState
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
+from datetime import datetime
 
 url = URL.create(
         "postgresql",
@@ -96,7 +97,8 @@ def create_timer_instance(user_id: int, timer_id: int) -> int:
     new_timer = TimerInstance(
             state=TimerState.running,
             timer_id=timer_id,
-            owner_id=user_id
+            owner_id=user_id,
+            start_time=datetime.utcnow()
             )
     db.add(new_timer)
     db.commit()
@@ -572,7 +574,7 @@ def test_changing_non_existent_timer_state(test_db):
     assert response.status_code == 401
 
 
-def test_changing_timer_state_to_finished(test_db):
+def test_changing_timer_state_to_finished(test_db):  # TODO
     user_id = create_user_and_return_id()
     id = create_timer("Test", user_id)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
@@ -581,3 +583,116 @@ def test_changing_timer_state_to_finished(test_db):
     timer: TimerInstance = db.query(TimerInstance).first()
     db.close()
     assert timer.owner_id == user_id
+
+# getting active timers
+
+
+def test_getting_active_timers_without_authentication(test_db):
+    response = client.get("/timers/active")
+    assert response.status_code == 401
+
+
+def test_getting_active_timers_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/timers/active",
+                          headers=headers
+                          )
+    assert response.status_code == 401
+
+
+def test_getting_users_active_timers(test_db):
+    user_id = create_user_and_return_id()
+    timer_id = create_timer("Test", user_id)
+    create_timer_instance(user_id, timer_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/timers/active",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_not_getting_other_users_active_timers(test_db):
+    id = create_user_and_return_id()
+    other = create_user_with_username("User2")
+    timer_id = create_timer("Test", other)
+    user_timer = create_timer("Test", id)
+    create_timer_instance(other, timer_id)
+    create_timer_instance(id, user_timer)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/active",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_getting_first_page_of_active_timers(test_db):
+    id = create_user_and_return_id()
+    timer = create_timer("Test", id)
+    for i in range(0, 6):
+        create_timer_instance(id, timer)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/active/?page=0&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 5
+
+
+def test_getting_second_page_of_active_timers(test_db):
+    id = create_user_and_return_id()
+    timer = create_timer("Test", id)
+    for i in range(0, 6):
+        create_timer_instance(id, timer)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/active/?page=1&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_getting_to_large_page_of_active_timers(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/active/?page=0&size=125",
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_getting_negative_page_of_active_timers(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/active/?page=-2&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_getting_negative_amount_of_active_timers(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/active/?page=0&size=-5",
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_getting_active_timers_with_default_values(test_db):
+    id = create_user_and_return_id()
+    timer = create_timer("Test", id)
+    for i in range(0, 30):
+        create_timer_instance(id, timer)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/active",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 20
