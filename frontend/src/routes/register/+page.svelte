@@ -4,6 +4,8 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import { tokenStorage } from '../../storage'; 
+
     let apiUri = "http://localhost:8000";
 
     let message: String;
@@ -20,10 +22,11 @@
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                })
+                });
 
                 if (response.ok) {
-                    const fromEndpoint = await response.json()
+                    const fromEndpoint = await response.json();
+                    tokenStorage.set(fromEndpoint.token);
                     console.log("Success");
                     goto('/')
                 } else {
