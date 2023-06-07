@@ -344,7 +344,6 @@ def test_not_getting_deleted_timers(test_db):
 
 
 # editing
-
 def test_editing_timer_without_authentication(test_db):
     response = client.put("/timers/1",
                           json={
@@ -462,8 +461,8 @@ def test_editing_other_users_timer(test_db):
                           )
     assert response.status_code == 401
 
-# deleting
 
+# deleting
 def test_deleting_timer_without_authentication(test_db):
     response = client.delete("/timers/1")
     assert response.status_code == 401
@@ -491,8 +490,8 @@ def test_deleting_other_users_timer(test_db):
     response = client.delete(f"/timers/{id}", headers=headers)
     assert response.status_code == 401
 
-# starting
 
+# starting
 def test_starting_timer_without_authentication(test_db):
     response = client.post("/timers/1/instances")
     assert response.status_code == 401
@@ -540,8 +539,6 @@ def test_adding_started_timer_instance_to_db_with_owner(test_db):
 
 
 # changing state
-
-
 def test_changing_timer_state_without_authentication(test_db):
     response = client.post("/timers/instances/1/state")
     assert response.status_code == 401
@@ -584,9 +581,8 @@ def test_changing_timer_state(test_db):
                            json={"state": "finished"})
     assert response.status_code == 200
 
+
 # getting active timers
-
-
 def test_getting_active_timers_without_authentication(test_db):
     response = client.get("/timers/active")
     assert response.status_code == 401
