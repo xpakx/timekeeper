@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>Register</title>
+    <title>Login</title>
 </svelte:head>
 
 <script lang="ts">
@@ -9,14 +9,14 @@
     let apiUri = "http://localhost:8000";
 
     let message: String;
-    let user = {username: "", password: "", repeated_password: ""};
+    let user = {username: "", password: ""};
 
-    async function register() {
-        const form = <HTMLFormElement> document.getElementById('register');
+    async function login() {
+        const form = <HTMLFormElement> document.getElementById('login');
 
         if (form && form.checkValidity()) {
             try {
-                let response = await fetch(`${apiUri}/users/register`, {
+                let response = await fetch(`${apiUri}/users/login`, {
                     method: 'POST',
                     body: JSON.stringify(user), 
                     headers: {
@@ -45,8 +45,8 @@
     }
 </script>
 
-<h1>Register</h1>
-<form id="register" autocomplete="on" novalidate>
+<h1>Login</h1>
+<form id="login" autocomplete="on" novalidate>
     <div>
         <label for="username">Username</label>
         <input 
@@ -62,19 +62,10 @@
         required 
         placeholder="Password" />
     </div>
-    <div>
-        <label for="password">Confirm password</label>
-        <input 
-        type="password" 
-        id="password" 
-        bind:value={user.repeated_password} 
-        required 
-        placeholder="Password (again)" />
-    </div>
     
     {#if message}
         <p>{message}</p>
     {/if}
     
-    <button type="button" on:click={register}>Register</button>
+    <button type="button" on:click={login}>Login</button>
 </form>
