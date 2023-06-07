@@ -1,5 +1,9 @@
 import { writable, type Writable } from 'svelte/store'
+import { browser } from '$app/environment';
 
-const stored = localStorage.token;
+const stored = browser ? localStorage.token : '';
 export const tokenStorage = <Writable<String>> writable(stored || '');
-tokenStorage.subscribe((value) => localStorage.token = value);
+
+if (browser) {
+    tokenStorage.subscribe((value) => localStorage.token = value);
+}
