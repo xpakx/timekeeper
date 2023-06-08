@@ -10,7 +10,7 @@
     let apiUri = "http://localhost:8000";
     let message: String;
 
-    let timers: [{ id: number, name: String, description: String, duration_s: number }];
+    let timers: { id: number, name: String, description: String, duration_s: number }[];
 
 	usernameStorage.subscribe(value => {
 		username = value;
@@ -50,6 +50,34 @@
         goto("/add");
 
     }
+
+    async function deleteTimer(id: number) {
+        let token: String = get(tokenStorage);
+        if(token) {
+            try {
+                let response = await fetch(`${apiUri}/timers/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    timers = timers.filter((a) => a.id != id);
+
+                } else {
+                    const errorBody = await response.json();
+                    message = errorBody.detail;
+                }
+
+            } catch (err) {
+                if (err instanceof Error) {
+                    message = err.message;
+                }
+            }
+        }
+    }
 </script>
 
 {#if username == ""}
@@ -63,13 +91,12 @@
 {#if timers}
     <h2>Timers</h2>
     {#each timers as timer}
-    <a href="/timers/{timer.id}">
         <div>
             {timer.name}
+            <button type="button" on:click={() => deleteTimer(timer.id)}>delete</button>
         </div>
-    </a>
     {/each}
-    {#if timers}
+    {#if !timers || timers.length == 0}
         <span>No timers</span>
     {/if}
 
