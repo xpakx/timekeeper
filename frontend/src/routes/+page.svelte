@@ -1,2 +1,18 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<svelte:head>
+    <title>Home</title>
+</svelte:head>
+
+<script lang="ts">
+    import { usernameStorage } from '../storage'; 
+    let username: String = "";
+
+	usernameStorage.subscribe(value => {
+		username = value;
+	});
+</script>
+
+{#if username == ""}
+    <p>Not logged</p>
+{:else}
+    <p>Logged as {username}</p>
+{/if}

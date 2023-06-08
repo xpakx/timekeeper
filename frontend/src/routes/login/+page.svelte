@@ -4,7 +4,7 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { tokenStorage } from '../../storage'; 
+    import { tokenStorage, usernameStorage } from '../../storage'; 
 
     let apiUri = "http://localhost:8000";
 
@@ -27,6 +27,7 @@
                 if (response.ok) {
                     const fromEndpoint = await response.json();
                     tokenStorage.set(fromEndpoint.token);
+                    usernameStorage.set(fromEndpoint.username);
                     console.log("Success");
                     goto('/')
                 } else {
