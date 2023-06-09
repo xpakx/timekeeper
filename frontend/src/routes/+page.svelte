@@ -114,6 +114,35 @@
             }
         }
     }
+
+    async function startTimer(id: number) {
+        let token: String = get(tokenStorage);
+        if(token) {
+            try {
+                let response = await fetch(`${apiUri}/timers/${id}/instances`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    let new_timer = await response.json();
+                    running_timers = [...running_timers, new_timer];
+
+                } else {
+                    const errorBody = await response.json();
+                    message = errorBody.detail;
+                }
+
+            } catch (err) {
+                if (err instanceof Error) {
+                    message = err.message;
+                }
+            }
+        }
+    }
 </script>
 
 {#if username == ""}
@@ -132,8 +161,6 @@
 
         </div>
     {/each}
-
-    <button type="button" on:click={add}>Add</button>
 {/if}
 
 <h2>Timers</h2>
@@ -143,6 +170,7 @@
             {timer.name}
             <button type="button" on:click={() => deleteTimer(timer.id)}>delete</button>
             <button type="button" on:click={() => goto(`/edit/${timer.id}`)}>edit</button>
+            <button type="button" on:click={() => startTimer(timer.id)}>start</button>
         </div>
     {/each}
 
