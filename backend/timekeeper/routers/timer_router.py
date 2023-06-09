@@ -28,6 +28,16 @@ async def get_timers(
     return timer_service.get_timers(page, size, user.id, db)
 
 
+@router.get("/active", response_model=list[timer_schemas.TimerInstance])
+async def get_active_timers(
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        page: Annotated[int, Query(ge=0)] = 0,
+        size: Annotated[int, Query(ge=1, le=20)] = 20,
+        db: Session = Depends(get_db)
+        ):
+    return timer_service.get_active(page, size, user.id, db)
+
+
 @router.get("/{id}", response_model=timer_schemas.TimerResponse)
 async def get_timer(
         id: int,
@@ -55,16 +65,6 @@ async def change_timer_state(
         db: Session = Depends(get_db)
         ):
     return timer_service.change_state(id, request, user.id, db)
-
-
-@router.get("/active", response_model=list[timer_schemas.TimerInstance])
-async def get_active_timers(
-        user: Annotated[CurrentUser, Depends(get_current_user)],
-        page: Annotated[int, Query(ge=0)] = 0,
-        size: Annotated[int, Query(ge=1, le=20)] = 20,
-        db: Session = Depends(get_db)
-        ):
-    return timer_service.get_active(page, size, user.id, db)
 
 
 @router.delete("/{id}", response_model=timer_schemas.TimerResponse)
