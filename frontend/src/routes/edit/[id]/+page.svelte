@@ -1,29 +1,27 @@
 <svelte:head>
-    <title>Home</title>
+    <title>Edit timer</title>
 </svelte:head>
 
 <script lang="ts">
     import { get } from 'svelte/store';
-    import { tokenStorage, usernameStorage } from '../storage'; 
+    import { tokenStorage } from '../../../storage'; 
     import { goto } from '$app/navigation';
-    let username: String = get(usernameStorage);
+    import { page } from '$app/stores';
+    let id = Number($page.params.id);
     let apiUri = "http://localhost:8000";
     let message: String;
+    let timer = {id: 0, name: "", description: "", duration_s: 0};
+    getTimer(id);
 
-    let timers: { id: number, name: String, description: String, duration_s: number }[];
-
-	usernameStorage.subscribe(value => {
-		username = value;
-        getAllTimers();
-	});
-
-
-    async function getAllTimers() {
+    async function editTimer() {
         let token: String = get(tokenStorage);
-        if(token) {
+        const form = <HTMLFormElement> document.getElementById('change_timer');
+
+        if(token && form && form.checkValidity()) {
             try {
-                let response = await fetch(`${apiUri}/timers/`, {
-                    method: 'GET',
+                let response = await fetch(`${apiUri}/timers/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(timer), 
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
@@ -31,8 +29,7 @@
                 });
 
                 if (response.ok) {
-                    timers = await response.json();
-
+                    goto("/");
                 } else {
                     const errorBody = await response.json();
                     message = errorBody.detail;
@@ -46,17 +43,13 @@
         }
     }
 
-    function add() {
-        goto("/add");
-
-    }
-
-    async function deleteTimer(id: number) {
+    async function getTimer(id: number) {
         let token: String = get(tokenStorage);
+
         if(token) {
             try {
                 let response = await fetch(`${apiUri}/timers/${id}`, {
-                    method: 'DELETE',
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
@@ -64,8 +57,7 @@
                 });
 
                 if (response.ok) {
-                    timers = timers.filter((a) => a.id != id);
-
+                    timer = await response.json();
                 } else {
                     const errorBody = await response.json();
                     message = errorBody.detail;
@@ -80,26 +72,33 @@
     }
 </script>
 
-{#if username == ""}
-    <p>Not logged, <a href="/login">log in</a></p>
-{:else}
-    <p>Logged as {username}</p>
-
-{/if}
-
-
-<h2>Timers</h2>
-{#if timers}
-    {#each timers as timer}
-        <div>
-            {timer.name}
-            <button type="button" on:click={() => deleteTimer(timer.id)}>delete</button>
-            <button type="button" on:click={() => goto(`/edit/${timer.id}`)}>delete</button>
-        </div>
-    {/each}
-
-    <button type="button" on:click={add}>Add</button>
-{/if}
-{#if !timers || timers.length == 0}
-    <span>No timers</span>
-{/if}
+<h1>Edit timer</h1>
+<form id="edit_timer" autocomplete="on" novalidate>
+    <div>
+        <label for="name">Name</label>
+        <input 
+        bind:value={timer.name} 
+        required placeholder="Name" 
+        id="name"/>
+    </div>
+    <div>
+        <label for="description">Description</label>
+        <input 
+        bind:value={timer.description} 
+        required placeholder="Description" 
+        id="description"/>
+    </div>
+    <div>
+        <label for="duration_s">Duration</label>
+        <input 
+        bind:value={timer.duration_s} 
+        required placeholder="Duration" 
+        id="duration_s"/>
+    </div>
+    
+    {#if message}
+        <p>{message}</p>
+    {/if}
+    
+    <button type="button" on:click={editTimer}>Add</button>
+</form>
