@@ -11,10 +11,18 @@
     let message: String;
 
     let timers: { id: number, name: String, description: String, duration_s: number }[];
+    let running_timers: { 
+        id: number,
+        start_time: Date,
+        end_time?: Date,
+        state: String,
+        timer_id: number 
+    }[];
 
 	usernameStorage.subscribe(value => {
 		username = value;
         getAllTimers();
+        getActiveTimers();
 	});
 
 
@@ -32,6 +40,34 @@
 
                 if (response.ok) {
                     timers = await response.json();
+
+                } else {
+                    const errorBody = await response.json();
+                    message = errorBody.detail;
+                }
+
+            } catch (err) {
+                if (err instanceof Error) {
+                    message = err.message;
+                }
+            }
+        }
+    }
+
+    async function getActiveTimers() {
+        let token: String = get(tokenStorage);
+        if(token) {
+            try {
+                let response = await fetch(`${apiUri}/timers/active`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    running_timers = await response.json();
 
                 } else {
                     const errorBody = await response.json();
@@ -87,6 +123,18 @@
 
 {/if}
 
+{#if running_timers && running_timers.length > 0}
+    <h2>Running</h2>
+
+    {#each running_timers as timer}
+        <div>
+            {timer.state}
+
+        </div>
+    {/each}
+
+    <button type="button" on:click={add}>Add</button>
+{/if}
 
 <h2>Timers</h2>
 {#if timers}
