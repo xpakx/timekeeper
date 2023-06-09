@@ -6,11 +6,16 @@ from ...db.models import TimerState
 
 class TimerBase(BaseModel):
     name: str
-    description: str | None = None
     duration_s: int
 
     class Config:
         orm_mode = True
+
+
+class TimerSummary(TimerBase):
+    name: str
+    description: str | None = None
+    duration_s: int
 
 
 class TimerRequest(BaseModel):
@@ -23,7 +28,7 @@ class TimerRequest(BaseModel):
     pass
 
 
-class TimerResponse(TimerBase):
+class TimerResponse(TimerSummary):
     id: int
 
 
@@ -37,6 +42,7 @@ class TimerInstance(BaseModel):
     end_time: Optional[datetime]
     state: TimerState
     timer_id: int
+    timer: TimerBase
 
     class Config:
         orm_mode = True
