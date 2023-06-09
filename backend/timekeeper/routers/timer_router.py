@@ -28,6 +28,15 @@ async def get_timers(
     return timer_service.get_timers(page, size, user.id, db)
 
 
+@router.get("/{id}", response_model=timer_schemas.TimerResponse)
+async def get_timer(
+        id: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return timer_service.get_timer(id, user.id, db)
+
+
 @router.put("/{id}", response_model=timer_schemas.TimerResponse)
 async def edit_timer(
         id: int,

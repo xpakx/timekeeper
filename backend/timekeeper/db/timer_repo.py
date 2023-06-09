@@ -33,6 +33,13 @@ def get_timers(page: int, size: int, user_id: int, db: Session):
         .all()
 
 
+def get_timer(timer_id: int, user_id: int, db: Session):
+    db_timer = db.get(Timer, timer_id)
+    if (not db_timer) or db_timer.owner_id != user_id:
+        raise ownership_exception()
+    return db_timer
+
+
 def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
     db_timer = db.get(Timer, timer_id)
     if db_timer:

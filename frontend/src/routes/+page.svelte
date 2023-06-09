@@ -94,7 +94,7 @@
         <div>
             {timer.name}
             <button type="button" on:click={() => deleteTimer(timer.id)}>delete</button>
-            <button type="button" on:click={() => goto(`/edit/${timer.id}`)}>delete</button>
+            <button type="button" on:click={() => goto(`/edit/${timer.id}`)}>edit</button>
         </div>
     {/each}
 

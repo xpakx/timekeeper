@@ -12,6 +12,12 @@ def get_timers(page, size, user_id: int, db: Session):
     return timer_repo.get_timers(page, size, user_id, db)
 
 
+def get_timer(timer_id: int,
+              user_id: int,
+              db: Session):
+    return timer_repo.get_timer(timer_id, user_id, db)
+
+
 def edit_timer(timer_id: int,
                request: timer_schemas.TimerRequest,
                user_id: int,
