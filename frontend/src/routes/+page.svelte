@@ -6,10 +6,10 @@
     let username: String = get(usernameStorage);
     let apiUri = "http://localhost:8000";
     let message: String;
-    let date = tweened(Date.now());
+    let date = tweened(Date.now(), {duration: 500});
     setInterval(() => {
         $date = Date.now();
-    }, 1000);
+    }, 500);
 
     let timers: {
         id: number;
@@ -23,6 +23,10 @@
         end_time?: Date;
         state: String;
         timer_id: number;
+	timer: {
+		name: string;
+		duration_s: number;
+	};
     }[];
 
     usernameStorage.subscribe((value) => {
@@ -71,7 +75,7 @@
 
                 if (response.ok) {
                     let fromEndpoint = await response.json();
-                    running_timers = fromEndpoint.map((t: any) => {
+                    running_timers = fromEndpoint.map(t => {
                         return {
                             id: t.id,
                             start_time: new Date(t.start_time),
@@ -80,6 +84,7 @@
                                 : undefined,
                             state: t.state,
                             timer_id: t.timer_id,
+			    timer: t.timer
                         };
                     });
                 } else {
@@ -168,8 +173,8 @@
 
     {#each running_timers as timer}
         <div>
-            {timer.state}
-            <progress value={(($date - timer.start_time.getTime())/(1000*60))}></progress> 
+            {timer.timer.name}
+            <progress value={(($date - timer.start_time.getTime())/(1000*timer.timer.duration_s))}></progress>
         </div>
     {/each}
 {/if}
