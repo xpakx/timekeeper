@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Time, Enum, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from .base import Base
 import enum
@@ -34,7 +34,7 @@ class TimerState(enum.Enum):
 class TimerInstance(Base):
     __tablename__ = "timer_instances"
     id = Column(Integer, primary_key=True, index=True)
-    start_time = Column(DateTime)
+    start_time = Column(DateTime(timezone=True))
     end_time = Column(DateTime)
     state = Column(Enum(TimerState))
     timer_id = Column(Integer, ForeignKey("timers.id"))

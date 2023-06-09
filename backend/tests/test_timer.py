@@ -10,6 +10,7 @@ from timekeeper.db.models import User, Timer, TimerInstance, TimerState
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from datetime import datetime
+from sqlalchemy.sql import func
 
 url = URL.create(
         "postgresql",
@@ -98,7 +99,7 @@ def create_timer_instance(user_id: int, timer_id: int) -> int:
             state=TimerState.running,
             timer_id=timer_id,
             owner_id=user_id,
-            start_time=datetime.utcnow()
+            start_time=func.now()
             )
     db.add(new_timer)
     db.commit()
