@@ -1,6 +1,5 @@
 from ..routers.dto.timer_schemas import TimerRequest
 from .models import Timer, TimerInstance, TimerState
-import datetime
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import false
@@ -81,7 +80,7 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
 
 def change_timer_state(
         timer_id: int,
-        timer_state: int,
+        timer_state: TimerState,
         user_id: int,
         db: Session) -> None:
     timer = db.get(TimerInstance, timer_id)

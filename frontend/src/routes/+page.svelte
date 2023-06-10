@@ -205,9 +205,15 @@
         <div>
             {timer.timer.name}
             <progress value={(($date - timer.start_time.getTime())/(1000*timer.timer.duration_s))}></progress>
-            <button type="button" on:click={() => changeTimerState(timer.id, "cancelled")}>
-                cancel
-            </button>
+            {#if ($date - timer.start_time.getTime()) <= (1000*timer.timer.duration_s)}
+                <button type="button" on:click={() => changeTimerState(timer.id, "cancelled")}>
+                    cancel
+                </button>
+            {:else}
+                <button type="button" on:click={() => changeTimerState(timer.id, "finished")}>
+                    success 
+                </button>
+            {/if}
             <button type="button" on:click={() => changeTimerState(timer.id, "failed")}>
                 fail
             </button>
