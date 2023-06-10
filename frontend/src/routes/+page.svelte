@@ -75,7 +75,7 @@
 
                 if (response.ok) {
                     let fromEndpoint = await response.json();
-                    running_timers = fromEndpoint.map(t => {
+                    running_timers = fromEndpoint.map((t: any) => {
                         return {
                             id: t.id,
                             start_time: new Date(t.start_time),
@@ -84,7 +84,7 @@
                                 : undefined,
                             state: t.state,
                             timer_id: t.timer_id,
-			    timer: t.timer
+                            timer: t.timer
                         };
                     });
                 } else {
@@ -156,6 +156,36 @@
             }
         }
     }
+
+    async function changeTimerState(id: number, state: String) {
+        let token: String = get(tokenStorage);
+        let body = {
+            "state": state
+        };
+        if (token) {
+            try {
+                let response = await fetch(`${apiUri}/timers/instances/${id}/state`, {
+                    method: "POST",
+                    body: JSON.stringify(body),
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    running_timers = running_timers.filter((a) => a.id != id);
+                } else {
+                    const errorBody = await response.json();
+                    message = errorBody.detail;
+                }
+            } catch (err) {
+                if (err instanceof Error) {
+                    message = err.message;
+                }
+            }
+        }
+    }
 </script>
 
 <svelte:head>
@@ -175,6 +205,12 @@
         <div>
             {timer.timer.name}
             <progress value={(($date - timer.start_time.getTime())/(1000*timer.timer.duration_s))}></progress>
+            <button type="button" on:click={() => changeTimerState(timer.id, "cancelled")}>
+                cancel
+            </button>
+            <button type="button" on:click={() => changeTimerState(timer.id, "failed")}>
+                fail
+            </button>
         </div>
     {/each}
 {/if}
