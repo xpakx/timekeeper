@@ -15,7 +15,7 @@
 
     async function editTimer() {
         let token: String = get(tokenStorage);
-        const form = <HTMLFormElement> document.getElementById('change_timer');
+        const form = <HTMLFormElement> document.getElementById('edit_timer');
 
         if(token && form && form.checkValidity()) {
             try {
@@ -100,5 +100,5 @@
         <p>{message}</p>
     {/if}
     
-    <button type="button" on:click={editTimer}>Add</button>
+    <button type="button" on:click={editTimer}>Save</button>
 </form>
