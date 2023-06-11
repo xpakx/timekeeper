@@ -202,7 +202,9 @@
     <h2>Running</h2>
 
     {#each running_timers as timer}
-        <div>
+        <div class="{
+        ($date - timer.start_time.getTime()) > (1000*timer.timer.duration_s) ? 'finished' : ''
+        }">
             {timer.timer.name}
             <progress value={(($date - timer.start_time.getTime())/(1000*timer.timer.duration_s))}></progress>
             {#if ($date - timer.start_time.getTime()) <= (1000*timer.timer.duration_s)}
@@ -210,7 +212,7 @@
                     cancel
                 </button>
             {:else}
-                <button type="button" on:click={() => changeTimerState(timer.id, "finished")}>
+                <button type="button" class="btn-finished" on:click={() => changeTimerState(timer.id, "finished")}>
                     success 
                 </button>
             {/if}
@@ -243,3 +245,14 @@
 {#if !timers || timers.length == 0}
     <span>No timers</span>
 {/if}
+
+<style>
+
+.finished {
+    color: greenyellow;
+}
+
+.btn-finished {
+    background-color: goldenrod;
+}
+</style>
