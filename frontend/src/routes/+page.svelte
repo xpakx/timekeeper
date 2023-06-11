@@ -225,10 +225,10 @@
     <h2>Running</h2>
 
     {#each running_timers as timer}
-        <div class="{
+        <div class="timer-container {
         ($date - timer.start_time.getTime()) > (1000*timer.timer.duration_s) ? 'finished' : ''
         }">
-            {timer.timer.name}
+           <span class="timer-name"> {timer.timer.name}</span>
             <progress value={(($date - timer.start_time.getTime())/(1000*timer.timer.duration_s))}></progress>
             {#if ($date - timer.start_time.getTime()) <= (1000*timer.timer.duration_s)}
                 <button type="button" on:click={() => changeTimerState(timer.id, "cancelled")}>
@@ -239,7 +239,7 @@
                     success 
                 </button>
             {/if}
-            <button type="button" on:click={() => changeTimerState(timer.id, "failed")}>
+            <button type="button" class="btn-fail" on:click={() => changeTimerState(timer.id, "failed")}>
                 fail
             </button>
         </div>
@@ -249,7 +249,7 @@
 <h2>Timers</h2>
 {#if timers}
     {#each timers as timer}
-        <div>
+        <div class="timer-container">
             {timer.name}
             <button type="button" on:click={() => deleteTimer(timer.id)}
                 >delete</button
@@ -273,10 +273,45 @@
 <style>
 
 .finished {
-    color: greenyellow;
+    color: #a6adc8;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+    
+    
+button {
+    font-size: 14px;
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #9399b2;
+}
+
+.finished {
+    opacity: 0.5;
 }
 
 .btn-finished {
-    background-color: goldenrod;
+    background-color: #a6e3a1;
+    color: white;
+}
+
+.btn-finished:hover {
+    background-color: #94e2d5;
+}
+
+button.btn-fail {
+    background-color: #f38ba8;
+    color: white;
+}
+
+button.btn-fail:hover {
+    background-color: #eba0ac;
 }
 </style>
