@@ -9,7 +9,9 @@
     let date = tweened(Date.now(), {duration: 500});
     setInterval(() => {
         $date = Date.now();
+        testTimers();
     }, 500);
+    let audio: HTMLAudioElement;
 
     let timers: {
         id: number;
@@ -186,6 +188,24 @@
             }
         }
     }
+
+
+    function testTimers() {
+
+        running_timers.forEach((t) => {
+            if (
+                ($date - t.start_time.getTime()) > (1000*t.timer.duration_s) 
+                && 
+                ($date - t.start_time.getTime() - 500) <= (1000*t.timer.duration_s) )
+            {
+                if (audio.paused) {
+                    audio.play();
+                }
+
+            }
+        });
+
+    }
 </script>
 
 <svelte:head>
@@ -246,6 +266,7 @@
     <span>No timers</span>
 {/if}
 
+<audio src="https://freesound.org/data/previews/536/536420_4921277-lq.mp3" bind:this={audio}></audio>
 <style>
 
 .finished {
