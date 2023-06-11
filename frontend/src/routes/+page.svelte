@@ -191,6 +191,9 @@
 
 
     function testTimers() {
+        if (!running_timers) {
+            return;
+        }
 
         running_timers.forEach((t) => {
             if (
