@@ -36,7 +36,7 @@ def get_timers(page: int, size: int, user_id: int, db: Session):
 def get_timer(timer_id: int, user_id: int, db: Session):
     db_timer = db.get(Timer, timer_id)
     if (not db_timer) or db_timer.owner_id != user_id:
-        raise ownership_exception()
+        raise not_found_exception()
     return db_timer
 
 
@@ -122,3 +122,10 @@ def delete_timer(timer_id: int, user_id: int, db: Session) -> Timer:
         db.commit()
         db.refresh(db_timer)
     return db_timer
+
+
+def not_found_exception():
+    return HTTPException(
+        status_code=404,
+        detail="Timer not found",
+    )
