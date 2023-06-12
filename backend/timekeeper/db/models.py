@@ -19,6 +19,7 @@ class Timer(Base):
     description = Column(String)
     duration_s = Column(Integer)
     deleted = Column(Boolean)
+    autofinish = Column(Boolean)
     instances = relationship("TimerInstance", back_populates="timer")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="timers")

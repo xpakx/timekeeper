@@ -13,7 +13,8 @@ def create_timer(timer: TimerRequest, user_id: int, db: Session):
             description=timer.description,
             duration_s=timer.duration_s,
             deleted=False,
-            owner_id=user_id
+            owner_id=user_id,
+            autofinish=timer.autofinish if timer.autofinish is not None else False
             )
     db.add(new_timer)
     db.commit()
@@ -48,6 +49,8 @@ def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
         db_timer.name = timer.name
         db_timer.description = timer.description
         db_timer.duration_s = timer.duration_s
+        if timer.autofinish is not None:
+            db_timer.autofinish = timer.autofinish
         db.commit()
         db.refresh(db_timer)
     return db_timer

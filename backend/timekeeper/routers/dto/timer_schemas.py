@@ -22,6 +22,7 @@ class TimerRequest(BaseModel):
     name: str = Field(strip_whitespace=True, min_length=1)
     description: str | None = None
     duration_s: int = Field(gt=0)
+    autofinish: bool | None
 
     class Config:
         orm_mode = True
