@@ -18,6 +18,7 @@
         name: String;
         description: String;
         duration_s: number;
+        autofinish: boolean;
     }[];
     let running_timers: {
         id: number;
@@ -28,6 +29,7 @@
 	timer: {
 		name: string;
 		duration_s: number;
+        autofinish: boolean;
 	};
     }[];
 
@@ -203,6 +205,9 @@
             {
                 if (audio.paused) {
                     audio.play();
+                }
+                if (t.timer.autofinish) {
+                    changeTimerState(t.id, "finished");
                 }
 
             }
