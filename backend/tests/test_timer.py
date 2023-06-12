@@ -9,7 +9,6 @@ from timekeeper.db.manager import get_db
 from timekeeper.db.models import User, Timer, TimerInstance, TimerState
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
-from datetime import datetime
 from sqlalchemy.sql import func
 
 url = URL.create(
@@ -693,3 +692,49 @@ def test_getting_active_timers_with_default_values(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result) == 20
+
+
+# getting timer
+def test_getting_timer_without_authentication(test_db):
+    response = client.get("/timers/1/")
+    assert response.status_code == 401
+
+
+def test_getting_timer_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/timers/1/",
+                          headers=headers
+                          )
+    assert response.status_code == 401
+
+
+def test_not_getting_nonexistent_timer(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/1/",
+                          headers=headers
+                          )
+    assert response.status_code == 404
+
+
+def test_getting_timer(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/timers/{id}/",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert result['name'] == "Test"
+
+
+def test_not_getting_other_users_timer(test_db):
+    user_id = create_user_and_return_id()
+    other = create_user_with_username("User2")
+    id = create_timer("Other", other)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/timers/{id}/",
+                          headers=headers
+                          )
+    assert response.status_code == 404
