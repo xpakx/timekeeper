@@ -7,6 +7,7 @@ from ...db.models import TimerState
 class TimerBase(BaseModel):
     name: str
     duration_s: int
+    autofinish: bool | None
 
     class Config:
         orm_mode = True
