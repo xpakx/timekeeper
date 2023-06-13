@@ -10,7 +10,7 @@
     let id = Number($page.params.id);
     let apiUri = "http://localhost:8000";
     let message: String;
-    let timer = {id: 0, name: "", description: "", duration_s: 0};
+    let timer = {id: 0, name: "", description: "", duration_s: 0, autofinish: false};
     getTimer(id);
 
     async function editTimer() {
@@ -94,6 +94,10 @@
         bind:value={timer.duration_s} 
         required placeholder="Duration" 
         id="duration_s"/>
+    </div>
+    <div>
+        <label for="autofinish">Autofinish</label>
+        <input type=checkbox bind:checked={timer.autofinish} id="autofinish">
     </div>
     
     {#if message}
