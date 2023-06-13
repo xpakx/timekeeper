@@ -8,7 +8,7 @@
     import { goto } from '$app/navigation';
     let apiUri = "http://localhost:8000";
     let message: String;
-    let timer = {name: "", description: "", duration_s: 0};
+    let timer = {name: "", description: "", duration_s: 0, autofinish: false};
 
     async function addTimer() {
         let token: String = get(tokenStorage);
@@ -64,6 +64,10 @@
         bind:value={timer.duration_s} 
         required placeholder="Duration" 
         id="duration_s"/>
+    </div>
+    <div>
+        <label for="autofinish">Autofinish</label>
+        <input type=checkbox bind:checked={timer.autofinish} id="autofinish">
     </div>
     
     {#if message}
