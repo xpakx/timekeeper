@@ -110,8 +110,8 @@ def get_active_timers(page: int, size: int, user_id: int, db: Session):
 
 def ownership_exception():
     return HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Not an owner of this timer",
         headers={"WWW-Authenticate": "Bearer"},
     )
 

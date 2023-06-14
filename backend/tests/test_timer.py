@@ -459,7 +459,7 @@ def test_editing_other_users_timer(test_db):
                                },
                           headers=headers
                           )
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 # deleting
@@ -488,7 +488,7 @@ def test_deleting_other_users_timer(test_db):
     id = create_timer("Test", other_id)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.delete(f"/timers/{id}", headers=headers)
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 # starting
@@ -509,14 +509,14 @@ def test_starting_other_users_timer(test_db):
     id = create_timer("Test", other_id)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post(f"/timers/{id}/instances", headers=headers)
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 def test_starting_non_existent_timer(test_db):
     user_id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post("/timers/1/instances", headers=headers)
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 def test_starting_timer(test_db):
@@ -559,7 +559,7 @@ def test_changing_other_users_timer_state(test_db):
     response = client.post(f"/timers/instances/{id}/state",
                            headers=headers,
                            json={"state": "finished"})
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 def test_changing_non_existent_timer_state(test_db):
@@ -568,7 +568,7 @@ def test_changing_non_existent_timer_state(test_db):
     response = client.post("/timers/instances/1/state",
                            headers=headers,
                            json={"state": "finished"})
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 def test_changing_timer_state(test_db):
