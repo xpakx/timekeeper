@@ -16,31 +16,33 @@
     async function editTimer() {
         let token: String = get(tokenStorage);
         const form = <HTMLFormElement> document.getElementById('edit_timer');
-        if(token && token != '' && form && form.checkValidity()) {
-            try {
-                let response = await fetch(`${apiUri}/timers/${id}`, {
-                    method: 'PUT',
-                    body: JSON.stringify(timer), 
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+        if(!token || token == '' || !form || !form.checkValidity()) {
+            return;
+        }
 
-                if (response.ok) {
-                    goto("/");
-                } else {
-                    if (response.status == 401) {
-                        goto('/logout');
-                    }
-                    const errorBody = await response.json();
-                    message = errorBody.detail;
+        try {
+            let response = await fetch(`${apiUri}/timers/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(timer), 
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
+            });
 
-            } catch (err) {
-                if (err instanceof Error) {
-                    message = err.message;
+            if (response.ok) {
+                goto("/");
+            } else {
+                if (response.status == 401) {
+                    goto('/logout');
                 }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
             }
         }
     }
@@ -48,30 +50,32 @@
     async function getTimer(id: number) {
         let token: String = get(tokenStorage);
 
-        if(token && token != '') {
-            try {
-                let response = await fetch(`${apiUri}/timers/${id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+        if(!token || token == '') {
+            return;
+        }
 
-                if (response.ok) {
-                    timer = await response.json();
-                } else {
-                    if (response.status == 401) {
-                        goto('/logout');
-                    }
-                    const errorBody = await response.json();
-                    message = errorBody.detail;
+        try {
+            let response = await fetch(`${apiUri}/timers/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
+            });
 
-            } catch (err) {
-                if (err instanceof Error) {
-                    message = err.message;
+            if (response.ok) {
+                timer = await response.json();
+            } else {
+                if (response.status == 401) {
+                    goto('/logout');
                 }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
             }
         }
     }

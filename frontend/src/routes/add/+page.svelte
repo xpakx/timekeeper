@@ -14,35 +14,36 @@
         let token: String = get(tokenStorage);
         const form = <HTMLFormElement> document.getElementById('new_timer');
 
-        if(token && token != '' && form && form.checkValidity()) {
-            try {
-                let response = await fetch(`${apiUri}/timers/`, {
-                    method: 'POST',
-                    body: JSON.stringify(timer), 
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+        if(!token || token == '' || !form || !form.checkValidity()) {
+            return;
+        }
 
-                if (response.ok) {
-                    goto("/");
-                } else {
-                    if (response.status == 401) {
-                        goto('/logout');
-                    }
-                    const errorBody = await response.json();
-                    message = errorBody.detail;
+        try {
+            let response = await fetch(`${apiUri}/timers/`, {
+                method: 'POST',
+                body: JSON.stringify(timer), 
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
+            });
 
-            } catch (err) {
-                if (err instanceof Error) {
-                    message = err.message;
+            if (response.ok) {
+                goto("/");
+            } else {
+                if (response.status == 401) {
+                    goto('/logout');
                 }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
             }
         }
     }
-
 </script>
 
 <h1>New timer</h1>

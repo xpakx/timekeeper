@@ -41,70 +41,74 @@
 
     async function getAllTimers() {
         let token: String = get(tokenStorage);
-        if (token && token != '') {
-            try {
-                let response = await fetch(`${apiUri}/timers/`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        if(!token || token == '') {
+            return;
+        }
 
-                if (response.ok) {
-                    timers = await response.json();
-                } else {
-                    if (response.status == 401) {
-                        goto('/logout');
-                    }
-                    const errorBody = await response.json();
-                    message = errorBody.detail;
+        try {
+            let response = await fetch(`${apiUri}/timers/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                timers = await response.json();
+            } else {
+                if (response.status == 401) {
+                    goto('/logout');
                 }
-            } catch (err) {
-                if (err instanceof Error) {
-                    message = err.message;
-                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
             }
         }
     }
 
     async function getActiveTimers() {
         let token: String = get(tokenStorage);
-        if (token && token != '') {
-            try {
-                let response = await fetch(`${apiUri}/timers/active`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        if(!token || token == '') {
+            return;
+        }
 
-                if (response.ok) {
-                    let fromEndpoint = await response.json();
-                    running_timers = fromEndpoint.map((t: any) => {
-                        return {
-                            id: t.id,
-                            start_time: new Date(t.start_time),
-                            end_time: t.end_time
-                                ? new Date(t.end_time)
-                                : undefined,
-                            state: t.state,
-                            timer_id: t.timer_id,
-                            timer: t.timer
-                        };
-                    });
-                } else {
-                    if (response.status == 401) {
-                        goto('/logout');
-                    }
-                    const errorBody = await response.json();
-                    message = errorBody.detail;
+        try {
+            let response = await fetch(`${apiUri}/timers/active`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                running_timers = fromEndpoint.map((t: any) => {
+                    return {
+                        id: t.id,
+                        start_time: new Date(t.start_time),
+                        end_time: t.end_time
+                            ? new Date(t.end_time)
+                            : undefined,
+                        state: t.state,
+                        timer_id: t.timer_id,
+                        timer: t.timer
+                    };
+                });
+            } else {
+                if (response.status == 401) {
+                    goto('/logout');
                 }
-            } catch (err) {
-                if (err instanceof Error) {
-                    message = err.message;
-                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
             }
         }
     }
@@ -119,93 +123,99 @@
 
     async function deleteTimer(id: number) {
         let token: String = get(tokenStorage);
-        if (token && token != '') {
-            try {
-                let response = await fetch(`${apiUri}/timers/${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        if(!token || token == '') {
+            return;
+        }
 
-                if (response.ok) {
-                    timers = timers.filter((a) => a.id != id);
-                } else {
-                    if (response.status == 401) {
-                        goto('/logout');
-                    }
-                    const errorBody = await response.json();
-                    message = errorBody.detail;
+        try {
+            let response = await fetch(`${apiUri}/timers/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                timers = timers.filter((a) => a.id != id);
+            } else {
+                if (response.status == 401) {
+                    goto('/logout');
                 }
-            } catch (err) {
-                if (err instanceof Error) {
-                    message = err.message;
-                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
             }
         }
     }
 
     async function startTimer(id: number) {
         let token: String = get(tokenStorage);
-        if (token && token != '') {
-            try {
-                let response = await fetch(`${apiUri}/timers/${id}/instances`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        if(!token || token == '') {
+            return;
+        }
 
-                if (response.ok) {
-                    let new_timer = await response.json();
-                    new_timer.start_time = new Date(new_timer.start_time);
-                    running_timers = [...running_timers, new_timer];
-                } else {
-                    if (response.status == 401) {
-                        goto('/logout');
-                    }
-                    const errorBody = await response.json();
-                    message = errorBody.detail;
+        try {
+            let response = await fetch(`${apiUri}/timers/${id}/instances`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let new_timer = await response.json();
+                new_timer.start_time = new Date(new_timer.start_time);
+                running_timers = [...running_timers, new_timer];
+            } else {
+                if (response.status == 401) {
+                    goto('/logout');
                 }
-            } catch (err) {
-                if (err instanceof Error) {
-                    message = err.message;
-                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
             }
         }
     }
 
     async function changeTimerState(id: number, state: String) {
         let token: String = get(tokenStorage);
+        if(!token || token == '') {
+            return;
+        }
+
         let body = {
             "state": state
         };
-        if (token && token != '') {
-            try {
-                let response = await fetch(`${apiUri}/timers/instances/${id}/state`, {
-                    method: "POST",
-                    body: JSON.stringify(body),
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        try {
+            let response = await fetch(`${apiUri}/timers/instances/${id}/state`, {
+                method: "POST",
+                body: JSON.stringify(body),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-                if (response.ok) {
-                    running_timers = running_timers.filter((a) => a.id != id);
-                } else {
-                    if (response.status == 401) {
-                        goto('/logout');
-                    }
-                    const errorBody = await response.json();
-                    message = errorBody.detail;
+            if (response.ok) {
+                running_timers = running_timers.filter((a) => a.id != id);
+            } else {
+                if (response.status == 401) {
+                    goto('/logout');
                 }
-            } catch (err) {
-                if (err instanceof Error) {
-                    message = err.message;
-                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
             }
         }
     }
@@ -228,7 +238,6 @@
                 if (t.timer.autofinish) {
                     changeTimerState(t.id, "finished");
                 }
-
             }
         });
 
