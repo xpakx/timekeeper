@@ -4,7 +4,8 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { tokenStorage, usernameStorage } from '../../storage'; 
+    import { tokenStorage, usernameStorage } from '../../storage';
+    import  jwt_decode from 'jwt-decode';
 
     let apiUri = "http://localhost:8000";
 

@@ -1,8 +1,9 @@
 <script lang="ts">
     import { get } from "svelte/store";
-    import { tokenStorage, usernameStorage } from "../storage";
+    import { usernameStorage } from "../storage";
     import { goto } from "$app/navigation";
     import { tweened } from "svelte/motion"
+    import { getToken } from "../token-manager";
     let username: String = get(usernameStorage);
     let apiUri = "http://localhost:8000";
     let message: String;
@@ -40,7 +41,7 @@
     });
 
     async function getAllTimers() {
-        let token: String = get(tokenStorage);
+        let token: String = getToken();
         if(!token || token == '') {
             return;
         }
@@ -71,7 +72,7 @@
     }
 
     async function getActiveTimers() {
-        let token: String = get(tokenStorage);
+        let token: String = getToken();
         if(!token || token == '') {
             return;
         }
@@ -122,7 +123,7 @@
     }
 
     async function deleteTimer(id: number) {
-        let token: String = get(tokenStorage);
+        let token: String = getToken();
         if(!token || token == '') {
             return;
         }
@@ -153,7 +154,7 @@
     }
 
     async function startTimer(id: number) {
-        let token: String = get(tokenStorage);
+        let token: String = getToken();
         if(!token || token == '') {
             return;
         }
@@ -186,7 +187,7 @@
     }
 
     async function changeTimerState(id: number, state: String) {
-        let token: String = get(tokenStorage);
+        let token: String = getToken();
         if(!token || token == '') {
             return;
         }

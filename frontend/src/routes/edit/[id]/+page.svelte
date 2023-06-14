@@ -3,10 +3,9 @@
 </svelte:head>
 
 <script lang="ts">
-    import { get } from 'svelte/store';
-    import { tokenStorage } from '../../../storage'; 
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
+    import { getToken } from '../../../token-manager';
     let id = Number($page.params.id);
     let apiUri = "http://localhost:8000";
     let message: String;
@@ -14,7 +13,7 @@
     getTimer(id);
 
     async function editTimer() {
-        let token: String = get(tokenStorage);
+        let token: String = getToken();
         const form = <HTMLFormElement> document.getElementById('edit_timer');
         if(!token || token == '' || !form || !form.checkValidity()) {
             return;
@@ -48,7 +47,7 @@
     }
 
     async function getTimer(id: number) {
-        let token: String = get(tokenStorage);
+        let token: String = getToken();
 
         if(!token || token == '') {
             return;

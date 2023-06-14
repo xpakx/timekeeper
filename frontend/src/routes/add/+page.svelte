@@ -3,15 +3,15 @@
 </svelte:head>
 
 <script lang="ts">
-    import { get } from 'svelte/store';
-    import { tokenStorage } from '../../storage'; 
     import { goto } from '$app/navigation';
+    import { getToken } from '../../token-manager';
+
     let apiUri = "http://localhost:8000";
     let message: String;
     let timer = {name: "", description: "", duration_s: 0, autofinish: false};
 
     async function addTimer() {
-        let token: String = get(tokenStorage);
+        let token: String = getToken();
         const form = <HTMLFormElement> document.getElementById('new_timer');
 
         if(!token || token == '' || !form || !form.checkValidity()) {
@@ -44,6 +44,7 @@
             }
         }
     }
+
 </script>
 
 <h1>New timer</h1>
