@@ -54,6 +54,9 @@
                 if (response.ok) {
                     timers = await response.json();
                 } else {
+                    if (response.status == 401) {
+                        goto('/logout');
+                    }
                     const errorBody = await response.json();
                     message = errorBody.detail;
                 }
@@ -92,6 +95,9 @@
                         };
                     });
                 } else {
+                    if (response.status == 401) {
+                        goto('/logout');
+                    }
                     const errorBody = await response.json();
                     message = errorBody.detail;
                 }
@@ -126,6 +132,9 @@
                 if (response.ok) {
                     timers = timers.filter((a) => a.id != id);
                 } else {
+                    if (response.status == 401) {
+                        goto('/logout');
+                    }
                     const errorBody = await response.json();
                     message = errorBody.detail;
                 }
@@ -154,6 +163,9 @@
                     new_timer.start_time = new Date(new_timer.start_time);
                     running_timers = [...running_timers, new_timer];
                 } else {
+                    if (response.status == 401) {
+                        goto('/logout');
+                    }
                     const errorBody = await response.json();
                     message = errorBody.detail;
                 }
@@ -184,6 +196,9 @@
                 if (response.ok) {
                     running_timers = running_timers.filter((a) => a.id != id);
                 } else {
+                    if (response.status == 401) {
+                        goto('/logout');
+                    }
                     const errorBody = await response.json();
                     message = errorBody.detail;
                 }

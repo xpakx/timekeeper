@@ -30,6 +30,9 @@
                 if (response.ok) {
                     goto("/");
                 } else {
+                    if (response.status == 401) {
+                        goto('/logout');
+                    }
                     const errorBody = await response.json();
                     message = errorBody.detail;
                 }
@@ -58,6 +61,9 @@
                 if (response.ok) {
                     timer = await response.json();
                 } else {
+                    if (response.status == 401) {
+                        goto('/logout');
+                    }
                     const errorBody = await response.json();
                     message = errorBody.detail;
                 }
