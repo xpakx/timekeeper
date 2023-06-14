@@ -14,7 +14,7 @@
         let token: String = get(tokenStorage);
         const form = <HTMLFormElement> document.getElementById('new_timer');
 
-        if(token && form && form.checkValidity()) {
+        if(token && token != '' && form && form.checkValidity()) {
             try {
                 let response = await fetch(`${apiUri}/timers/`, {
                     method: 'POST',

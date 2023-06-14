@@ -41,7 +41,7 @@
 
     async function getAllTimers() {
         let token: String = get(tokenStorage);
-        if (token) {
+        if (token && token != '') {
             try {
                 let response = await fetch(`${apiUri}/timers/`, {
                     method: "GET",
@@ -67,7 +67,7 @@
 
     async function getActiveTimers() {
         let token: String = get(tokenStorage);
-        if (token) {
+        if (token && token != '') {
             try {
                 let response = await fetch(`${apiUri}/timers/active`, {
                     method: "GET",
@@ -107,9 +107,13 @@
         goto("/add");
     }
 
+    function logout() {
+        goto("/logout");
+    }
+
     async function deleteTimer(id: number) {
         let token: String = get(tokenStorage);
-        if (token) {
+        if (token && token != '') {
             try {
                 let response = await fetch(`${apiUri}/timers/${id}`, {
                     method: "DELETE",
@@ -135,7 +139,7 @@
 
     async function startTimer(id: number) {
         let token: String = get(tokenStorage);
-        if (token) {
+        if (token && token != '') {
             try {
                 let response = await fetch(`${apiUri}/timers/${id}/instances`, {
                     method: "POST",
@@ -166,7 +170,7 @@
         let body = {
             "state": state
         };
-        if (token) {
+        if (token && token != '') {
             try {
                 let response = await fetch(`${apiUri}/timers/instances/${id}/state`, {
                     method: "POST",
@@ -224,6 +228,7 @@
     <p>Not logged, <a href="/login">log in</a></p>
 {:else}
     <p>Logged as {username}</p>
+    <button type="button" on:click={logout}>log out</button>
 {/if}
 
 {#if running_timers && running_timers.length > 0}
@@ -256,15 +261,15 @@
     {#each timers as timer}
         <div class="timer-container">
             {timer.name}
-            <button type="button" on:click={() => deleteTimer(timer.id)}
-                >delete</button
-            >
-            <button type="button" on:click={() => goto(`/edit/${timer.id}`)}
-                >edit</button
-            >
-            <button type="button" on:click={() => startTimer(timer.id)}
-                >start</button
-            >
+            <button type="button" on:click={() => deleteTimer(timer.id)}>
+                delete
+            </button >
+            <button type="button" on:click={() => goto(`/edit/${timer.id}`)}>
+                edit
+            </button>
+            <button type="button" on:click={() => startTimer(timer.id)}>
+                start
+            </button>
         </div>
     {/each}
 

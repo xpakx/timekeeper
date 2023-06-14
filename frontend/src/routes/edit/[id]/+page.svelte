@@ -16,8 +16,7 @@
     async function editTimer() {
         let token: String = get(tokenStorage);
         const form = <HTMLFormElement> document.getElementById('edit_timer');
-
-        if(token && form && form.checkValidity()) {
+        if(token && token != '' && form && form.checkValidity()) {
             try {
                 let response = await fetch(`${apiUri}/timers/${id}`, {
                     method: 'PUT',
@@ -46,7 +45,7 @@
     async function getTimer(id: number) {
         let token: String = get(tokenStorage);
 
-        if(token) {
+        if(token && token != '') {
             try {
                 let response = await fetch(`${apiUri}/timers/${id}`, {
                     method: 'GET',
