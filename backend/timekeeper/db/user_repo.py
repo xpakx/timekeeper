@@ -36,6 +36,13 @@ def check_user(user: AuthRequest, db: Session) -> Optional[User]:
         raise wrong_password()
 
 
+def get_user_by_id(id: int, db: Session) -> Optional[User]:
+    db_user = db.query(User).where(User.id == id).first()
+    if not db_user:
+        return None
+    return db_user
+
+
 def username_taken():
     return HTTPException(
         status_code=400,

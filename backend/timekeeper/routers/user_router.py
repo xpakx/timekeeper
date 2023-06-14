@@ -19,3 +19,10 @@ async def register(request: user_schemas.RegistrationRequest,
                    db: Session = Depends(get_db)
                    ):
     return user_service.register(request, db)
+
+
+@router.post("/refresh", response_model=user_schemas.AuthResponse)
+async def refresh(request: user_schemas.RefreshRequest,
+                  db: Session = Depends(get_db)
+                  ):
+    return user_service.refresh(request, db)

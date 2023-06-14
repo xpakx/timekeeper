@@ -18,3 +18,11 @@ class RegistrationRequest(AuthRequest):
 
 class AuthResponse(UserBase):
     token: str
+    refresh_token: str
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+    class Config:
+        orm_mode = True
