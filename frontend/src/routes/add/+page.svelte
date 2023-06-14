@@ -11,7 +11,7 @@
     let timer = {name: "", description: "", duration_s: 0, autofinish: false};
 
     async function addTimer() {
-        let token: String = getToken();
+        let token: String = await getToken();
         const form = <HTMLFormElement> document.getElementById('new_timer');
 
         if(!token || token == '' || !form || !form.checkValidity()) {

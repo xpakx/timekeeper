@@ -4,7 +4,7 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { tokenStorage, usernameStorage } from '../../storage';
+    import { refreshStorage, tokenStorage, usernameStorage } from '../../storage';
     import  jwt_decode from 'jwt-decode';
 
     let apiUri = "http://localhost:8000";
@@ -29,6 +29,7 @@
                     const fromEndpoint = await response.json();
                     tokenStorage.set(fromEndpoint.token);
                     usernameStorage.set(fromEndpoint.username);
+                    refreshStorage.set(fromEndpoint.refresh_token);
                     console.log("Success");
                     goto('/')
                 } else {

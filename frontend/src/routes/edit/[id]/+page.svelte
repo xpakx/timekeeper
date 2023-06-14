@@ -13,7 +13,7 @@
     getTimer(id);
 
     async function editTimer() {
-        let token: String = getToken();
+        let token: String = await getToken();
         const form = <HTMLFormElement> document.getElementById('edit_timer');
         if(!token || token == '' || !form || !form.checkValidity()) {
             return;
@@ -47,7 +47,7 @@
     }
 
     async function getTimer(id: number) {
-        let token: String = getToken();
+        let token: String = await getToken();
 
         if(!token || token == '') {
             return;

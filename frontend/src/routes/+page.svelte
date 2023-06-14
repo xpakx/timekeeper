@@ -41,7 +41,7 @@
     });
 
     async function getAllTimers() {
-        let token: String = getToken();
+        let token: String = await getToken();
         if(!token || token == '') {
             return;
         }
@@ -72,7 +72,7 @@
     }
 
     async function getActiveTimers() {
-        let token: String = getToken();
+        let token: String = await getToken();
         if(!token || token == '') {
             return;
         }
@@ -123,7 +123,7 @@
     }
 
     async function deleteTimer(id: number) {
-        let token: String = getToken();
+        let token: String = await getToken();
         if(!token || token == '') {
             return;
         }
@@ -154,7 +154,7 @@
     }
 
     async function startTimer(id: number) {
-        let token: String = getToken();
+        let token: String = await getToken();
         if(!token || token == '') {
             return;
         }
@@ -187,7 +187,7 @@
     }
 
     async function changeTimerState(id: number, state: String) {
-        let token: String = getToken();
+        let token: String = await getToken();
         if(!token || token == '') {
             return;
         }

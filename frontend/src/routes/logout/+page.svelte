@@ -4,10 +4,11 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { tokenStorage, usernameStorage } from '../../storage'; 
+    import { refreshStorage, tokenStorage, usernameStorage } from '../../storage'; 
 
     tokenStorage.set('');
     usernameStorage.set('');
+    refreshStorage.set('');
     goto('/');
 
 </script>
