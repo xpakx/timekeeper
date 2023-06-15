@@ -36,7 +36,7 @@ class TimerInstance(Base):
     __tablename__ = "timer_instances"
     id = Column(Integer, primary_key=True, index=True)
     start_time = Column(DateTime(timezone=True))
-    end_time = Column(DateTime)
+    end_time = Column(DateTime(timezone=True))
     state = Column(Enum(TimerState))
     timer_id = Column(Integer, ForeignKey("timers.id"))
     timer = relationship("Timer", back_populates="instances")
