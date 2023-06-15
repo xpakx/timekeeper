@@ -91,6 +91,8 @@ def change_timer_state(
         if timer.owner_id != user_id:
             raise ownership_exception()
         timer.state = timer_state
+        if timer_state != TimerState.running:
+            timer.end_time = func.now()
         db.commit()
     else:
         raise ownership_exception()
