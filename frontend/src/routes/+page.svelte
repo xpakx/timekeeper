@@ -4,6 +4,8 @@
     import { goto } from "$app/navigation";
     import { tweened } from "svelte/motion"
     import { getToken } from "../token-manager";
+    import Fa from 'svelte-fa'
+    import { faTrash, faHourglassStart, faEdit, faPlayCircle, faPlay, faStop, faCancel, faCheck } from '@fortawesome/free-solid-svg-icons'
     let username: String = get(usernameStorage);
     let apiUri = "http://localhost:8000";
     let message: String;
@@ -266,16 +268,16 @@
            <span class="timer-name"> {timer.timer.name}</span>
             <progress value={(($date - timer.start_time.getTime())/(1000*timer.timer.duration_s))}></progress>
             {#if ($date - timer.start_time.getTime()) <= (1000*timer.timer.duration_s)}
-                <button type="button" on:click={() => changeTimerState(timer.id, "cancelled")}>
-                    cancel
+                <button class="btn-icon" type="button" on:click={() => changeTimerState(timer.id, "cancelled")}>
+                    <Fa icon={faStop} />
                 </button>
             {:else}
-                <button type="button" class="btn-finished" on:click={() => changeTimerState(timer.id, "finished")}>
-                    success 
+                <button type="button" class="btn-finished btn-icon" on:click={() => changeTimerState(timer.id, "finished")}>
+                    <Fa icon={faCheck} />
                 </button>
             {/if}
-            <button type="button" class="btn-fail" on:click={() => changeTimerState(timer.id, "failed")}>
-                fail
+            <button type="button" class="btn-fail btn-icon" on:click={() => changeTimerState(timer.id, "failed")}>
+                <Fa icon={faCancel} />
             </button>
         </div>
     {/each}
@@ -286,14 +288,14 @@
     {#each timers as timer}
         <div class="timer-container">
             {timer.name}
-            <button type="button" on:click={() => deleteTimer(timer.id)}>
-                delete
+            <button class="btn-icon" type="button" on:click={() => deleteTimer(timer.id)}>
+                <Fa icon={faTrash} />
             </button >
-            <button type="button" on:click={() => goto(`/edit/${timer.id}`)}>
-                edit
+            <button class="btn-icon" type="button" on:click={() => goto(`/edit/${timer.id}`)}>
+                <Fa icon={faEdit} />
             </button>
-            <button type="button" on:click={() => startTimer(timer.id)}>
-                start
+            <button class="btn-icon" type="button" on:click={() => startTimer(timer.id)}>
+                <Fa icon={faPlay} />
             </button>
         </div>
     {/each}
@@ -321,11 +323,12 @@ h2 {
 button {
     font-size: 14px;
     padding: 5px 10px;
-    margin-left: 10px;
+    margin-right: 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     background-color: #9399b2;
+    color: #313244;
 }
 
 .finished {
@@ -348,5 +351,9 @@ button.btn-fail {
 
 button.btn-fail:hover {
     background-color: #eba0ac;
+}
+
+button.btn-icon {
+    border-radius: 7px;
 }
 </style>
