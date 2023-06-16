@@ -42,3 +42,7 @@ def get_active(page: int, size: int, user_id: int, db: Session):
 
 def delete_timer(timer_id: int, user_id: int, db: Session):
     return timer_repo.delete_timer(timer_id, user_id, db)
+
+
+def get_history(page: int, size: int, user_id: int, db: Session):
+    return timer_repo.get_history(page, size, user_id, db)

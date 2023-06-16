@@ -134,3 +134,16 @@ def not_found_exception():
         status_code=404,
         detail="Timer not found",
     )
+
+
+def get_history(page: int, size: int, user_id: int, db: Session):
+    offset = page*size
+    return db\
+        .query(TimerInstance)\
+        .where(
+             and_(TimerInstance.state != TimerState.running, TimerInstance.owner_id == user_id)
+            )\
+        .order_by(TimerInstance.end_time.desc())\
+        .offset(offset)\
+        .limit(size)\
+        .all()
