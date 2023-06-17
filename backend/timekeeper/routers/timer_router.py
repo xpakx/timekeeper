@@ -91,3 +91,14 @@ async def get_history(
         db: Session = Depends(get_db)
         ):
     return timer_service.get_history(page, size, user.id, db)
+
+
+@router.get("/{id}/history", response_model=list[timer_schemas.TimerInstance])
+async def get_timer_history(
+        id: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        page: Annotated[int, Query(ge=0)] = 0,
+        size: Annotated[int, Query(ge=1, le=20)] = 20,
+        db: Session = Depends(get_db)
+        ):
+    return timer_service.get_timer_history(page, size, user.id, id, db)

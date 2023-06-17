@@ -147,3 +147,19 @@ def get_history(page: int, size: int, user_id: int, db: Session):
         .offset(offset)\
         .limit(size)\
         .all()
+
+
+def get_timer_history(page: int, size: int, user_id: int, timer_id: int, db: Session):
+    offset = page*size
+    return db\
+        .query(TimerInstance)\
+        .where(
+             and_(
+                 TimerInstance.state != TimerState.running,
+                 TimerInstance.owner_id == user_id,
+                 TimerInstance.timer_id == timer_id)
+            )\
+        .order_by(TimerInstance.end_time.desc())\
+        .offset(offset)\
+        .limit(size)\
+        .all()
