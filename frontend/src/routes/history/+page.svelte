@@ -1,6 +1,8 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import Fa from "svelte-fa";
     import { getToken } from "../../token-manager";
+    import { faCancel, faCheck, faStop } from "@fortawesome/free-solid-svg-icons";
     let apiUri = "http://localhost:8000";
     let message: String;
     getHistory();
@@ -71,8 +73,44 @@
 {#if timers && timers.length > 0}
     {#each timers as timer}
         <div class="timer-container">
+            <span class="icon { timer.state }">
+            {#if timer.state == 'finished'}
+                <Fa icon={faCheck} />
+            {:else if timer.state == 'cancelled'}
+                <Fa icon={faCancel} />
+            {:else}
+                <Fa icon={faStop} />
+            {/if}
+            </span>
            <span class="timer-name"> {timer.timer.name}</span>
-           {timer.state}
         </div>
     {/each}
 {/if}
+
+
+<style>
+    .timer-container {
+        margin-bottom: 10px;
+    }
+    
+    .icon {
+        font-size: 14px;
+        padding: 5px 10px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        background-color: #9399b2;
+        color: #313244;
+        border-radius: 7px;
+    }
+
+    .icon.finished {
+        background-color: #a6e3a1;
+        color: white;
+    }
+
+    .icon.failed {
+        background-color: #f38ba8;
+        color: white;
+    }
+</style>
