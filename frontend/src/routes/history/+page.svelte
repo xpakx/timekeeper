@@ -19,6 +19,15 @@
             autofinish: boolean;
         };
     }[];
+    const formatter = new Intl.DateTimeFormat('default', {
+		weekday: 'short',
+		month: 'short',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: '2-digit',
+		hour12: false
+	});
+
 
     async function getHistory() {
         let token: String = await getToken();
@@ -83,6 +92,7 @@
             {/if}
             </span>
            <span class="timer-name"> {timer.timer.name}</span>
+           <span class="date">{formatter.format(timer.end_time)}</span>
         </div>
     {/each}
 {/if}
@@ -91,6 +101,11 @@
 <style>
     .timer-container {
         margin-bottom: 10px;
+    }
+
+    .date {
+        font-size: 12px;
+        color: #7f849c;
     }
     
     .icon {
