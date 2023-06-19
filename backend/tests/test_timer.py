@@ -854,3 +854,115 @@ def test_getting_history_with_default_values(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result) == 20
+
+
+# getting timer history
+def test_getting_timer_history_without_authentication(test_db):
+    response = client.get("/timers/1/history")
+    assert response.status_code == 401
+
+
+def test_getting_timer_history_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/timers/history",
+                          headers=headers
+                          )
+    assert response.status_code == 401
+
+
+def test_getting_user_timer_history(test_db):
+    user_id = create_user_and_return_id()
+    timer_id = create_timer("Test", user_id)
+    create_timer_instance_with_state(user_id, timer_id, TimerState.finished)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/timers/{timer_id}/history",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_not_getting_other_users_timer_history(test_db):
+    id = create_user_and_return_id()
+    other = create_user_with_username("User2")
+    timer_id = create_timer("Test", other)
+    user_timer = create_timer("Test", id)
+    create_timer_instance_with_state(other, timer_id, TimerState.finished)
+    create_timer_instance_with_state(id, user_timer, TimerState.finished)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get(f"/timers/{user_timer}/history",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_getting_first_page_of_timer_history(test_db):
+    id = create_user_and_return_id()
+    timer = create_timer("Test", id)
+    for i in range(0, 6):
+        create_timer_instance_with_state(id, timer, TimerState.finished)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get(f"/timers/{timer}/history/?page=0&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 5
+
+
+def test_getting_second_page_of_timer_history(test_db):
+    id = create_user_and_return_id()
+    timer = create_timer("Test", id)
+    for i in range(0, 6):
+        create_timer_instance_with_state(id, timer, TimerState.finished)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get(f"/timers/{timer}/history/?page=1&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_getting_to_large_page_of_timer_history(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/1/history/?page=0&size=125",
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_getting_negative_page_of_timer_history(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/1/history/?page=-2&size=5",
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_getting_negative_amount_of_timer_history(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/1/history/?page=0&size=-5",
+                          headers=headers
+                          )
+    assert response.status_code == 400
+
+
+def test_getting_timer_history_with_default_values(test_db):
+    id = create_user_and_return_id()
+    timer = create_timer("Test", id)
+    for i in range(0, 30):
+        create_timer_instance_with_state(id, timer, TimerState.finished)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get(f"/timers/{timer}/history",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 20
