@@ -856,6 +856,20 @@ def test_getting_history_with_default_values(test_db):
     assert len(result) == 20
 
 
+def test_not_getting_active_timers_with_history(test_db):
+    id = create_user_and_return_id()
+    timer_id = create_timer("Test", id)
+    create_timer_instance_with_state(id, timer_id, TimerState.finished)
+    create_timer_instance_with_state(id, timer_id, TimerState.running)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/timers/history",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
 # getting timer history
 def test_getting_timer_history_without_authentication(test_db):
     response = client.get("/timers/1/history")
@@ -966,3 +980,32 @@ def test_getting_timer_history_with_default_values(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result) == 20
+
+
+def test_not_getting_active_timers_with_timer_history(test_db):
+    id = create_user_and_return_id()
+    timer_id = create_timer("Test", id)
+    create_timer_instance_with_state(id, timer_id, TimerState.finished)
+    create_timer_instance_with_state(id, timer_id, TimerState.running)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get(f"/timers/{timer_id}/history",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_not_getting_other_timers_instances_with_timer_history(test_db):
+    id = create_user_and_return_id()
+    timer_id = create_timer("Test", id)
+    other_id = create_timer("Other", id)
+    create_timer_instance_with_state(id, timer_id, TimerState.finished)
+    create_timer_instance_with_state(id, other_id, TimerState.finished)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get(f"/timers/{timer_id}/history",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
