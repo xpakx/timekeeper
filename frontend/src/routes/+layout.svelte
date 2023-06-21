@@ -1,39 +1,46 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
     import { get } from "svelte/store";
     import { usernameStorage } from "../storage";
+    import Fa from "svelte-fa";
+    import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 
     let username: String = get(usernameStorage);
     usernameStorage.subscribe((value) => {
         username = value;
     });
-
-    function logout() {
-        goto("/logout");
-    }
-
 </script>
+
 <nav>
-    {#if username == ""}
-        <p>Not logged, <a href="/login">log in</a></p>
-    {:else}
-        <p>Logged as {username}</p>
-        <button type="button" on:click={logout}>log out</button>
-    {/if}
+    <div>
+        <a href="/">timers</a>
+        <a href="/history">history</a>
+    </div>
+    <div class="user">
+        {#if username == ""}
+            <p>
+                Not logged,
+                <a href="/login">log in</a>
+            </p>
+        {:else}
+            <p>
+                Logged as {username}.
+                <a href="/logout"><Fa icon={faSignOut} /></a>
+            </p>
+        {/if}
+    </div>
 </nav>
 
-<style>
+<slot />
 
-    button {
+<style>
+    nav {
+        display: flex;
+        justify-content: space-between;
+        margin: 0 10px;
+    }
+    nav a {
         font-size: 14px;
-        padding: 5px 10px;
-        margin-right: 10px;
-        border: none;
-        border-radius: 4px;
         cursor: pointer;
-        background-color: #9399b2;
-        color: #313244;
+        color: #7f849c;
     }
 </style>
-
-<slot></slot>
