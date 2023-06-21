@@ -1,22 +1,18 @@
 <script lang="ts">
-    import { get } from "svelte/store";
-    import { usernameStorage } from "../storage";
+    import { tokenStorage } from "../storage";
     import { goto } from "$app/navigation";
     import { tweened } from "svelte/motion";
     import { getToken } from "../token-manager";
     import Fa from "svelte-fa";
     import {
         faTrash,
-        faHourglassStart,
         faEdit,
-        faPlayCircle,
         faPlay,
         faStop,
         faCancel,
         faCheck,
         faAdd,
     } from "@fortawesome/free-solid-svg-icons";
-    let username: String = get(usernameStorage);
     let apiUri = "http://localhost:8000";
     let message: String;
     let date = tweened(Date.now(), { duration: 500 });
@@ -46,8 +42,7 @@
         };
     }[];
 
-    usernameStorage.subscribe((value) => {
-        username = value;
+    tokenStorage.subscribe((_) => {
         getAllTimers();
         getActiveTimers();
     });
@@ -126,10 +121,6 @@
 
     function add() {
         goto("/add");
-    }
-
-    function logout() {
-        goto("/logout");
     }
 
     async function deleteTimer(id: number) {
@@ -260,12 +251,6 @@
     <title>Home</title>
 </svelte:head>
 
-{#if username == ""}
-    <p>Not logged, <a href="/login">log in</a></p>
-{:else}
-    <p>Logged as {username}</p>
-    <button type="button" on:click={logout}>log out</button>
-{/if}
 
 {#if running_timers && running_timers.length > 0}
     <h2>Running</h2>
