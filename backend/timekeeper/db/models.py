@@ -42,3 +42,11 @@ class TimerInstance(Base):
     timer = relationship("Timer", back_populates="instances")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
+
+
+class Points(Base):
+    __tablename__ = "points"
+    id = Column(Integer, primary_key=True, index=True)
+    points = Column(Integer)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User")
