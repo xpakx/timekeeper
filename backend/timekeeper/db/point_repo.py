@@ -35,7 +35,14 @@ def add_points(points: int, user_id: int, db: Session):
             )\
         .first()
     if not db_points:
-        return
+        new_points = Points(
+            points=points,
+            user_id=user_id,
+            )
+        db.add(new_points)
+        db.commit()
+        db.refresh(new_points)
+        return new_points
     db_points.points += points
     db.commit()
     db.refresh(db_points)
