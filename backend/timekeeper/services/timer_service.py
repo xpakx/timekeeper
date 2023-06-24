@@ -1,8 +1,9 @@
 from ..routers.dto import timer_schemas
 from ..db import timer_repo, point_repo
-from ..db.models import TimerInstance, TimerState
+from ..db.models import TimerInstance, TimerState, TimerDifficulty
 from sqlalchemy.orm import Session
 import random
+from typing import Optional
 
 
 def add_timer(request: timer_schemas.TimerRequest, user_id: int, db: Session):
@@ -36,8 +37,19 @@ def change_state(timer_id: int,
                  db: Session) -> None:
     timer = timer_repo.change_timer_state(timer_id, request.state, user_id, db)
     if timer.rewarded and request.state == TimerState.finished:
-        reward = random.randint(1, 5)
+        reward = get_random_reward_for_difficulty(timer.difficulty)
         point_repo.add_points(reward, user_id, db)
+
+
+def get_random_reward_for_difficulty(difficulty: Optional[TimerDifficulty]):
+    if difficulty is None or difficulty == TimerDifficulty.trivial:
+        return random.randint(1, 5)
+    if difficulty == TimerDifficulty.easy:
+        return random.randint(2, 6)
+    if difficulty == TimerDifficulty.medium:
+        return random.randint(5, 10)
+    if difficulty == TimerDifficulty.hard:
+        return random.randint(10, 15)
 
 
 def get_active(page: int, size: int, user_id: int, db: Session):
