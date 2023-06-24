@@ -1,6 +1,6 @@
 from ..routers.dto import timer_schemas
-from ..db import timer_repo
-from ..db.models import TimerInstance
+from ..db import timer_repo, point_repo
+from ..db.models import TimerInstance, TimerState
 from sqlalchemy.orm import Session
 
 
@@ -34,6 +34,8 @@ def change_state(timer_id: int,
                  user_id: int,
                  db: Session) -> None:
     timer_repo.change_timer_state(timer_id, request.state, user_id, db)
+    if request.state == TimerState.finished:
+        point_repo.add_points(5, user_id, db)
 
 
 def get_active(page: int, size: int, user_id: int, db: Session):
