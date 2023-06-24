@@ -29,9 +29,9 @@ def get_points(user_id: int, db: Session):
 
 def add_points(points: int, user_id: int, db: Session):
     db_points = db\
-        .query(points)\
+        .query(Points)\
         .where(
-              points.user_id == user_id
+              Points.user_id == user_id
             )\
         .first()
     if not db_points:
