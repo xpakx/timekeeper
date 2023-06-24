@@ -12,6 +12,13 @@ class User(Base):
     timers = relationship("Timer", back_populates="owner")
 
 
+class TimerDifficulty(enum.Enum):
+    trivial = "trivial"
+    easy = "easy"
+    medium = "medium"
+    hard = "hard"
+
+
 class Timer(Base):
     __tablename__ = "timers"
     id = Column(Integer, primary_key=True, index=True)
@@ -21,6 +28,7 @@ class Timer(Base):
     deleted = Column(Boolean)
     autofinish = Column(Boolean)
     rewarded = Column(Boolean)
+    difficulty = Column(Enum(TimerDifficulty))
     instances = relationship("TimerInstance", back_populates="timer")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="timers")
