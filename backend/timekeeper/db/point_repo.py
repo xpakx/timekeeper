@@ -1,10 +1,5 @@
-from ..routers.dto.timer_schemas import TimerRequest
 from .models import Points
-from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import false
-from sqlalchemy import and_
-from sqlalchemy.sql import func
 
 
 def create_points(user_id: int, db: Session):

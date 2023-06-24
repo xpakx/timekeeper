@@ -33,8 +33,8 @@ def change_state(timer_id: int,
                  request: timer_schemas.StateRequest,
                  user_id: int,
                  db: Session) -> None:
-    timer_repo.change_timer_state(timer_id, request.state, user_id, db)
-    if request.state == TimerState.finished:
+    timer = timer_repo.change_timer_state(timer_id, request.state, user_id, db)
+    if timer.rewarded and request.state == TimerState.finished:
         point_repo.add_points(5, user_id, db)
 
 
