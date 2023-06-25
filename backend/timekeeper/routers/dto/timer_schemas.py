@@ -48,3 +48,8 @@ class TimerInstance(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class StateChangeResponse(BaseModel):
+    state: TimerState
+    points: int

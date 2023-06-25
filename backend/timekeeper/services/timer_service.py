@@ -39,6 +39,8 @@ def change_state(timer_id: int,
     if timer.rewarded and request.state == TimerState.finished:
         reward = get_random_reward_for_difficulty(timer.difficulty)
         point_repo.add_points(reward, user_id, db)
+        return timer_schemas.StateChangeResponse(state=request.state, points=reward)
+    return timer_schemas.StateChangeResponse(state=request.state, points=0)
 
 
 def get_random_reward_for_difficulty(difficulty: Optional[TimerDifficulty]):
