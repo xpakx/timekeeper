@@ -2,7 +2,7 @@
     import { get } from "svelte/store";
     import { usernameStorage } from "../storage";
     import Fa from "svelte-fa";
-    import { faSignOut } from "@fortawesome/free-solid-svg-icons";
+    import { faHistory, faHourglass, faSignOut } from "@fortawesome/free-solid-svg-icons";
 
     let username: String = get(usernameStorage);
     usernameStorage.subscribe((value) => {
@@ -11,21 +11,17 @@
 </script>
 
 <nav>
-    <div>
-        <a href="/">timers</a>
-        <a href="/history">history</a>
+    <div class="nav-component">
+        <a href="/"><Fa icon={faHourglass} /></a>
+        <a href="/history"><Fa icon={faHistory} /></a>
     </div>
-    <div class="user">
+    <div class="user nav-component">
         {#if username == ""}
-            <p>
                 Not logged,
                 <a href="/login">log in</a>
-            </p>
         {:else}
-            <p>
-                Logged as {username}.
-                <a href="/logout"><Fa icon={faSignOut} /></a>
-            </p>
+                Logged as {username}. 
+                <a href="/logout" class="log-out"><Fa icon={faSignOut} /></a>
         {/if}
     </div>
 </nav>
@@ -37,10 +33,25 @@
         display: flex;
         justify-content: space-between;
         margin: 0 10px;
+        margin-bottom: 15px;
     }
     nav a {
         font-size: 14px;
         cursor: pointer;
         color: #7f849c;
+        margin-right: 10px;
+    }
+
+    nav a:last-child {
+        margin-right: 0;
+    }
+
+    nav a.log-out {
+        color: #f2cdcd;
+    }
+
+    .nav-component {
+        display: flex;
+        align-items: center;
     }
 </style>
