@@ -211,6 +211,11 @@
 
             if (response.ok) {
                 running_timers = running_timers.filter((a) => a.id != id);
+                let fromEndpoint = await response.json();
+                let points = fromEndpoint.points;
+                if (points > 0) {
+                    console.log(points);
+                }
             } else {
                 if (response.status == 401) {
                     goto("/logout");
