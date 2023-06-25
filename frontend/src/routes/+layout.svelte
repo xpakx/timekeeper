@@ -2,7 +2,11 @@
     import { get } from "svelte/store";
     import { usernameStorage } from "../storage";
     import Fa from "svelte-fa";
-    import { faHistory, faHourglass, faSignOut } from "@fortawesome/free-solid-svg-icons";
+    import {
+        faHistory,
+        faHourglass,
+        faSignOut,
+    } from "@fortawesome/free-solid-svg-icons";
 
     let username: String = get(usernameStorage);
     usernameStorage.subscribe((value) => {
@@ -15,14 +19,16 @@
         <a href="/"><Fa icon={faHourglass} /></a>
         <a href="/history"><Fa icon={faHistory} /></a>
     </div>
-    <div class="user nav-component">
-        {#if username == ""}
+    <div class="nav-component">
+        <div class="user">
+            {#if username == ""}
                 Not logged,
                 <a href="/login">log in</a>
-        {:else}
-                Logged as {username}. 
+            {:else}
+                Logged as <strong>{username}</strong>.
                 <a href="/logout" class="log-out"><Fa icon={faSignOut} /></a>
-        {/if}
+            {/if}
+        </div>
     </div>
 </nav>
 
@@ -53,5 +59,10 @@
     .nav-component {
         display: flex;
         align-items: center;
+    }
+
+    .user strong {
+        color: #a6adc8;
+        font-weight: bold;
     }
 </style>
