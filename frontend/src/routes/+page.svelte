@@ -13,6 +13,8 @@
         faCheck,
         faAdd,
     } from "@fortawesome/free-solid-svg-icons";
+    import { fade } from "svelte/transition";
+
     let apiUri = "http://localhost:8000";
     let message: String;
     let date = tweened(Date.now(), { duration: 500 });
@@ -266,6 +268,7 @@
             1000 * timer.timer.duration_s
                 ? 'finished'
                 : ''}"
+                transition:fade
         >
             <span class="timer-name"> {timer.timer.name}</span>
             <div class="progress-bar">
