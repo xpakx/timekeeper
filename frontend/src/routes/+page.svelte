@@ -264,7 +264,6 @@
     <title>Home</title>
 </svelte:head>
 
-
 {#if running_timers && running_timers.length > 0}
     <h2>Running</h2>
 
@@ -274,7 +273,7 @@
             1000 * timer.timer.duration_s
                 ? 'finished'
                 : ''}"
-                transition:fade
+            transition:fade|local
         >
             <span class="timer-name"> {timer.timer.name}</span>
             <div class="progress-bar">
