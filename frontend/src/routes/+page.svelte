@@ -410,6 +410,59 @@
         background-color: #eba0ac;
     }
 
+    progress {
+        height: 20px;
+        border: none;
+        border-radius: 10px;
+        background-color: #1e1e2e;
+        overflow: hidden;
+        box-shadow: inset 1px 1px 3px 0 rgba(0, 0, 0, 0.8),
+            1px 1px 0 0 rgba(255, 255, 255, 0.12);
+    }
+
+    progress::-webkit-progress-bar {
+        background-color: #1e1e2e;
+        border-radius: 10px;
+    }
+
+    progress::-webkit-progress-value {
+        background-image: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.33) 0,
+                rgba(255, 255, 255, 0.08) 50%,
+                rgba(0, 0, 0, 0.25) 50%,
+                rgba(0, 0, 0, 0.1) 100%
+            ),
+            linear-gradient(to right, #e67070, #f2cdcd);
+    }
+
+    progress::-moz-progress-bar {
+        background-image: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.33) 0,
+                rgba(255, 255, 255, 0.08) 50%,
+                rgba(0, 0, 0, 0.25) 50%,
+                rgba(0, 0, 0, 0.1) 100%
+            ),
+            linear-gradient(to right, #e67070, #f2cdcd);
+    }
+
+    progress::-ms-fill {
+        background-image: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.33) 0,
+                rgba(255, 255, 255, 0.08) 50%,
+                rgba(0, 0, 0, 0.25) 50%,
+                rgba(0, 0, 0, 0.1) 100%
+            ),
+            linear-gradient(to right, #e67070, #f2cdcd);
+    }
+
+    progress::-ms-fill-upper {
+        background-color: #1e1e2e;
+        border-radius: 10px;
+    }
+
     button.btn-icon {
         border-radius: 7px;
     }
