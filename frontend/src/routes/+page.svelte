@@ -14,11 +14,12 @@
         faAdd,
     } from "@fortawesome/free-solid-svg-icons";
     import { fade } from "svelte/transition";
+    import { onDestroy } from "svelte";
 
     let apiUri = "http://localhost:8000";
     let message: String;
     let date = tweened(Date.now(), { duration: 500 });
-    setInterval(() => {
+    let timer_interval = setInterval(() => {
         $date = Date.now();
         testTimers();
     }, 500);
@@ -48,6 +49,11 @@
         getAllTimers();
         getActiveTimers();
     });
+
+    onDestroy(() => {
+        clearInterval(timer_interval);
+    });
+
 
     async function getAllTimers() {
         let token: String = await getToken();
