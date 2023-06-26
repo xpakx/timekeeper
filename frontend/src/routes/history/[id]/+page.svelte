@@ -80,6 +80,7 @@
     <title>History</title>
 </svelte:head>
 
+<h2>Timer's history</h2>
 
 {#if timers && timers.length > 0}
     {#each timers as timer}

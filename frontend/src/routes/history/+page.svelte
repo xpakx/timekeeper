@@ -79,6 +79,8 @@
 </svelte:head>
 
 
+<h2>History</h2>
+
 {#if timers && timers.length > 0}
     {#each timers as timer}
         <div class="timer-container">
