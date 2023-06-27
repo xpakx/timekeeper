@@ -13,7 +13,8 @@ def create_timer(timer: TimerRequest, user_id: int, db: Session):
             description=timer.description,
             duration_s=timer.duration_s,
             deleted=False,
-            rewarded=False,
+            rewarded=timer.rewarded if timer.rewarded is not None else False,
+            difficulty=timer.difficulty,
             owner_id=user_id,
             autofinish=timer.autofinish if timer.autofinish is not None else False
             )

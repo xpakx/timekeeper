@@ -1,13 +1,15 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
-from ...db.models import TimerState
+from ...db.models import TimerState, TimerDifficulty
 
 
 class TimerBase(BaseModel):
     name: str
     duration_s: int
     autofinish: bool | None
+    rewarded: bool | None
+    difficulty: TimerDifficulty | None
 
     class Config:
         orm_mode = True
@@ -24,6 +26,8 @@ class TimerRequest(BaseModel):
     description: str | None = None
     duration_s: int = Field(gt=0)
     autofinish: bool | None
+    rewarded: bool | None
+    difficulty: TimerDifficulty | None
 
     class Config:
         orm_mode = True
