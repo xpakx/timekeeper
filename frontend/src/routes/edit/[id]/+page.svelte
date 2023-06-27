@@ -11,6 +11,7 @@
         description: "",
         duration_s: 0,
         autofinish: false,
+        rewarded: false,
     };
     getTimer(id);
 
@@ -119,6 +120,18 @@
             Autofinish
         </label>
     </div>
+    
+    <div class="checkbox-container">
+        <input
+            type="checkbox"
+            bind:checked={timer.rewarded}
+            id="reward"
+        />
+        <label for="reward" class="checkbox-label">
+            <div class="checkbox" />
+            Reward for timer
+        </label>
+    </div>
 
     {#if message}
         <p>{message}</p>
@@ -194,7 +207,6 @@
         background-color: #7f849c;
     }
 
-    /* Custom checkbox style */
     .checkbox-container label {
         display: flex;
         align-items: start;
