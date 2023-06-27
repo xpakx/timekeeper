@@ -53,6 +53,10 @@ def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
         db_timer.duration_s = timer.duration_s
         if timer.autofinish is not None:
             db_timer.autofinish = timer.autofinish
+        if timer.rewarded is not None:
+            db_timer.rewarded = timer.rewarded
+        if timer.difficulty is not None:
+            db_timer.difficulty = timer.difficulty
         db.commit()
         db.refresh(db_timer)
     return db_timer
