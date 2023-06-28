@@ -119,9 +119,7 @@
             <div class="checkbox" />
             Autofinish
         </label>
-    </div>
     
-    <div class="checkbox-container">
         <input
             type="checkbox"
             bind:checked={timer.rewarded}

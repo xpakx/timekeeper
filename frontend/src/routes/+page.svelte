@@ -377,6 +377,14 @@
         margin-bottom: 10px;
     }
 
+    .timer-container .timer-name {
+        margin-bottom: 5px;
+    }
+
+    .timer-container .progress-bar {
+        margin-bottom: 5px;
+    }
+
     button {
         font-size: 14px;
         padding: 5px 10px;
