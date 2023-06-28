@@ -12,12 +12,15 @@
         faCancel,
         faCheck,
         faAdd,
+        faArrowLeft,
+        faArrowRight,
     } from "@fortawesome/free-solid-svg-icons";
     import { fade } from "svelte/transition";
     import { onDestroy } from "svelte";
 
     let apiUri = "http://localhost:8000";
     let message: String;
+    let page: number = 0;
     let date = tweened(Date.now(), { duration: 500 });
     let timer_interval = setInterval(() => {
         $date = Date.now();
@@ -54,21 +57,27 @@
         clearInterval(timer_interval);
     });
 
+    async function getAllTimers(new_page: number = 0) {
+        if (new_page < 0) {
+            return;
+        }
 
-    async function getAllTimers() {
         let token: String = await getToken();
         if (!token || token == "") {
             return;
         }
 
         try {
-            let response = await fetch(`${apiUri}/timers/`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            let response = await fetch(
+                `${apiUri}/timers/${new_page > 0 ? "?page=" + new_page : ""}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
             if (response.ok) {
                 timers = await response.json();
@@ -342,14 +351,30 @@
             </div>
         </div>
     {/each}
-
-    <button type="button" class="btn-icon" on:click={add}>
-        <Fa icon={faAdd} />
-    </button>
 {/if}
 {#if !timers || timers.length == 0}
     <span>No timers</span>
 {/if}
+
+<div class="page-nav">
+    <button
+        class="btn-icon"
+        on:click={() => getAllTimers(page - 1)}
+        disabled={page <= 0}
+    >
+        <Fa icon={faArrowLeft} />
+    </button>
+    <button type="button" class="btn-icon" on:click={add}>
+        <Fa icon={faAdd} />
+    </button>
+    <button
+        class="btn-icon"
+        on:click={() => getAllTimers(page + 1)}
+        disabled={!timers || timers.length < 20}
+    >
+        <Fa icon={faArrowRight} />
+    </button>
+</div>
 
 <audio
     src="https://freesound.org/data/previews/536/536420_4921277-lq.mp3"
@@ -473,5 +498,9 @@
 
     button.btn-icon {
         border-radius: 7px;
+    }
+    button.btn-icon:disabled {
+        background-color: #313244;
+        color: #585b70;
     }
 </style>

@@ -34,7 +34,7 @@
     });
 
     async function getHistory(new_page: number = 0) {
-        if (page < 0) {
+        if (new_page < 0) {
             return;
         }
 

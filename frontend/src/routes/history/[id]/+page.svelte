@@ -33,6 +33,10 @@
 	});
 
     async function getHistory(page: number = 0) {
+        if (page < 0) {
+            return;
+        }
+
         let token: String = await getToken();
         if(!token || token == '') {
             return;
