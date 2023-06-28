@@ -499,6 +499,7 @@
     button.btn-icon {
         border-radius: 7px;
     }
+
     button.btn-icon:disabled {
         background-color: #313244;
         color: #585b70;

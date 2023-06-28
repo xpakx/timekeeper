@@ -3,6 +3,8 @@
     import Fa from "svelte-fa";
     import { getToken } from "../../token-manager";
     import {
+        faArrowLeft,
+        faArrowRight,
         faCancel,
         faCheck,
         faStop,
@@ -110,13 +112,20 @@
 {/if}
 
 <div class="page-nav">
-    <button on:click={() => getHistory(page - 1)} disabled={page <= 0}
-        >Previous</button
-    >
     <button
-        on:click={() => getHistory(page + 1)}
-        disabled={!timers || timers.length < 20}>Next</button
+        class="btn-icon"
+        on:click={() => getHistory(page - 1)}
+        disabled={page <= 0}
     >
+        <Fa icon={faArrowLeft} />
+    </button>
+    <button
+        class="btn-icon"
+        on:click={() => getHistory(page + 1)}
+        disabled={!timers || timers.length < 20}
+    >
+        <Fa icon={faArrowRight} />
+    </button>
 </div>
 
 <style>
@@ -148,5 +157,25 @@
     .icon.failed {
         background-color: #f38ba8;
         color: white;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 5px 10px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #9399b2;
+        color: #313244;
+    }
+
+    button.btn-icon {
+        border-radius: 7px;
+    }
+
+    button.btn-icon:disabled {
+        background-color: #313244;
+        color: #585b70;
     }
 </style>
