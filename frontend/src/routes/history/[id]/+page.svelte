@@ -6,6 +6,7 @@
     import Fa from "svelte-fa";
     let apiUri = "http://localhost:8000";
     let message: String;
+    let curr_page: number = 0;
     let id = Number($page.params.id);
     getHistory();
 
@@ -31,14 +32,16 @@
 		hour12: false
 	});
 
-    async function getHistory() {
+    async function getHistory(page: number = 0) {
         let token: String = await getToken();
         if(!token || token == '') {
             return;
         }
 
         try {
-            let response = await fetch(`${apiUri}/timers/${id}/history`, {
+            let response = await fetch(`${apiUri}/timers/${id}/history${
+                    page > 0 ? "?page=" + page : ""
+            }`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -48,6 +51,7 @@
 
             if (response.ok) {
                 let fromEndpoint = await response.json();
+                curr_page = page;
                 timers = fromEndpoint.map((t: any) => {
                     return {
                         id: t.id,
@@ -99,6 +103,16 @@
         </div>
     {/each}
 {/if}
+
+<div class="page-nav">
+    <button on:click={() => getHistory(curr_page - 1)} disabled={curr_page <= 0}
+        >Previous</button
+    >
+    <button
+        on:click={() => getHistory(curr_page + 1)}
+        disabled={!timers || timers.length < 20}>Next</button
+    >
+</div>
 
 <style>
     .timer-container {

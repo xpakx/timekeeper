@@ -2,9 +2,14 @@
     import { goto } from "$app/navigation";
     import Fa from "svelte-fa";
     import { getToken } from "../../token-manager";
-    import { faCancel, faCheck, faStop } from "@fortawesome/free-solid-svg-icons";
+    import {
+        faCancel,
+        faCheck,
+        faStop,
+    } from "@fortawesome/free-solid-svg-icons";
     let apiUri = "http://localhost:8000";
     let message: String;
+    let page: number = 0;
     getHistory();
 
     let timers: {
@@ -19,48 +24,55 @@
             autofinish: boolean;
         };
     }[];
-    const formatter = new Intl.DateTimeFormat('default', {
-		weekday: 'short',
-		month: 'short',
-		day: 'numeric',
-		hour: 'numeric',
-		minute: '2-digit',
-		hour12: false
-	});
+    const formatter = new Intl.DateTimeFormat("default", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: false,
+    });
 
+    async function getHistory(new_page: number = 0) {
+        if (page < 0) {
+            return;
+        }
 
-    async function getHistory() {
         let token: String = await getToken();
-        if(!token || token == '') {
+        if (!token || token == "") {
             return;
         }
 
         try {
-            let response = await fetch(`${apiUri}/timers/history`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            let response = await fetch(
+                `${apiUri}/timers/history${
+                    new_page > 0 ? "?page=" + new_page : ""
+                }`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
             if (response.ok) {
                 let fromEndpoint = await response.json();
+                page = new_page;
                 timers = fromEndpoint.map((t: any) => {
                     return {
                         id: t.id,
                         start_time: new Date(t.start_time),
-                        end_time: t.end_time
-                            ? new Date(t.end_time)
-                            : undefined,
+                        end_time: t.end_time ? new Date(t.end_time) : undefined,
                         state: t.state,
                         timer_id: t.timer_id,
-                        timer: t.timer
+                        timer: t.timer,
                     };
                 });
             } else {
                 if (response.status == 401) {
-                    goto('/logout');
+                    goto("/logout");
                 }
                 const errorBody = await response.json();
                 message = errorBody.detail;
@@ -71,34 +83,41 @@
             }
         }
     }
-
 </script>
 
 <svelte:head>
     <title>History</title>
 </svelte:head>
 
-
 <h2>History</h2>
 
 {#if timers && timers.length > 0}
     {#each timers as timer}
         <div class="timer-container">
-            <span class="icon { timer.state }">
-            {#if timer.state == 'finished'}
-                <Fa icon={faCheck} />
-            {:else if timer.state == 'cancelled'}
-                <Fa icon={faCancel} />
-            {:else}
-                <Fa icon={faStop} />
-            {/if}
+            <span class="icon {timer.state}">
+                {#if timer.state == "finished"}
+                    <Fa icon={faCheck} />
+                {:else if timer.state == "cancelled"}
+                    <Fa icon={faCancel} />
+                {:else}
+                    <Fa icon={faStop} />
+                {/if}
             </span>
-           <span class="timer-name"> {timer.timer.name}</span>
-           <span class="date">{formatter.format(timer.end_time)}</span>
+            <span class="timer-name"> {timer.timer.name}</span>
+            <span class="date">{formatter.format(timer.end_time)}</span>
         </div>
     {/each}
 {/if}
 
+<div class="page-nav">
+    <button on:click={() => getHistory(page - 1)} disabled={page <= 0}
+        >Previous</button
+    >
+    <button
+        on:click={() => getHistory(page + 1)}
+        disabled={!timers || timers.length < 20}>Next</button
+    >
+</div>
 
 <style>
     .timer-container {
@@ -109,7 +128,7 @@
         font-size: 12px;
         color: #7f849c;
     }
-    
+
     .icon {
         font-size: 14px;
         padding: 5px 10px;
