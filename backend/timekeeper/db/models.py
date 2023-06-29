@@ -59,3 +59,28 @@ class Points(Base):
     points = Column(Integer)
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User")
+
+
+class ItemRarity(enum.Enum):
+    common = "common"
+    uncommon = "uncommon"
+    rare = "rare"
+
+
+class Item(Base):
+    __tablename__ = "items"
+    id = Column(Integer, primary_key=True, index=True)
+    num = Column(Integer, nullable=False)
+    name = Column(String)
+    description = Column(String)
+    rarity = Column(Enum(ItemRarity))
+
+
+class EquipmentEntry(Base):
+    __tablename__ = "eqentries"
+    id = Column(Integer, primary_key=True, index=True)
+    amount = Column(Integer, nullable=False)
+    item_id = Column(Integer, ForeignKey("items.id"))
+    item = relationship("Item")
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User")
