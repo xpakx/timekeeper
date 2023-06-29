@@ -17,6 +17,7 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { fade } from "svelte/transition";
     import { onDestroy } from "svelte";
+    import Timer from "../components/Timer.svelte";
 
     let apiUri = "http://localhost:8000";
     let message: String;
@@ -324,32 +325,11 @@
 <h2>Timers</h2>
 {#if timers}
     {#each timers as timer}
-        <div class="timer-container">
-            <span class="timer-name"> {timer.name}</span>
-            <div class="buttons">
-                <button
-                    class="btn-icon"
-                    type="button"
-                    on:click={() => deleteTimer(timer.id)}
-                >
-                    <Fa icon={faTrash} />
-                </button>
-                <button
-                    class="btn-icon"
-                    type="button"
-                    on:click={() => goto(`/edit/${timer.id}`)}
-                >
-                    <Fa icon={faEdit} />
-                </button>
-                <button
-                    class="btn-icon"
-                    type="button"
-                    on:click={() => startTimer(timer.id)}
-                >
-                    <Fa icon={faPlay} />
-                </button>
-            </div>
-        </div>
+        <Timer
+            {timer}
+            on:delete={() => deleteTimer(timer.id)}
+            on:start={() => startTimer(timer.id)}
+        />
     {/each}
 {/if}
 {#if !timers || timers.length == 0}
