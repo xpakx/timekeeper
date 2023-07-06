@@ -3,14 +3,9 @@
     import { faEdit, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
     import { createEventDispatcher } from 'svelte';
+    import type { TimerDetails } from "../types/TimerDetails";
 
-    export let timer: {
-        id: number;
-        name: String;
-        description: String;
-        duration_s: number;
-        autofinish: boolean;
-    };
+    export let timer: TimerDetails;
 
 	const dispatch = createEventDispatcher();
 

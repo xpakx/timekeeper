@@ -14,6 +14,7 @@
     import RunningTimer from "../components/RunningTimer.svelte";
     import type { TimerDetails } from "../types/TimerDetails";
     import type { RunningTimerDetails } from "../types/RunningTimerDetails";
+    import InfoBar from "../components/InfoBar.svelte";
 
     let apiUri = "http://localhost:8000";
     let message: String;
@@ -211,7 +212,7 @@
                 let fromEndpoint = await response.json();
                 let points = fromEndpoint.points;
                 if (points > 0) {
-                    console.log(points);
+                    infoBar.addInfo({points: points});
                 }
             } else {
                 if (response.status == 401) {
@@ -247,11 +248,15 @@
             }
         });
     }
+
+    let infoBar: InfoBar;
 </script>
 
 <svelte:head>
     <title>Home</title>
 </svelte:head>
+
+<InfoBar bind:this={infoBar} />
 
 {#if running_timers && running_timers.length > 0}
     <h2>Running</h2>
