@@ -4,20 +4,39 @@
     export const addInfo = (info: InfoDetails) => addNewInfo(info);
     let infos: InfoDetails[] = [];
 
-
     function addNewInfo(info: InfoDetails) {
-        console.log(info.points);
         infos.push(info);
         infos = infos;
+    }
+</script>
 
+<div class="infos">
+    {#each infos as info}
+        <div class="info">
+            <div class="info-header">Reward</div>
+            {info.points} points
+        </div>
+    {/each}
+</div>
+
+<style>
+    .infos {
+        display: flex;
+        gap: 5px;
     }
 
-</script>
-{#each infos as info }
-<div class="info">
-    {info.points}
-</div>
-    
-{/each}
+    .info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #181825;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
 
-<style></style>
+    .info-header {
+        font-weight: bold;
+        color: #a6adc8;
+    }
+</style>
