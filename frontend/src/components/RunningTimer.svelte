@@ -4,19 +4,9 @@
 
     import Fa from "svelte-fa";
     import { fade } from "svelte/transition";
+    import type { RunningTimerDetails } from "../types/RunningTimerDetails";
 
-    export let timer: {
-        id: number;
-        start_time: Date;
-        end_time?: Date;
-        state: String;
-        timer_id: number;
-        timer: {
-            name: string;
-            duration_s: number;
-            autofinish: boolean;
-        };
-    };
+    export let timer: RunningTimerDetails;
 	const dispatch = createEventDispatcher();
     
     export let date: number;

@@ -12,6 +12,8 @@
     import { onDestroy } from "svelte";
     import Timer from "../components/Timer.svelte";
     import RunningTimer from "../components/RunningTimer.svelte";
+    import type { TimerDetails } from "../types/TimerDetails";
+    import type { RunningTimerDetails } from "../types/RunningTimerDetails";
 
     let apiUri = "http://localhost:8000";
     let message: String;
@@ -23,25 +25,8 @@
     }, 500);
     let audio: HTMLAudioElement;
 
-    let timers: {
-        id: number;
-        name: String;
-        description: String;
-        duration_s: number;
-        autofinish: boolean;
-    }[];
-    let running_timers: {
-        id: number;
-        start_time: Date;
-        end_time?: Date;
-        state: String;
-        timer_id: number;
-        timer: {
-            name: string;
-            duration_s: number;
-            autofinish: boolean;
-        };
-    }[];
+    let timers: TimerDetails[];
+    let running_timers: RunningTimerDetails[];
 
     tokenStorage.subscribe((_) => {
         getAllTimers();
