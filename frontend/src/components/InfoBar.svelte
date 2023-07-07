@@ -29,7 +29,7 @@
             <div class="info">
                 <div class="info-header">
                     Reward
-                    <button on:click={() => closeMessage(index)}>
+                    <button on:click={() => closeMessage(index)} class="btn-icon">
                         <Fa icon={faClose} />
                     </button>
                 </div>
@@ -61,5 +61,20 @@
         color: #a6adc8;
         display: flex;
         justify-content: space-between;
+    }
+    
+    button {
+        font-size: 12;
+        padding: 2px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #9399b2;
+        color: #313244;
+    }
+
+    button.btn-icon {
+        background-color: transparent;
+        color: #9399b2;
     }
 </style>
