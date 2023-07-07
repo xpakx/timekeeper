@@ -16,21 +16,28 @@
         infos.splice(index, 1);
         infos = infos;
     }
+
+    function closeAllMessages() {
+        infos = [];
+    }
 </script>
 
-<div class="infos">
-    {#each infos as info, index}
-        <div class="info">
-            <div class="info-header">
-                Reward
-                <button on:click={() => closeMessage(index)}>
-                    <Fa icon={faClose} />
-                </button>
+{#if infos.length > 0}
+    <button class="clean" on:click={closeAllMessages}>Clean</button>
+    <div class="infos">
+        {#each infos as info, index}
+            <div class="info">
+                <div class="info-header">
+                    Reward
+                    <button on:click={() => closeMessage(index)}>
+                        <Fa icon={faClose} />
+                    </button>
+                </div>
+                {info.points} points
             </div>
-            {info.points} points
-        </div>
-    {/each}
-</div>
+        {/each}
+    </div>
+{/if}
 
 <style>
     .infos {
