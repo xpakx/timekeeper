@@ -1,5 +1,7 @@
 <script lang="ts">
+    import Fa from "svelte-fa";
     import type { InfoDetails } from "../types/InfoDetails";
+    import { faClose } from "@fortawesome/free-solid-svg-icons";
 
     export const addInfo = (info: InfoDetails) => addNewInfo(info);
     let infos: InfoDetails[] = [];
@@ -8,12 +10,23 @@
         infos.push(info);
         infos = infos;
     }
+
+    function closeMessage(index: number) {
+        console.log(index);
+        infos.splice(index, 1);
+        infos = infos;
+    }
 </script>
 
 <div class="infos">
-    {#each infos as info}
+    {#each infos as info, index}
         <div class="info">
-            <div class="info-header">Reward</div>
+            <div class="info-header">
+                Reward
+                <button on:click={() => closeMessage(index)}>
+                    <Fa icon={faClose} />
+                </button>
+            </div>
             {info.points} points
         </div>
     {/each}
@@ -39,5 +52,7 @@
     .info-header {
         font-weight: bold;
         color: #a6adc8;
+        display: flex;
+        justify-content: space-between;
     }
 </style>
