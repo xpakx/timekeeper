@@ -23,6 +23,7 @@
     .infos {
         display: flex;
         gap: 5px;
+        overflow: auto;
     }
 
     .info {
