@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import false
 from sqlalchemy import and_
 from sqlalchemy.sql import func
+import random
 
 
 def create_timer(timer: TimerRequest, user_id: int, db: Session):
@@ -63,22 +64,15 @@ def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
 
 
 def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
-    ownership = db\
-            .query(
-                    db
-                    .query(Timer)
-                    .where(
-                        and_(Timer.id == timer_id, Timer.owner_id == user_id)
-                        )
-                    .exists()
-            )\
-            .scalar()
-    if not ownership:
+    db_timer = db.get(Timer, timer_id)
+    if not db_timer or db_timer.owner_id != user_id:
         raise ownership_exception()
+    reward = random.randint(0, 1)
     timer_instance = TimerInstance(
             timer_id=timer_id,
             start_time=func.now(),
             state=TimerState.running,
+            reward_time=(random.randint(0, db_timer.duration_s) * 1000) if reward else None,
             owner_id=user_id
             )
     db.add(timer_instance)
