@@ -67,7 +67,7 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
     db_timer = db.get(Timer, timer_id)
     if not db_timer or db_timer.owner_id != user_id:
         raise ownership_exception()
-    reward = random.randint(0, 1)
+    reward = db_timer.rewarded and random.randint(0, 2) > 0
     timer_instance = TimerInstance(
             timer_id=timer_id,
             start_time=func.now(),
