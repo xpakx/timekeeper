@@ -45,6 +45,7 @@ class StateRequest(BaseModel):
 class TimerInstance(BaseModel):
     id: int
     start_time: datetime
+    reward_time: Optional[int]
     end_time: Optional[datetime]
     state: TimerState
     timer_id: int
