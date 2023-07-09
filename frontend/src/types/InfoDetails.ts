@@ -1,3 +1,6 @@
 export type InfoDetails = {
-    points: number
+    points?: number;
+    reward?: {
+        name: String
+    }
 }

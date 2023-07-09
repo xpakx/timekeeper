@@ -29,11 +29,18 @@
             <div class="info">
                 <div class="info-header">
                     Reward
-                    <button on:click={() => closeMessage(index)} class="btn-icon">
+                    <button
+                        on:click={() => closeMessage(index)}
+                        class="btn-icon"
+                    >
                         <Fa icon={faClose} />
                     </button>
                 </div>
-                {info.points} points
+                {#if info.points}
+                    {info.points} points
+                {:else if info.reward}
+                    {info.reward.name}
+                {/if}
             </div>
         {/each}
     </div>
@@ -62,7 +69,7 @@
         display: flex;
         justify-content: space-between;
     }
-    
+
     button {
         font-size: 12;
         padding: 2px;

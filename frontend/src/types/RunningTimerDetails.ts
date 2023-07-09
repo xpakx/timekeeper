@@ -7,4 +7,5 @@ export type RunningTimerDetails = {
     state: String;
     timer_id: number;
     timer: TimerMin;
+    reward_time?: number;
 }
