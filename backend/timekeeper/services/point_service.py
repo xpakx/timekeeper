@@ -1,4 +1,3 @@
-
 from ..db import point_repo
 from ..db.models import Points
 from sqlalchemy.orm import Session

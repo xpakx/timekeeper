@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
-from .dto import timer_schemas
-from ..services import timer_service
+from .dto import timer_schemas, item_schemas
+from ..services import timer_service, reward_service
 from typing import Annotated
 from ..security.jwt import get_current_user, CurrentUser
 from ..db.manager import get_db
@@ -75,6 +75,15 @@ async def change_timer_state(
         db: Session = Depends(get_db)
         ):
     return timer_service.change_state(id, request, user.id, db)
+
+
+@router.get("/instances/{id}/reward", response_model=item_schemas.ItemBase)
+async def generate_reward(
+        id: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return reward_service.get_reward(id, user.id, db)
 
 
 @router.delete("/{id}", response_model=timer_schemas.TimerResponse)
