@@ -164,3 +164,10 @@ def get_timer_history(page: int, size: int, user_id: int, timer_id: int, db: Ses
         .offset(offset)\
         .limit(size)\
         .all()
+
+
+def get_timer_inst(timer_id: int, user_id: int, db: Session) -> TimerInstance:
+    db_timer = db.get(TimerInstance, timer_id)
+    if (not db_timer) or db_timer.owner_id != user_id:
+        raise not_found_exception()
+    return db_timer
