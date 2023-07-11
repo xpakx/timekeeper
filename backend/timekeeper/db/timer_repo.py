@@ -73,6 +73,7 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
             start_time=func.now(),
             state=TimerState.running,
             reward_time=(random.randint(0, db_timer.duration_s) * 1000) if reward else None,
+            rewarded=False,
             owner_id=user_id
             )
     db.add(timer_instance)

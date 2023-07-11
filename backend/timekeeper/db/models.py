@@ -46,6 +46,7 @@ class TimerInstance(Base):
     id = Column(Integer, primary_key=True, index=True)
     start_time = Column(DateTime(timezone=True))
     reward_time = Column(Integer)
+    rewarded = Column(Boolean)
     end_time = Column(DateTime(timezone=True))
     state = Column(Enum(TimerState))
     timer_id = Column(Integer, ForeignKey("timers.id"))
