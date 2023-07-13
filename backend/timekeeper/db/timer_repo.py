@@ -1,11 +1,12 @@
 from ..routers.dto.timer_schemas import TimerRequest
-from .models import Timer, TimerInstance, TimerState
+from .models import Timer, TimerInstance, TimerState, TimerDifficulty
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import false
 from sqlalchemy import and_
 from sqlalchemy.sql import func
 import random
+from typing import Optional
 
 
 def create_timer(timer: TimerRequest, user_id: int, db: Session):
@@ -67,7 +68,7 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
     db_timer = db.get(Timer, timer_id)
     if not db_timer or db_timer.owner_id != user_id:
         raise ownership_exception()
-    reward = db_timer.rewarded and random.randint(0, 2) > 0
+    reward = db_timer.rewarded and randomize_reward_generation(db_timer.difficulty)
     timer_instance = TimerInstance(
             timer_id=timer_id,
             start_time=func.now(),
@@ -81,6 +82,17 @@ def start_timer(timer_id: int, user_id: int, db: Session) -> TimerInstance:
     db.refresh(timer_instance)
     return timer_instance
 
+
+def randomize_reward_generation(difficulty: Optional[TimerDifficulty]) -> bool:
+    if not difficulty or difficulty == TimerDifficulty.trivial:
+        return random.randint(0, 5) > 3
+    if difficulty == TimerDifficulty.easy:
+        return random.randint(0, 4) > 2
+    if difficulty == TimerDifficulty.medium:
+        return random.randint(0, 3) > 1
+    if difficulty == TimerDifficulty.hard:
+        return random.randint(0, 2) > 0
+    return False
 
 def change_timer_state(
         timer_id: int,
