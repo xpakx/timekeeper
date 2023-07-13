@@ -37,3 +37,7 @@ def already_rewarded_exception():
         status_code=403,
         detail="Cannot reward twice",
     )
+
+
+def get_items(page, size, user_id: int, db: Session):
+    return equipment_repo.get_items(page, size, user_id, db)

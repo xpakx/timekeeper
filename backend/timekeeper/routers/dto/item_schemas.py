@@ -9,3 +9,12 @@ class ItemBase(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class EquipmentBase(BaseModel):
+    id: int
+    amount: int
+    item: ItemBase
+
+    class Config:
+        orm_mode = True

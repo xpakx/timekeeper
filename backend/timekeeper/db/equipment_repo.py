@@ -20,3 +20,15 @@ def create_entry(item_id, amount, user_id, db: Session):
                 owner_id=user_id
                 )
         db.add(entry)
+
+
+def get_items(page: int, size: int, user_id: int, db: Session):
+    offset = page*size
+    return db\
+        .query(EquipmentEntry)\
+        .where(
+                    and_(EquipmentEntry.owner_id == user_id)
+                    )\
+        .offset(offset)\
+        .limit(size)\
+        .all()
