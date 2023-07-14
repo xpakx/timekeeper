@@ -5,6 +5,7 @@ from ...db.models import ItemRarity
 class ItemBase(BaseModel):
     id: int
     name: str
+    num: int
     rarity: ItemRarity
 
     class Config:
