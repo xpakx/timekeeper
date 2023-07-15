@@ -15,6 +15,7 @@
     import type { TimerDetails } from "../types/TimerDetails";
     import type { RunningTimerDetails } from "../types/RunningTimerDetails";
     import InfoBar from "../components/InfoBar.svelte";
+    import type { Item } from "../types/Item";
 
     let apiUri = "http://localhost:8000";
     let message: String;
@@ -250,10 +251,46 @@
                 $date -t.start_time.getTime() > t.reward_time &&
                 $date - t.start_time.getTime() - 500 <= t.reward_time
                 ) {
-                    infoBar.addInfo({reward: {name: "reward"}})
+                    generateReward(t.id);
 
             }
         });
+    }
+
+    async function generateReward(id: number) {
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        try {
+            let response = await fetch(
+                `${apiUri}/timers/instances/${id}/reward`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                let reward: Item = fromEndpoint;
+                infoBar.addInfo({reward: reward});
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
+            }
+        }
     }
 
     let infoBar: InfoBar;
