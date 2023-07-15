@@ -246,7 +246,9 @@
                 if (t.timer.autofinish) {
                     changeTimerState(t.id, "finished");
                 }
-            } else if(
+            } 
+            
+            if(
                 t.reward_time && 
                 $date -t.start_time.getTime() > t.reward_time &&
                 $date - t.start_time.getTime() - 500 <= t.reward_time
