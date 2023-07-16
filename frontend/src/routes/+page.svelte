@@ -213,7 +213,7 @@
                 let fromEndpoint = await response.json();
                 let points = fromEndpoint.points;
                 if (points > 0) {
-                    infoBar.addInfo({points: points});
+                    infoBar.addInfo({ points: points });
                 }
             } else {
                 if (response.status == 401) {
@@ -246,15 +246,14 @@
                 if (t.timer.autofinish) {
                     changeTimerState(t.id, "finished");
                 }
-            } 
-            
-            if(
-                t.reward_time && 
-                $date -t.start_time.getTime() > t.reward_time &&
-                $date - t.start_time.getTime() - 500 <= t.reward_time
-                ) {
-                    generateReward(t.id);
+            }
 
+            if (
+                (t.reward_time || t.reward_time == 0) &&
+                $date - t.start_time.getTime() > t.reward_time &&
+                $date - t.start_time.getTime() - 500 <= t.reward_time
+            ) {
+                generateReward(t.id);
             }
         });
     }
@@ -280,7 +279,7 @@
             if (response.ok) {
                 let fromEndpoint = await response.json();
                 let reward: Item = fromEndpoint;
-                infoBar.addInfo({reward: reward});
+                infoBar.addInfo({ reward: reward });
             } else {
                 if (response.status == 401) {
                     goto("/logout");
