@@ -172,6 +172,7 @@
                 let new_timer = await response.json();
                 new_timer.start_time = new Date(new_timer.start_time);
                 running_timers = [...running_timers, new_timer];
+                onCreationTimerTest(new_timer);
             } else {
                 if (response.status == 401) {
                     goto("/logout");
@@ -256,6 +257,15 @@
                 generateReward(t.id);
             }
         });
+    }
+
+    function onCreationTimerTest(timer: RunningTimerDetails) {
+        if (
+            timer.reward_time &&
+            $date - timer.start_time.getTime() > timer.reward_time 
+        ) {
+            generateReward(timer.id);
+        }
     }
 
     async function generateReward(id: number) {
