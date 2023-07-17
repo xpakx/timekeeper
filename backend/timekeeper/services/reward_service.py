@@ -5,7 +5,7 @@ from fastapi import HTTPException
 
 def get_reward(timer_id: int, user_id: int, db: Session):
     timer = timer_repo.get_timer_inst(timer_id, user_id, db)
-    if not timer.reward_time:
+    if timer.reward_time is None:
         raise not_reward_time_exception()
     if timer.rewarded:
         raise already_rewarded_exception()
