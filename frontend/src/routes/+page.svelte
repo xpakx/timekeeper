@@ -26,6 +26,7 @@
         testTimers();
     }, 500);
     let audio: HTMLAudioElement;
+    let rewardAudio: HTMLAudioElement;
 
     let timers: TimerDetails[];
     let running_timers: RunningTimerDetails[];
@@ -289,6 +290,9 @@
             if (response.ok) {
                 let fromEndpoint = await response.json();
                 let reward: Item = fromEndpoint;
+                if (rewardAudio.paused) {
+                    rewardAudio.play();
+                }
                 infoBar.addInfo({ reward: reward });
             } else {
                 if (response.status == 401) {
@@ -362,6 +366,12 @@
 <audio
     src="https://freesound.org/data/previews/536/536420_4921277-lq.mp3"
     bind:this={audio}
+/>
+
+
+<audio
+    src="https://freesound.org/data/previews/614/614265_12888024-lq.mp3"
+    bind:this={rewardAudio}
 />
 
 <style>
