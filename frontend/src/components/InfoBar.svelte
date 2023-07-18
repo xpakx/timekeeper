@@ -26,7 +26,7 @@
     <button class="clean" on:click={closeAllMessages}>Clean</button>
     <div class="infos">
         {#each infos as info, index}
-            <div class="info">
+            <div class="info {info.reward ? info.reward.rarity : ''}">
                 <div class="info-header">
                     Reward
                     <button
@@ -51,6 +51,7 @@
         display: flex;
         gap: 5px;
         overflow: auto;
+        margin-top: 5px;
     }
 
     .info {
@@ -83,5 +84,25 @@
     button.btn-icon {
         background-color: transparent;
         color: #9399b2;
+    }
+
+    .common {
+        border: solid 1px #585b70;
+    }
+
+    .uncommon {
+        border: solid 1px #cdd6f4;
+    }
+
+    .rare {
+        border: solid 1px #f2cdcd;
+    }
+
+    .info.uncommon .info-header {
+        color: #cdd6f4;
+    }
+
+    .info.rare .info-header {
+        color: #f2cdcd;
     }
 </style>
