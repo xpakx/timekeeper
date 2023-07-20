@@ -6,11 +6,16 @@
 
 <div class="item-container {item.item.rarity}">
     <div class="item-header">
-        <div class="item-name">
-            {item.item.name}
+        <div class="item-name-container">
+            <div class="item-name">
+                {item.item.name}
+            </div>
+            <div class="item-count">
+                [{item.amount}]
+            </div>
         </div>
-        <div class="item-count">
-            {item.amount}
+        <div class="item-id">
+            #{item.item.num}
         </div>
     </div>
 </div>
@@ -24,6 +29,22 @@
         border-radius: 8px;
         padding: 10px;
         margin-bottom: 10px;
+    }
+
+    .item-header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+
+    .item-name-container {
+        display: flex;
+        gap: 5px;
+    }
+
+    .item-count,
+    .item-id {
+        color: #585b70;
     }
 
     .item-name {
