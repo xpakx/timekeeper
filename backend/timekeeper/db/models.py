@@ -86,3 +86,34 @@ class EquipmentEntry(Base):
     item = relationship("Item")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
+
+
+class HeroType(enum.Enum):
+    dark = "dark"
+    light = "light"
+    celestial = "celestial"
+
+
+class Hero(Base):
+    __tablename__ = "heroes"
+    id = Column(Integer, primary_key=True, index=True)
+    num = Column(Integer, nullable=False)
+    name = Column(String)
+    description = Column(String)
+    base_hp = Column(Integer)
+    base_attack = Column(Integer)
+    base_defense = Column(Integer)
+    base_speed = Column(Integer)
+    base_special = Column(Integer)
+    rarity = Column(Enum(ItemRarity))
+    hero_type = Column(Enum(HeroType))
+    secondary_hero_type = Column(Enum(HeroType))
+
+
+class UserHero(Base):
+    __tablename__ = "user_heroes"
+    id = Column(Integer, primary_key=True, index=True)
+    hero_id = Column(Integer, ForeignKey("hero.id"))
+    hero = relationship("Hero")
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User")
