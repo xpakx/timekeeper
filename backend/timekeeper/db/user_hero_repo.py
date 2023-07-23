@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
 
-def create_entry(hero_id, amount, user_id, db: Session):
+def create_entry(hero_id, user_id, db: Session):
     entry = UserHero(
             hero_id=hero_id,
-            amount=amount,
             owner_id=user_id
             )
     db.add(entry)

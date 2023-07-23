@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import timer_router, user_router, point_router, item_router
+from .routers import timer_router, user_router, point_router, item_router, hero_router
 from .db.models import Base
 from .db.base import engine
 
@@ -14,6 +14,7 @@ app.include_router(timer_router.router)
 app.include_router(user_router.router)
 app.include_router(point_router.router)
 app.include_router(item_router.router)
+app.include_router(hero_router.router)
 
 app.add_middleware(
     CORSMiddleware,
