@@ -32,3 +32,18 @@ def get_items(page: int, size: int, user_id: int, db: Session):
         .offset(offset)\
         .limit(size)\
         .all()
+
+
+def subtract_items(item_id, amount, user_id, db: Session):
+    entry = db\
+        .query(EquipmentEntry)\
+        .where(
+             and_(
+                 EquipmentEntry.owner_id == user_id,
+                 EquipmentEntry.item.num == item_id)
+            ) .first()
+    if not entry or entry.amount < amount:
+        return False
+    else:
+        entry.amount = entry.amount - amount
+    return True
