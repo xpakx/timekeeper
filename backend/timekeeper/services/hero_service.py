@@ -8,7 +8,6 @@ CRYSTAL = 6
 def get_hero(timer_id: int, user_id: int, db: Session):
     if not equipment_repo.subtract_items(CRYSTAL, 1, user_id, db):
         raise not_enough_crystal_exception()
-
     hero = hero_repo.get_random_hero(db)
     if not hero:
         raise not_initialized_exception()

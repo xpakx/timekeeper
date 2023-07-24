@@ -113,6 +113,11 @@ class Hero(Base):
 class UserHero(Base):
     __tablename__ = "user_heroes"
     id = Column(Integer, primary_key=True, index=True)
+    hp = Column(Integer)
+    attack = Column(Integer)
+    defense = Column(Integer)
+    speed = Column(Integer)
+    special = Column(Integer)
     hero_id = Column(Integer, ForeignKey("hero.id"))
     hero = relationship("Hero")
     owner_id = Column(Integer, ForeignKey("users.id"))
