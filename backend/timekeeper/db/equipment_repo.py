@@ -1,4 +1,4 @@
-from .models import EquipmentEntry
+from .models import EquipmentEntry, Item
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
@@ -39,10 +39,11 @@ def get_items(page: int, size: int, user_id: int, db: Session):
 def subtract_items(item_id, amount, user_id, db: Session):
     entry = db\
         .query(EquipmentEntry)\
+        .join(Item, EquipmentEntry.item)\
         .where(
              and_(
                  EquipmentEntry.owner_id == user_id,
-                 EquipmentEntry.item.num == item_id)
+                 Item.num == item_id)
             ) .first()
     if not entry or entry.amount < amount:
         return False
