@@ -21,11 +21,10 @@ async def get_heroes(
 
 @router.get("/reward", response_model=hero_schemas.HeroBase)
 async def generate_hero(
-        id: int,
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return hero_service.get_hero(id, user.id, db)
+    return hero_service.get_hero(user.id, db)
 
 
 @router.get("/crystals", response_model=list[hero_schemas.Crystals])
