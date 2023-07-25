@@ -118,7 +118,7 @@ class UserHero(Base):
     defense = Column(Integer)
     speed = Column(Integer)
     special = Column(Integer)
-    hero_id = Column(Integer, ForeignKey("hero.id"))
+    hero_id = Column(Integer, ForeignKey("heroes.id"))
     hero = relationship("Hero")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
