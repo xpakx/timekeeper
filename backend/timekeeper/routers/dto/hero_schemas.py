@@ -18,3 +18,7 @@ class UserHeroBase(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Crystals(BaseModel):
+    crystals: int

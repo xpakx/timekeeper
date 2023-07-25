@@ -26,3 +26,11 @@ async def generate_hero(
         db: Session = Depends(get_db)
         ):
     return hero_service.get_hero(id, user.id, db)
+
+
+@router.get("/crystals", response_model=list[hero_schemas.Crystals])
+async def get_crystals(
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return {'crystals': hero_service.get_crystals(user.id, db)}

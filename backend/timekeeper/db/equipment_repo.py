@@ -2,6 +2,8 @@ from .models import EquipmentEntry
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
+CRYSTAL = 6
+
 
 def create_entry(item_id, amount, user_id, db: Session):
     entry_db = db\
@@ -47,3 +49,16 @@ def subtract_items(item_id, amount, user_id, db: Session):
     else:
         entry.amount = entry.amount - amount
     return True
+
+
+def get_crystals(user_id, db: Session):
+    entry = db\
+        .query(EquipmentEntry)\
+        .where(
+             and_(
+                 EquipmentEntry.owner_id == user_id,
+                 EquipmentEntry.item.num == CRYSTAL)
+            ) .first()
+    if not entry:
+        return 0
+    return entry.amount

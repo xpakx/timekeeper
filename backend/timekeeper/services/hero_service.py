@@ -16,6 +16,10 @@ def get_hero(timer_id: int, user_id: int, db: Session):
     return hero
 
 
+def get_crystals(user_id: int, db: Session):
+    return equipment_repo.get_crystals(user_id, db)
+
+
 def not_initialized_exception():
     return HTTPException(
         status_code=500,
