@@ -4,7 +4,7 @@
     import type { Hero } from "../../types/Hero";
 
     let apiUri = "http://localhost:8000";
-    let hero: Hero[];
+    let hero: Hero;
     let message: String;
     let crystals: number;
     getCrystals();
@@ -16,16 +16,13 @@
         }
 
         try {
-            let response = await fetch(
-                `${apiUri}/heroes/reward`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            let response = await fetch(`${apiUri}/heroes/reward`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             if (response.ok) {
                 let fromEndpoint = await response.json();
@@ -51,16 +48,13 @@
         }
 
         try {
-            let response = await fetch(
-                `${apiUri}/heroes/crystals`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            let response = await fetch(`${apiUri}/heroes/crystals`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             if (response.ok) {
                 let fromEndpoint = await response.json();
@@ -87,7 +81,23 @@
 <button class="hero-btn" on:click={generateHero}>Get</button>
 <div class="crystals">
     {#if crystals}
-      {crystals}
+        {crystals}
     {/if}
 </div>
+{#if hero}
+    <div class="hero-modal {hero.rarity}">
+        <div class="hero-header">
+            <div class="hero-name">
+                {hero.name}
+            </div>
+            <div class="hero-id">
+                #{hero.num}
+            </div>
+            <div class="hero-image">
+                <img src="heroes/hero_{hero.num}.png" alt="" />
+            </div>
+        </div>
+    </div>
+{/if}
+
 <style></style>
