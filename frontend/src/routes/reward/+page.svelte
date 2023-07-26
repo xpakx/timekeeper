@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import HeroCard from "../../components/HeroCard.svelte";
     import { getToken } from "../../token-manager";
     import type { Hero } from "../../types/Hero";
 
@@ -85,19 +86,7 @@
     {/if}
 </div>
 {#if hero}
-    <div class="hero-modal {hero.rarity}">
-        <div class="hero-header">
-            <div class="hero-name">
-                {hero.name}
-            </div>
-            <div class="hero-id">
-                #{hero.num}
-            </div>
-            <div class="hero-image">
-                <img src="heroes/hero_{hero.num}.png" alt="" />
-            </div>
-        </div>
-    </div>
+   <HeroCard {hero} /> 
 {/if}
 
 <style></style>
