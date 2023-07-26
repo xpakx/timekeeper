@@ -55,10 +55,11 @@ def subtract_items(item_id, amount, user_id, db: Session):
 def get_crystals(user_id, db: Session):
     entry = db\
         .query(EquipmentEntry)\
+        .join(Item, EquipmentEntry.item)\
         .where(
              and_(
                  EquipmentEntry.owner_id == user_id,
-                 EquipmentEntry.item.num == CRYSTAL)
+                 Item.num == CRYSTAL)
             ) .first()
     if not entry:
         return 0
