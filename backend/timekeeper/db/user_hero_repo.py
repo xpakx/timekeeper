@@ -8,10 +8,10 @@ def create_entry(hero_id, user_id, db: Session):
     entry = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
-            attack=random.randint(16),
-            defense=random.randint(16),
-            speed=random.randint(16),
-            special=random.randint(16)
+            attack=random.randint(0, 16),
+            defense=random.randint(0, 16),
+            speed=random.randint(0, 16),
+            special=random.randint(0, 16)
             )
     db.add(entry)
 
