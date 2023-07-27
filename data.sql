@@ -19,3 +19,26 @@ insert into items (num, name, description, rarity) values
 (18, 'Test 18', 'eighteenth test item', 'rare'),
 (19, 'Test 19', 'ninteenth test item', 'rare'),
 (20, 'Test 20', 'twentieth test item', 'rare');
+
+insert into heroes (num, name, description, rarity, hero_type, secondary_hero_type, 
+    base_hp, base_attack, base_defense, base_speed, base_special) values 
+    (1, 'Hero 1', '', 'common', 'celestial', NULL, 100, 50, 50, 50, 50),
+    (2, 'Hero 2', '', 'common', 'dark', NULL, 100, 50, 50, 50, 50),
+    (3, 'Hero 3', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (4, 'Hero 4', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (5, 'Hero 5', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (6, 'Hero 6', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (7, 'Hero 7', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (8, 'Hero 8', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (9, 'Hero 9', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (10, 'Hero 10', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (11, 'Hero 11', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (12, 'Hero 12', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (13, 'Hero 13', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (14, 'Hero 14', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (15, 'Hero 15', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (16, 'Hero 16', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (17, 'Hero 17', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (18, 'Hero 18', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (19, 'Hero 19', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (20, 'Hero 20', '', 'common', 'light', NULL, 100, 50, 50, 50, 50);
