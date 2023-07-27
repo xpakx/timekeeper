@@ -6,6 +6,7 @@
 
     let apiUri = "http://localhost:8000";
     let hero: Hero;
+    let showHero: boolean = false;
     let message: String;
     let crystals: number;
     getCrystals();
@@ -28,6 +29,7 @@
             if (response.ok) {
                 let fromEndpoint = await response.json();
                 hero = fromEndpoint;
+                showHero = true;
             } else {
                 if (response.status == 401) {
                     goto("/logout");
@@ -85,7 +87,7 @@
         {crystals}
     {/if}
 </div>
-{#if hero}
+{#if showHero}
    <HeroCard {hero} /> 
 {/if}
 
