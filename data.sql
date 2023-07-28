@@ -22,9 +22,9 @@ insert into items (num, name, description, rarity) values
 
 insert into heroes (num, name, description, rarity, hero_type, secondary_hero_type, 
     base_hp, base_attack, base_defense, base_speed, base_special) values 
-    (1, 'Hero 1', '', 'common', 'celestial', NULL, 100, 50, 50, 50, 50),
-    (2, 'Hero 2', '', 'common', 'dark', NULL, 100, 50, 50, 50, 50),
-    (3, 'Hero 3', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
+    (1, 'Hero 1', '', 'common', 'celestial', NULL, 45, 50, 50, 45, 65),
+    (2, 'Hero 2', '', 'common', 'light', NULL, 40, 55, 45, 65, 55),
+    (3, 'Hero 3', '', 'common', 'dark', NULL, 45, 50, 65, 45, 60),
     (4, 'Hero 4', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
     (5, 'Hero 5', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
     (6, 'Hero 6', '', 'common', 'light', NULL, 100, 50, 50, 50, 50),
