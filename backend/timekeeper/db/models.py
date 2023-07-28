@@ -89,6 +89,11 @@ class EquipmentEntry(Base):
 
 
 class HeroType(enum.Enum):
+    fire = "fire"
+    steam = "steam"
+    water = "water"
+    air = "air"
+    earth = "earth"
     dark = "dark"
     light = "light"
     celestial = "celestial"
