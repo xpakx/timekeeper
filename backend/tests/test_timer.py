@@ -129,6 +129,22 @@ def create_timer_instance_with_state(user_id: int, timer_id: int, state: TimerSt
     return new_timer.id
 
 
+def create_timer_instance_with_reward(user_id: int, timer_id: int) -> int:
+    db = TestingSessionLocal()
+    new_timer = TimerInstance(
+            state=TimerState.running,
+            timer_id=timer_id,
+            owner_id=user_id,
+            start_time=func.now(),
+            reward_time=0
+            )
+    db.add(new_timer)
+    db.commit()
+    db.refresh(new_timer)
+    db.close()
+    return new_timer.id
+
+
 def get_token() -> str:
     return get_token_for(1)
 
@@ -1062,3 +1078,40 @@ def test_starting_not_rewarded_timer_without_reward(test_db):
     assert response.status_code == 200
     result = response.json()
     assert result['reward_time'] is None
+
+
+def test_getting_reward_without_authentication(test_db):
+    response = client.get("/timers/instances/1/reward")
+    assert response.status_code == 401
+
+
+def test_getting_reward_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/timers/instances/1/reward", headers=headers)
+    assert response.status_code == 401
+
+
+def test_getting_reward_for_other_users_timer(test_db):
+    user_id = create_user_and_return_id()
+    other_id = create_user_with_username("Other")
+    timer_id = create_timer_with_reward("Test", other_id)
+    id = create_timer_instance_with_reward(other_id, timer_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/timers/instances/{id}/reward", headers=headers)
+    assert response.status_code == 404
+
+
+def test_getting_reward_for_nonexistent_timer(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/timers/instances/1/reward", headers=headers)
+    assert response.status_code == 404
+
+
+def test_getting_reward_without_data_in_db(test_db):
+    user_id = create_user_and_return_id()
+    timer_id = create_timer_with_reward("Test", user_id)
+    id = create_timer_instance_with_reward(user_id, timer_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/timers/instances/{id}/reward", headers=headers)
+    assert response.status_code == 500
