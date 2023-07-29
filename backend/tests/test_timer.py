@@ -10,6 +10,7 @@ from timekeeper.db.models import User, Timer, TimerInstance, TimerState
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from sqlalchemy.sql import func
+from unittest.mock import patch, Mock
 
 url = URL.create(
         "postgresql",
@@ -83,6 +84,23 @@ def create_timer_(name: str, user_id: int, deleted: bool) -> int:
             description="",
             duration_s=100,
             deleted=deleted,
+            owner_id=user_id
+            )
+    db.add(new_timer)
+    db.commit()
+    db.refresh(new_timer)
+    db.close()
+    return new_timer.id
+
+
+def create_timer_with_reward(name: str, user_id: int) -> int:
+    db = TestingSessionLocal()
+    new_timer = Timer(
+            name=name,
+            description="",
+            duration_s=100,
+            deleted=False,
+            rewarded=True,
             owner_id=user_id
             )
     db.add(new_timer)
@@ -1009,3 +1027,38 @@ def test_not_getting_other_timers_instances_with_timer_history(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result) == 1
+
+
+# reward generation
+
+@patch('timekeeper.db.timer_repo.randomize_reward_generation', Mock(return_value=True))
+def test_starting_timer_with_reward(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer_with_reward("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/timers/{id}/instances", headers=headers)
+    assert response.status_code == 200
+    result = response.json()
+    assert result['reward_time'] is not None
+
+
+@patch('timekeeper.db.timer_repo.randomize_reward_generation', Mock(return_value=False))
+def test_starting_timer_without_reward(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer_with_reward("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/timers/{id}/instances", headers=headers)
+    assert response.status_code == 200
+    result = response.json()
+    assert result['reward_time'] is None
+
+
+@patch('timekeeper.db.timer_repo.randomize_reward_generation', Mock(return_value=True))
+def test_starting_not_rewarded_timer_without_reward(test_db):
+    user_id = create_user_and_return_id()
+    id = create_timer("Test", user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/timers/{id}/instances", headers=headers)
+    assert response.status_code == 200
+    result = response.json()
+    assert result['reward_time'] is None
