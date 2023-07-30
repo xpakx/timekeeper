@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User
+from timekeeper.db.models import User, Points
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 
@@ -169,3 +169,20 @@ def test_authentication(test_db):
     result = response.json()
     assert result['username'] == "User"
     assert result['token'] is not None
+
+
+def test_creating_user_points(test_db):
+    client.post("/users/register",
+                json={
+                    "username": "User1",
+                    "password": "password",
+                    "repeated_password": "password"
+                    }
+                )
+    db = TestingSessionLocal()
+    user = db.query(User).where(User.username == "User1").first()
+    points = db.query(Points).all()
+    db.close()
+    assert len(points) == 1
+    assert points[0].points == 0
+    assert points[0].user_id == user.id
