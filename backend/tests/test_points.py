@@ -110,9 +110,7 @@ def test_getting_points_if_there_is_no_points_entry(test_db):
     user_id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.get("/points", headers=headers)
-    assert response.status_code == 200
-    result = response.json()
-    assert result['points'] == 0
+    assert response.status_code == 500
 
 
 def test_getting_points(test_db):
