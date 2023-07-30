@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 router = APIRouter(prefix="/points")
 
 
-@router.get("/", response_model=list[point_schemas.PointsResponse])
+@router.get("/", response_model=point_schemas.PointsResponse)
 async def get_points(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
