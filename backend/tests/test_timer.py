@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Timer, TimerInstance, TimerState
+from timekeeper.db.models import User, Timer, TimerInstance, TimerState, Item, ItemRarity
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from sqlalchemy.sql import func
@@ -143,6 +143,24 @@ def create_timer_instance_with_reward(user_id: int, timer_id: int) -> int:
     db.refresh(new_timer)
     db.close()
     return new_timer.id
+
+
+def create_item(id: int, db):
+    item = Item(
+            num=id,
+            name=f"Item {id}",
+            description="",
+            rarity=ItemRarity.common
+            )
+    db.add(item)
+
+
+def add_items():
+    db = TestingSessionLocal()
+    for i in range(1, 21):
+        create_item(i, db)
+    db.commit()
+    db.close()
 
 
 def get_token() -> str:
@@ -1115,3 +1133,13 @@ def test_getting_reward_without_data_in_db(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.get(f"/timers/instances/{id}/reward", headers=headers)
     assert response.status_code == 500
+
+
+def test_getting_reward(test_db):
+    add_items()
+    user_id = create_user_and_return_id()
+    timer_id = create_timer_with_reward("Test", user_id)
+    id = create_timer_instance_with_reward(user_id, timer_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/timers/instances/{id}/reward", headers=headers)
+    assert response.status_code == 200
