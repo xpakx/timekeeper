@@ -244,3 +244,34 @@ def test_getting_equipment_with_default_values(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result) == 20
+
+
+# getting crystals
+def test_getting_crytals_without_authentication(test_db):
+    response = client.get("/heroes/crystals")
+    assert response.status_code == 401
+
+
+def test_getting_crytals_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/heroes/crystals", headers=headers)
+    assert response.status_code == 401
+
+
+def test_getting_crytals_if_there_is_no_entry(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/heroes/crystals", headers=headers)
+    assert response.status_code == 200
+    result = response.json()
+    assert result['crystals'] == 0
+
+
+def test_getting_crystals(test_db):
+    user_id = create_user_and_return_id()
+    create_equipment_item(create_crystal(), user_id, 12)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/heroes/crystals", headers=headers)
+    assert response.status_code == 200
+    result = response.json()
+    assert result['crystals'] == 12
