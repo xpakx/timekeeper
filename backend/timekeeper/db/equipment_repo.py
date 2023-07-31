@@ -29,7 +29,8 @@ def get_items(page: int, size: int, user_id: int, db: Session):
     return db\
         .query(EquipmentEntry)\
         .where(
-                    and_(EquipmentEntry.owner_id == user_id)
+                    and_(EquipmentEntry.owner_id == user_id,
+                         EquipmentEntry.amount > 0)
                     )\
         .offset(offset)\
         .limit(size)\
