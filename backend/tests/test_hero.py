@@ -126,6 +126,24 @@ def create_user_hero(hero_id: int, user_id: int):
     db.close()
 
 
+def create_hero_(id: int, db):
+    item = Hero(
+            num=id,
+            name=f"Hero {id}",
+            description="",
+            rarity=ItemRarity.uncommon
+            )
+    db.add(item)
+
+
+def create_heroes():
+    db = TestingSessionLocal()
+    for i in range(1, 21):
+        create_hero_(i, db)
+    db.commit()
+    db.close()
+
+
 def get_token() -> str:
     return get_token_for(1)
 
@@ -275,3 +293,41 @@ def test_getting_crystals(test_db):
     assert response.status_code == 200
     result = response.json()
     assert result['crystals'] == 12
+
+
+# hero randomization
+
+def test_getting_hero_without_authentication(test_db):
+    response = client.get("/heroes/reward")
+    assert response.status_code == 401
+
+
+def test_getting_hero_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/heroes/reward", headers=headers)
+    assert response.status_code == 401
+
+
+def test_getting_hero_if_no_crystals(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/heroes/reward", headers=headers)
+    assert response.status_code == 400
+
+
+def test_getting_hero(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    create_equipment_item(create_crystal(), user_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/heroes/reward", headers=headers)
+    assert response.status_code == 200
+
+
+def test_getting_hero_without_data_in_db(test_db):
+    user_id = create_user_and_return_id()
+    create_equipment_item(create_crystal(), user_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/heroes/reward", headers=headers)
+    assert response.status_code == 500
