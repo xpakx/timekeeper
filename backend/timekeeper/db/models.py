@@ -127,3 +127,18 @@ class UserHero(Base):
     hero = relationship("Hero")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
+
+
+class Battle(Base):
+    __tablename__ = "battles"
+    id = Column(Integer, primary_key=True, index=True)
+    turn = Column(Integer)
+    player_turn = Column(Boolean)
+    hero_hp = Column(Integer)
+    enemy_hp = Column(Integer)
+    hero_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero = relationship("UserHero")
+    enemy_id = Column(Integer, ForeignKey("heroes.id"))
+    enemy = relationship("Hero")
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User")
