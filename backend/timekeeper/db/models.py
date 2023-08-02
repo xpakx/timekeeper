@@ -123,6 +123,9 @@ class UserHero(Base):
     defense = Column(Integer)
     speed = Column(Integer)
     special = Column(Integer)
+    incubated = Column(Boolean)
+    damage = Column(Integer)
+    experience = Column(Integer)
     hero_id = Column(Integer, ForeignKey("heroes.id"))
     hero = relationship("Hero")
     owner_id = Column(Integer, ForeignKey("users.id"))
@@ -137,8 +140,20 @@ class Battle(Base):
     hero_hp = Column(Integer)
     enemy_hp = Column(Integer)
     hero_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero = relationship("UserHero", primaryjoin="UserHero.id==Battle.hero_id")
+    enemy_id = Column(Integer, ForeignKey("user_heroes.id"))
+    enemy = relationship("UserHero", primaryjoin="UserHero.id==Battle.enemy_id")
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User")
+
+
+class Incubator(Base):
+    __tablename__ = "incubators"
+    id = Column(Integer, primary_key=True, index=True)
+    permanent = Column(Boolean)
+    broken = Column(Boolean)
+    initial_points = Column(Integer)
+    hero_id = Column(Integer, ForeignKey("user_heroes.id"))
     hero = relationship("UserHero")
-    enemy_id = Column(Integer, ForeignKey("heroes.id"))
-    enemy = relationship("Hero")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
