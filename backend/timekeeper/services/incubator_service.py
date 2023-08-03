@@ -16,7 +16,7 @@ def install_incubator(user_id: int, db: Session):
 
 
 def get_incubators(user_id: int, db: Session):
-    pass
+    incubator_repo.get_incubators(user_id, db)
 
 
 def insert_hero(user_id: int, hero_id: int, incubator_id: int, db: Session):
@@ -34,7 +34,7 @@ def delete_incubator(user_id: int, incubator_id: int, db: Session):
 def not_incubators_exception():
     return HTTPException(
         status_code=400,
-        detail="Not incubators!",
+        detail="No incubators!",
     )
 
 
