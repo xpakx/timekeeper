@@ -1,4 +1,3 @@
-
 from .models import Hero
 from sqlalchemy.orm import Session
 import random
