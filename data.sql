@@ -5,7 +5,7 @@ insert into items (num, name, description, rarity) values
 (4, 'Test 4', 'fourth test item', 'common'),
 (5, 'Test 5', 'fifth test item', 'common'),
 (6, 'Crystal', 'crystal for summoning heroes', 'uncommon'),
-(7, 'Test 7', 'seventh test item', 'uncommon'),
+(7, 'Incubator', 'machine that helps heroes gain experience', 'uncommon'),
 (8, 'Test 8', 'eighth test item', 'uncommon'),
 (9, 'Test 9', 'ninth test item', 'uncommon'),
 (10, 'Test 10', 'tenth test item', 'uncommon'),
