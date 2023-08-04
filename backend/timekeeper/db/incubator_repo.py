@@ -48,7 +48,8 @@ def get_incubator(user_id: int, hero_id: int, db: Session) -> Optional[Incubator
         .where(
                     and_(
                         Incubator.owner_id == user_id,
-                        Incubator.id == hero_id
+                        Incubator.id == hero_id,
+                        Incubator.broken == false()
                         )
                     )\
         .first()
