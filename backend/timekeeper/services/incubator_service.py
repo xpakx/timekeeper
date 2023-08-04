@@ -38,7 +38,21 @@ def insert_hero(user_id: int, hero_id: int, incubator_id: int, db: Session):
 
 
 def get_hero(user_id: int, incubator_id: int, db: Session):
-    pass
+    incubator = incubator_repo.get_incubator(user_id, incubator_id, db)
+    if not incubator:
+        raise no_such_incubator_exception()
+    if incubator.hero is not None:
+        raise incubator_empty_exception()
+    hero = incubator.hero
+    points_obj = point_repo.get_points(user_id, db)
+    points = points_obj.points if points_obj else 0
+    exp = hero.experience + points - incubator.initial_points
+    hero.incubated = False
+    hero.experience = exp
+    incubator.hero = None
+    incubator.initial_points = 0
+    incubator.broken = True  # TODO: multiple usages?
+    db.commit()
 
 
 def delete_incubator(user_id: int, incubator_id: int, db: Session):
@@ -78,6 +92,15 @@ def incubator_full_exception():
         status_code=400,
         detail="Incubator is full!",
     )
+
+
+def incubator_empty_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Incubator is empty!",
+    )
+
+
 
 
 def hero_not_available_exception():
