@@ -56,7 +56,13 @@ def get_hero(user_id: int, incubator_id: int, db: Session):
 
 
 def delete_incubator(user_id: int, incubator_id: int, db: Session):
-    pass
+    incubator = incubator_repo.get_incubator(user_id, incubator_id, db)
+    if not incubator:
+        raise no_such_incubator_exception()
+    if incubator.hero is not None:
+        raise incubator_full_exception()
+    incubator.broken = True
+    db.commit()
 
 
 def not_incubators_exception():
