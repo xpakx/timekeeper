@@ -2,6 +2,7 @@ from .models import UserHero
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 import random
+from typing import Optional
 
 
 def create_entry(hero_id, user_id, db: Session):
@@ -26,3 +27,15 @@ def get_heroes(page: int, size: int, user_id: int, db: Session):
         .offset(offset)\
         .limit(size)\
         .all()
+
+
+def get_hero(user_id: int, hero_id: int, db: Session) -> Optional[UserHero]:
+    return db\
+        .query(UserHero)\
+        .where(
+                    and_(
+                        UserHero.owner_id == user_id,
+                        UserHero.id == hero_id
+                        )
+                    )\
+        .first()

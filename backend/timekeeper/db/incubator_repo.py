@@ -2,6 +2,7 @@ from .models import Incubator
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import false
 from sqlalchemy.orm import Session
+from typing import Optional
 
 INCUBATOR = 7
 
@@ -39,3 +40,15 @@ def get_incubators(user_id: int, db: Session):
                         )
                     )\
         .all()
+
+
+def get_incubator(user_id: int, hero_id: int, db: Session) -> Optional[Incubator]:
+    return db\
+        .query(Incubator)\
+        .where(
+                    and_(
+                        Incubator.owner_id == user_id,
+                        Incubator.id == hero_id
+                        )
+                    )\
+        .first()
