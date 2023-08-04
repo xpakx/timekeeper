@@ -24,6 +24,7 @@ def install_incubator(incubator_id: int, user_id: int, db: Session) -> Incubator
             owner_id=user_id,
             broken=False,
             permanent=False,
+            usages=5
             )
     db.add(entry)
     db.refresh(entry)

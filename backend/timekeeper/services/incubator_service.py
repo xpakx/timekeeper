@@ -12,6 +12,7 @@ def install_incubator(user_id: int, db: Session):
         raise too_many_incubators_exceotion()
     incubator = incubator_repo.install_incubator(INCUBATOR, user_id, db)
     db.commit()
+    db.refresh(incubator)
     return incubator
 
 
@@ -35,6 +36,8 @@ def insert_hero(user_id: int, hero_id: int, incubator_id: int, db: Session):
     incubator.hero_id = hero.id
     incubator.initial_points = points.points if points else 0
     db.commit()
+    db.refresh(incubator)
+    return incubator
 
 
 def get_hero(user_id: int, incubator_id: int, db: Session):
@@ -51,8 +54,12 @@ def get_hero(user_id: int, incubator_id: int, db: Session):
     hero.experience = exp
     incubator.hero = None
     incubator.initial_points = 0
-    incubator.broken = True  # TODO: multiple usages?
+    incubator.usages = incubator.usages - 1
+    if incubator.usages <= 0:
+        incubator.broken = True
     db.commit()
+    db.refresh(hero)
+    return hero
 
 
 def delete_incubator(user_id: int, incubator_id: int, db: Session):

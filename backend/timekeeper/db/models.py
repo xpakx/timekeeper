@@ -153,6 +153,7 @@ class Incubator(Base):
     permanent = Column(Boolean)
     broken = Column(Boolean)
     initial_points = Column(Integer)
+    usages = Column(Integer)
     hero_id = Column(Integer, ForeignKey("user_heroes.id"))
     hero = relationship("UserHero")
     owner_id = Column(Integer, ForeignKey("users.id"))
