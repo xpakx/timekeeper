@@ -23,6 +23,8 @@ def insert_hero(user_id: int, hero_id: int, incubator_id: int, db: Session):
     hero = user_hero_repo.get_hero(user_id, hero_id, db)
     if not hero:
         raise no_such_hero_exception()
+    if hero.incubated:
+        raise hero_not_available_exception()
     incubator = incubator_repo.get_incubator(user_id, incubator_id, db)
     if not incubator:
         raise no_such_incubator_exception()
@@ -75,4 +77,11 @@ def incubator_full_exception():
     return HTTPException(
         status_code=400,
         detail="Incubator is full!",
+    )
+
+
+def hero_not_available_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Hero unavailable!",
     )
