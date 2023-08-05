@@ -19,10 +19,11 @@ async def get_heroes(
 
 @router.post("/", response_model=list[incubator_schemas.IncubatorBase])
 async def install_incubator(
+        request: incubator_schemas.InstallRequest,
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return incubator_service.install_incubator(user.id, db)
+    return incubator_service.install_incubator(user.id, request.item_id, db)
 
 
 @router.post("/{incubator_id}", response_model=list[incubator_schemas.IncubatorBase])

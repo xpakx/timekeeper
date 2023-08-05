@@ -14,7 +14,7 @@ insert into items (num, name, description, rarity) values
 (13, 'Test 13', 'thirteenth test item', 'uncommon'),
 (14, 'Test 14', 'fourteenth test item', 'uncommon'),
 (15, 'Test 15', 'fifteenth test item', 'uncommon'),
-(16, 'Test 16', 'sixteenth test item', 'rare'),
+(16, 'Super Incubator', 'more durable machine that helps heroes gain experience', 'rare'),
 (17, 'Test 17', 'seventeenth test item', 'rare'),
 (18, 'Test 18', 'eighteenth test item', 'rare'),
 (19, 'Test 19', 'ninteenth test item', 'rare'),

@@ -3,14 +3,18 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 INCUBATOR = 7
+SUPER_INCUBATOR = 16
+incubators = [INCUBATOR, SUPER_INCUBATOR]
 
 
-def install_incubator(user_id: int, db: Session):
-    if not equipment_repo.subtract_items(INCUBATOR, 1, user_id, db):
+def install_incubator(user_id: int, item_id: int, db: Session):
+    if item_id not in incubators:
+        raise not_an_incubator_exception()
+    if not equipment_repo.subtract_items(item_id, 1, user_id, db):
         raise not_incubators_exception()
     if incubator_repo.get_installed(user_id, db) > 5:
         raise too_many_incubators_exceotion()
-    incubator = incubator_repo.install_incubator(INCUBATOR, user_id, db)
+    incubator = incubator_repo.install_incubator(item_id, user_id, db)
     db.commit()
     db.refresh(incubator)
     return incubator
@@ -114,10 +118,15 @@ def incubator_empty_exception():
     )
 
 
-
-
 def hero_not_available_exception():
     return HTTPException(
         status_code=400,
         detail="Hero unavailable!",
+    )
+
+
+def not_an_incubator_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Given item is not an incubator!",
     )

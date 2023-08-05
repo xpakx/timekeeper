@@ -18,3 +18,10 @@ class IncubationRequest(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class InstallRequest(BaseModel):
+    item_id: int
+
+    class Config:
+        orm_mode = True

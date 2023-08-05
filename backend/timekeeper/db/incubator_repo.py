@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 INCUBATOR = 7
+SUPER_INCUBATOR = 16
 
 
 def get_installed(user_id: int, db: Session) -> int:
@@ -24,7 +25,7 @@ def install_incubator(incubator_id: int, user_id: int, db: Session) -> Incubator
             owner_id=user_id,
             broken=False,
             permanent=False,
-            usages=5
+            usages=5 if incubator_id == INCUBATOR else 10
             )
     db.add(entry)
     db.refresh(entry)
