@@ -39,7 +39,9 @@ def change_state(timer_id: int,
     if timer.rewarded and request.state == TimerState.finished:
         reward = get_random_reward_for_difficulty(timer.difficulty)
         point_repo.add_points(reward, user_id, db)
-        return timer_schemas.StateChangeResponse(state=request.state, points=reward)
+        return timer_schemas.StateChangeResponse(
+                state=request.state,
+                points=reward)
     return timer_schemas.StateChangeResponse(state=request.state, points=0)
 
 
@@ -66,5 +68,10 @@ def get_history(page: int, size: int, user_id: int, db: Session):
     return timer_repo.get_history(page, size, user_id, db)
 
 
-def get_timer_history(page: int, size: int, user_id: int, timer_id: int, db: Session):
+def get_timer_history(
+        page: int,
+        size: int,
+        user_id: int,
+        timer_id: int,
+        db: Session):
     return timer_repo.get_timer_history(page, size, user_id, timer_id, db)

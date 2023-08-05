@@ -44,7 +44,10 @@ def register(
 
 def refresh(request, db: Session) -> Optional[user_schemas.AuthResponse]:
     try:
-        claims = jwt.decode(request.refresh_token, SECRET, algorithms=["HS256"])
+        claims = jwt.decode(
+                request.refresh_token,
+                SECRET,
+                algorithms=["HS256"])
         user = user_repo.get_user_by_id(int(claims.get('id')), db)
         if user:
             token = create_token({"sub": user.username, "id": user.id})

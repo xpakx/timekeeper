@@ -20,7 +20,10 @@ def get_installed(user_id: int, db: Session) -> int:
         .count()
 
 
-def install_incubator(incubator_id: int, user_id: int, db: Session) -> Incubator:
+def install_incubator(
+        incubator_id: int,
+        user_id: int,
+        db: Session) -> Incubator:
     entry = Incubator(
             owner_id=user_id,
             broken=False,
@@ -44,7 +47,10 @@ def get_incubators(user_id: int, db: Session):
         .all()
 
 
-def get_incubator(user_id: int, hero_id: int, db: Session) -> Optional[Incubator]:
+def get_incubator(
+        user_id: int,
+        hero_id: int,
+        db: Session) -> Optional[Incubator]:
     return db\
         .query(Incubator)\
         .where(

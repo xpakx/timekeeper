@@ -1,4 +1,11 @@
-from sqlalchemy import Column, Integer, String, DateTime, Time, Enum, ForeignKey, Boolean
+from sqlalchemy import (
+        Column,
+        Integer,
+        String,
+        DateTime,
+        Enum,
+        ForeignKey,
+        Boolean)
 from sqlalchemy.orm import relationship
 from .base import Base
 import enum
@@ -142,7 +149,9 @@ class Battle(Base):
     hero_id = Column(Integer, ForeignKey("user_heroes.id"))
     hero = relationship("UserHero", primaryjoin="UserHero.id==Battle.hero_id")
     enemy_id = Column(Integer, ForeignKey("user_heroes.id"))
-    enemy = relationship("UserHero", primaryjoin="UserHero.id==Battle.enemy_id")
+    enemy = relationship(
+            "UserHero",
+            primaryjoin="UserHero.id==Battle.enemy_id")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
 

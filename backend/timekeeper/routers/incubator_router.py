@@ -26,17 +26,25 @@ async def install_incubator(
     return incubator_service.install_incubator(user.id, request.item_id, db)
 
 
-@router.post("/{incubator_id}", response_model=list[incubator_schemas.IncubatorBase])
+@router.post(
+        "/{incubator_id}",
+        response_model=list[incubator_schemas.IncubatorBase])
 async def insert_hero(
         incubator_id: int,
         request: incubator_schemas.IncubationRequest,
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return incubator_service.insert_hero(user.id, request.hero_id, incubator_id, db)
+    return incubator_service.insert_hero(
+            user.id,
+            request.hero_id,
+            incubator_id,
+            db)
 
 
-@router.post("/{incubator_id}/hero", response_model=list[hero_schemas.UserHeroBase])
+@router.post(
+        "/{incubator_id}/hero",
+        response_model=list[hero_schemas.UserHeroBase])
 async def get_hero(
         incubator_id: int,
         user: Annotated[CurrentUser, Depends(get_current_user)],

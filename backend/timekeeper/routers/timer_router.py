@@ -67,7 +67,9 @@ async def edit_timer(
     return timer_service.edit_timer(id, timer, user.id, db)
 
 
-@router.post("/instances/{id}/state", response_model=timer_schemas.StateChangeResponse)
+@router.post(
+        "/instances/{id}/state",
+        response_model=timer_schemas.StateChangeResponse)
 async def change_timer_state(
         id: int,
         request: timer_schemas.StateRequest,
