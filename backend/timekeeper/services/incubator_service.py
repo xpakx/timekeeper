@@ -21,7 +21,7 @@ def install_incubator(user_id: int, item_id: int, db: Session):
 
 
 def get_incubators(user_id: int, db: Session):
-    incubator_repo.get_incubators(user_id, db)
+    return incubator_repo.get_incubators(user_id, db)
 
 
 def insert_hero(user_id: int, hero_id: int, incubator_id: int, db: Session):
