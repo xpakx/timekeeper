@@ -6,7 +6,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Item, ItemRarity, EquipmentEntry, Incubator
+from timekeeper.db.models import (
+        User,
+        Item,
+        ItemRarity,
+        EquipmentEntry,
+        Incubator)
 from timekeeper.db.models import Hero, UserHero
 from timekeeper.services.incubator_service import INCUBATOR
 from bcrypt import hashpw, gensalt
@@ -127,7 +132,10 @@ def create_user_hero(hero_id: int, user_id: int):
     db.close()
 
 
-def create_incubator(user_id: int, hero_id: Optional[int] = None, broken: bool = False):
+def create_incubator(
+        user_id: int,
+        hero_id: Optional[int] = None,
+        broken: bool = False):
     db = TestingSessionLocal()
     item = Incubator(
             hero_id=hero_id,
@@ -190,6 +198,7 @@ def test_getting_users_incubators_with_hero(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result) == 1
+    print(result)
     assert result[0]['hero']['name'] == "Hero"
 
 
@@ -198,6 +207,19 @@ def test_not_getting_other_users_incubators(test_db):
     other = create_user_with_username("User2")
     create_incubator(id)
     create_incubator(other)
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.get("/incubators/",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result) == 1
+
+
+def test_not_getting_broken_incubators(test_db):
+    id = create_user_and_return_id()
+    create_incubator(id)
+    create_incubator(id, broken=True)
     headers = {"Authorization": f"Bearer {get_token_for(id)}"}
     response = client.get("/incubators/",
                           headers=headers
