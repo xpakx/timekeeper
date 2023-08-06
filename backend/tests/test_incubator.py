@@ -121,7 +121,7 @@ def create_hero(id: int, name: str) -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int):
+def create_user_hero(hero_id: int, user_id: int) -> int:
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
@@ -129,7 +129,9 @@ def create_user_hero(hero_id: int, user_id: int):
             )
     db.add(item)
     db.commit()
+    db.refresh(item)
     db.close()
+    return item.id
 
 
 def create_incubator(
@@ -199,7 +201,7 @@ def test_getting_users_incubators_with_hero(test_db):
     result = response.json()
     assert len(result) == 1
     print(result)
-    assert result[0]['hero']['name'] == "Hero"
+    assert result[0]['hero']['hero']['name'] == "Hero"
 
 
 def test_not_getting_other_users_incubators(test_db):
