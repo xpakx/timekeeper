@@ -1,12 +1,13 @@
 from pydantic import BaseModel
 from .hero_schemas import UserHeroBase
+from typing import Optional
 
 
 class IncubatorBase(BaseModel):
     id: int
-    hero: UserHeroBase
+    hero: Optional[UserHeroBase]
     permanent: bool
-    initial_points: int
+    initial_points: Optional[int]
     usages: int
 
     class Config:
