@@ -13,7 +13,9 @@ from timekeeper.db.models import (
         EquipmentEntry,
         Incubator)
 from timekeeper.db.models import Hero, UserHero
-from timekeeper.services.incubator_service import INCUBATOR
+from timekeeper.services.incubator_service import (
+        INCUBATOR,
+        SUPER_INCUBATOR)
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from typing import Optional
@@ -291,7 +293,8 @@ def test_installing_too_much_incubators(test_db):
     assert response.status_code == 400
 
 
-def test_not_counting_broken_incubators_to_limit_while_installing_new_one(test_db):
+def test_not_counting_broken_incubators_to_limit_while_installing_new_one(
+        test_db):
     id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(id)}"}
     create_equipment_item(create_item(INCUBATOR), id, 1)
@@ -305,3 +308,39 @@ def test_not_counting_broken_incubators_to_limit_while_installing_new_one(test_d
                                }
                            )
     assert response.status_code == 200
+
+
+def test_installing_normal_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    create_equipment_item(create_item(INCUBATOR), id, 1)
+    create_item(SUPER_INCUBATOR)
+    response = client.post("/incubators/",
+                           headers=headers,
+                           json={
+                               "item_id": INCUBATOR
+                               }
+                           )
+    assert response.status_code == 200
+    result = response.json()
+    assert result['usages'] == 5
+    assert result['hero'] is None
+    assert result['permanent'] is False
+
+
+def test_installing_super_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    create_item(INCUBATOR)
+    create_equipment_item(create_item(SUPER_INCUBATOR), id, 1)
+    response = client.post("/incubators/",
+                           headers=headers,
+                           json={
+                               "item_id": SUPER_INCUBATOR
+                               }
+                           )
+    assert response.status_code == 200
+    result = response.json()
+    assert result['usages'] == 10
+    assert result['hero'] is None
+    assert result['permanent'] is False
