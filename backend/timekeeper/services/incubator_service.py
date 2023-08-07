@@ -12,7 +12,7 @@ def install_incubator(user_id: int, item_id: int, db: Session):
         raise not_an_incubator_exception()
     if not equipment_repo.subtract_items(item_id, 1, user_id, db):
         raise not_incubators_exception()
-    if incubator_repo.get_installed(user_id, db) > 5:
+    if incubator_repo.get_installed(user_id, db) >= 5:
         raise too_many_incubators_exceotion()
     incubator = incubator_repo.install_incubator(item_id, user_id, db)
     db.commit()
