@@ -18,6 +18,8 @@ from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from typing import Optional
 
+NOT_INCUBATOR = 1
+
 url = URL.create(
         "postgresql",
         "root",
@@ -229,3 +231,47 @@ def test_not_getting_broken_incubators(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result) == 1
+
+
+# installing incubator
+        # request: incubator_schemas.InstallRequest,
+def test_installing_incubator_without_authentication(test_db):
+    response = client.post("/incubators/")
+    assert response.status_code == 401
+
+
+def test_installing_incubator_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/incubators/",
+                           headers=headers,
+                           json={
+                               "item_id": INCUBATOR
+                               }
+                           )
+    assert response.status_code == 401
+
+
+def test_installing_incubator_with_bad_item(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    create_equipment_item(create_item(NOT_INCUBATOR), id, 1)
+    response = client.post("/incubators/",
+                           headers=headers,
+                           json={
+                               "item_id": NOT_INCUBATOR
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_installing_incubator_without_item_in_equipment(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    create_item(INCUBATOR)
+    response = client.post("/incubators/",
+                           headers=headers,
+                           json={
+                               "item_id": INCUBATOR
+                               }
+                           )
+    assert response.status_code == 400
