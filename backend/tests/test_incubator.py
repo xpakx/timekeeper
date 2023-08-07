@@ -234,7 +234,6 @@ def test_not_getting_broken_incubators(test_db):
 
 
 # installing incubator
-        # request: incubator_schemas.InstallRequest,
 def test_installing_incubator_without_authentication(test_db):
     response = client.post("/incubators/")
     assert response.status_code == 401
@@ -275,3 +274,34 @@ def test_installing_incubator_without_item_in_equipment(test_db):
                                }
                            )
     assert response.status_code == 400
+
+
+def test_installing_too_much_incubators(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    create_equipment_item(create_item(INCUBATOR), id, 1)
+    for i in range(0, 5):
+        create_incubator(id)
+    response = client.post("/incubators/",
+                           headers=headers,
+                           json={
+                               "item_id": INCUBATOR
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_not_counting_broken_incubators_to_limit_while_installing_new_one(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    create_equipment_item(create_item(INCUBATOR), id, 1)
+    for i in range(0, 4):
+        create_incubator(id)
+    create_incubator(id, broken=True)
+    response = client.post("/incubators/",
+                           headers=headers,
+                           json={
+                               "item_id": INCUBATOR
+                               }
+                           )
+    assert response.status_code == 200
