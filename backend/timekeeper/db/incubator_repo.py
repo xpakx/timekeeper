@@ -13,7 +13,7 @@ def get_installed(user_id: int, db: Session) -> int:
         .query(Incubator)\
         .where(
                 and_(
-                  Incubator.user_id == user_id,
+                  Incubator.owner_id == user_id,
                   Incubator.broken == false()
                   )
             )\
