@@ -31,7 +31,6 @@ def install_incubator(
             usages=5 if incubator_id == INCUBATOR else 10
             )
     db.add(entry)
-    db.refresh(entry)
     return entry
 
 
