@@ -125,11 +125,12 @@ def create_hero(id: int, name: str) -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int) -> int:
+def create_user_hero(hero_id: int, user_id: int, incubated: bool = False) -> int:
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
+            incubated=incubated
             )
     db.add(item)
     db.commit()
@@ -152,7 +153,9 @@ def create_incubator(
             )
     db.add(item)
     db.commit()
+    db.refresh(item)
     db.close()
+    return item.id
 
 
 def get_token() -> str:
@@ -344,3 +347,47 @@ def test_installing_super_incubator(test_db):
     assert result['usages'] == 10
     assert result['hero'] is None
     assert result['permanent'] is False
+
+
+# hero incubation
+def test_incubating_hero_without_authentication(test_db):
+    response = client.post("/incubators/1")
+    assert response.status_code == 401
+
+
+def test_incubating_hero_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/incubators/1",
+                           headers=headers,
+                           json={
+                               "hero_id": 1
+                               }
+                           )
+    assert response.status_code == 401
+
+
+def test_incubating_nonexistent_hero(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id)
+    response = client.post(f"/incubators/{incubator_id}",
+                           headers=headers,
+                           json={
+                               "hero_id": 1
+                               }
+                           )
+    assert response.status_code == 404
+
+
+def test_incubating_incubated_hero(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id)
+    hero_id = create_user_hero(id, create_hero(1, "Hero"), incubated=True)
+    response = client.post(f"/incubators/{incubator_id}",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id
+                               }
+                           )
+    assert response.status_code == 400
