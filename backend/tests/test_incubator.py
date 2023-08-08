@@ -419,3 +419,17 @@ def test_incubating_hero_in_full_incubator(test_db):
                                }
                            )
     assert response.status_code == 400
+
+
+def test_incubating_hero_in_broken_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id, broken=True)
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    response = client.post(f"/incubators/{incubator_id}",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id
+                               }
+                           )
+    assert response.status_code == 404
