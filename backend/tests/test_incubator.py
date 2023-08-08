@@ -383,7 +383,35 @@ def test_incubating_incubated_hero(test_db):
     id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(id)}"}
     incubator_id = create_incubator(id)
-    hero_id = create_user_hero(id, create_hero(1, "Hero"), incubated=True)
+    hero_id = create_user_hero(create_hero(1, "Hero"), id, incubated=True)
+    response = client.post(f"/incubators/{incubator_id}",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_incubating_hero_in_nonexistent_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    response = client.post("/incubators/1",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id
+                               }
+                           )
+    assert response.status_code == 404
+
+
+def test_incubating_hero_in_full_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    inc_hero_id = create_user_hero(create_hero(2, "Incubated Hero"), id)
+    incubator_id = create_incubator(id, hero_id=inc_hero_id)
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
     response = client.post(f"/incubators/{incubator_id}",
                            headers=headers,
                            json={
