@@ -433,3 +433,30 @@ def test_incubating_hero_in_broken_incubator(test_db):
                                }
                            )
     assert response.status_code == 404
+
+
+# get hero
+def test_getting_hero_without_authentication(test_db):
+    response = client.post("/incubators/1/hero")
+    assert response.status_code == 401
+
+
+def test_getting_hero_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/incubators/1/hero", headers=headers)
+    assert response.status_code == 401
+
+
+def test_getting_hero_from_nonexistent_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.post("/incubators/1/hero", headers=headers)
+    assert response.status_code == 404
+
+
+def test_getting_hero_from_broken_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id, broken=True)
+    response = client.post(f"/incubators/{incubator_id}/hero", headers=headers)
+    assert response.status_code == 404
