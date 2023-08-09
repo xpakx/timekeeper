@@ -460,3 +460,11 @@ def test_getting_hero_from_broken_incubator(test_db):
     incubator_id = create_incubator(id, broken=True)
     response = client.post(f"/incubators/{incubator_id}/hero", headers=headers)
     assert response.status_code == 404
+
+
+def test_getting_hero_from_empty_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id)
+    response = client.post(f"/incubators/{incubator_id}/hero", headers=headers)
+    assert response.status_code == 400
