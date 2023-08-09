@@ -48,7 +48,7 @@ def get_hero(user_id: int, incubator_id: int, db: Session):
     incubator = incubator_repo.get_incubator(user_id, incubator_id, db)
     if not incubator:
         raise no_such_incubator_exception()
-    if incubator.hero is not None:
+    if incubator.hero is None:
         raise incubator_empty_exception()
     hero = incubator.hero
     points_obj = point_repo.get_points(user_id, db)
