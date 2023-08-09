@@ -588,3 +588,51 @@ def test_making_incubator_broken(test_db):
     assert incubator is not None
     assert incubator.usages == 0
     assert incubator.broken is True
+
+
+# deleting incubator
+def test_deleting_incubator_without_authentication(test_db):
+    response = client.delete("/incubators/1")
+    assert response.status_code == 401
+
+
+def test_deleting_incubator_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.delete("/incubators/1", headers=headers)
+    assert response.status_code == 401
+
+
+def test_deleting_nonexistent_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    response = client.delete("/incubators/1", headers=headers)
+    assert response.status_code == 404
+
+
+def test_deleting_full_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    hero_id = create_user_hero(create_hero(2, "Incubated Hero"), id)
+    incubator_id = create_incubator(id, hero_id=hero_id)
+    response = client.delete(f"/incubators/{incubator_id}", headers=headers)
+    assert response.status_code == 400
+
+
+def test_deleting_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id)
+    response = client.delete(f"/incubators/{incubator_id}", headers=headers)
+    assert response.status_code == 200
+
+
+def test_updating_deleted_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id)
+    client.delete(f"/incubators/{incubator_id}", headers=headers)
+    db = TestingSessionLocal()
+    incubator = db.query(Incubator).where(Incubator.id == incubator_id).first()
+    db.close()
+    assert incubator is not None
+    assert incubator.broken is True
