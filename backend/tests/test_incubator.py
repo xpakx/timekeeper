@@ -451,6 +451,56 @@ def test_incubating_hero_in_broken_incubator(test_db):
     assert response.status_code == 404
 
 
+def test_incubating_hero_in_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id)
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    response = client.post(f"/incubators/{incubator_id}",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id
+                               }
+                           )
+    assert response.status_code == 200
+
+
+def test_updating_hero_while_incubating(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id)
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    client.post(f"/incubators/{incubator_id}",
+                headers=headers,
+                json={
+                    "hero_id": hero_id
+                    }
+                )
+    db = TestingSessionLocal()
+    hero = db.query(UserHero).where(UserHero.id == hero_id).first()
+    db.close()
+    assert hero is not None
+    assert hero.incubated is True
+
+
+def test_updating_incubator_while_incubating(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    incubator_id = create_incubator(id)
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    client.post(f"/incubators/{incubator_id}",
+                headers=headers,
+                json={
+                    "hero_id": hero_id
+                    }
+                )
+    db = TestingSessionLocal()
+    incubator = db.query(Incubator).where(Incubator.id == incubator_id).first()
+    db.close()
+    assert incubator is not None
+    assert incubator.hero_id == hero_id
+
+
 # get hero
 def test_getting_hero_without_authentication(test_db):
     response = client.post("/incubators/1/hero")
