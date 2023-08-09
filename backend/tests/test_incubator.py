@@ -11,7 +11,8 @@ from timekeeper.db.models import (
         Item,
         ItemRarity,
         EquipmentEntry,
-        Incubator)
+        Incubator,
+        Points)
 from timekeeper.db.models import Hero, UserHero
 from timekeeper.services.incubator_service import (
         INCUBATOR,
@@ -130,7 +131,8 @@ def create_user_hero(hero_id: int, user_id: int, incubated: bool = False) -> int
     item = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
-            incubated=incubated
+            incubated=incubated,
+            experience=0
             )
     db.add(item)
     db.commit()
@@ -142,20 +144,34 @@ def create_user_hero(hero_id: int, user_id: int, incubated: bool = False) -> int
 def create_incubator(
         user_id: int,
         hero_id: Optional[int] = None,
-        broken: bool = False):
+        broken: bool = False,
+        points: Optional[int] = None,
+        usages: int = 5):
     db = TestingSessionLocal()
     item = Incubator(
             hero_id=hero_id,
             owner_id=user_id,
             broken=broken,
-            usages=5,
-            permanent=False
+            usages=usages,
+            permanent=False,
+            initial_points=points
             )
     db.add(item)
     db.commit()
     db.refresh(item)
     db.close()
     return item.id
+
+
+def add_points_for_user(user_id: int, points: int):
+    db = TestingSessionLocal()
+    points_db = Points(
+            user_id=user_id,
+            points=points
+            )
+    db.add(points_db)
+    db.commit()
+    db.close()
 
 
 def get_token() -> str:
@@ -468,3 +484,57 @@ def test_getting_hero_from_empty_incubator(test_db):
     incubator_id = create_incubator(id)
     response = client.post(f"/incubators/{incubator_id}/hero", headers=headers)
     assert response.status_code == 400
+
+
+def test_getting_hero_from_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    incubator_id = create_incubator(id, hero_id=hero_id, points=0)
+    response = client.post(f"/incubators/{incubator_id}/hero", headers=headers)
+    assert response.status_code == 200
+
+
+def test_updating_hero(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    incubator_id = create_incubator(id, hero_id=hero_id, points=0)
+    add_points_for_user(id, 100)
+    client.post(f"/incubators/{incubator_id}/hero", headers=headers)
+    db = TestingSessionLocal()
+    hero = db.query(UserHero).where(UserHero.id == hero_id).first()
+    db.close()
+    assert hero is not None
+    assert hero.experience == 100
+    assert hero.incubated is False
+
+
+def test_updating_incubator(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    incubator_id = create_incubator(id, hero_id=hero_id, points=0, usages=5)
+    add_points_for_user(id, 100)
+    client.post(f"/incubators/{incubator_id}/hero", headers=headers)
+    db = TestingSessionLocal()
+    incubator = db.query(Incubator).where(Incubator.id == incubator_id).first()
+    db.close()
+    assert incubator is not None
+    assert incubator.hero_id is None
+    assert incubator.usages == 4
+
+
+def test_making_incubator_broken(test_db):
+    id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(id)}"}
+    hero_id = create_user_hero(create_hero(1, "Hero"), id)
+    incubator_id = create_incubator(id, hero_id=hero_id, points=0, usages=1)
+    add_points_for_user(id, 100)
+    client.post(f"/incubators/{incubator_id}/hero", headers=headers)
+    db = TestingSessionLocal()
+    incubator = db.query(Incubator).where(Incubator.id == incubator_id).first()
+    db.close()
+    assert incubator is not None
+    assert incubator.usages == 0
+    assert incubator.broken is True
