@@ -10,7 +10,7 @@ router = APIRouter(prefix="/incubators")
 
 
 @router.get("/", response_model=list[incubator_schemas.IncubatorBase])
-async def get_heroes(
+async def get_incubators(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
