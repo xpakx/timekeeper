@@ -29,6 +29,7 @@
             if (response.ok) {
                 let fromEndpoint = await response.json();
                 hero = fromEndpoint;
+                crystals = crystals - 1;
                 showHero = true;
             } else {
                 if (response.status == 401) {
@@ -84,11 +85,13 @@
 <button class="hero-btn" on:click={generateHero}>Get</button>
 <div class="crystals">
     {#if crystals}
-        {crystals}
+        {crystals} crystals
+    {:else}
+        No crystals
     {/if}
 </div>
 {#if showHero}
-   <HeroCard {hero} /> 
+    <HeroCard {hero} />
 {/if}
 
 <style></style>
