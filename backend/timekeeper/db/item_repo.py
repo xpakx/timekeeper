@@ -8,10 +8,10 @@ RARE = range(16, 21)
 
 
 def get_random_item(db: Session):
-    rnd = random.randint(0, 6)
-    if rnd < 3:
+    rnd = random.randint(0, 10)
+    if rnd < 6:
         rnd = random.choice(COMMON)
-    elif rnd < 5:
+    elif rnd < 9:
         rnd = random.choice(UNCOMMON)
     else:
         rnd = random.choice(RARE)
