@@ -104,6 +104,7 @@ class HeroType(enum.Enum):
     dark = "dark"
     light = "light"
     celestial = "celestial"
+    nature = "nature"
 
 
 class Hero(Base):
@@ -111,6 +112,7 @@ class Hero(Base):
     id = Column(Integer, primary_key=True, index=True)
     num = Column(Integer, nullable=False)
     name = Column(String)
+    title = Column(String)
     description = Column(String)
     base_hp = Column(Integer)
     base_attack = Column(Integer)
