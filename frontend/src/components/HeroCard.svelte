@@ -14,6 +14,7 @@
             #{hero.num}
         </div>
     </div>
+    <div class="hero-title">{hero.title}</div>
     <div class="hero-image">
         <img src="heroes/hero_{hero.num}.png" alt="" />
     </div>
