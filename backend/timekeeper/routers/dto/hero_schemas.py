@@ -5,6 +5,7 @@ from ...db.models import ItemRarity
 class HeroBase(BaseModel):
     id: int
     name: str
+    title: str
     num: int
     rarity: ItemRarity
 
