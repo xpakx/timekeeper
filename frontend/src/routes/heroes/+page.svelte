@@ -9,6 +9,7 @@
     import HeroCard from "../../components/HeroCard.svelte";
     import type { UserHero } from "../../types/UserHero";
     import type { Incubator } from "../../types/Incubator";
+    import CompactHeroCard from "../../components/CompactHeroCard.svelte";
     let apiUri = "http://localhost:8000";
     let message: String;
     let page: number = 0;
@@ -120,7 +121,7 @@
 
 {#if heroes && heroes.length > 0}
     {#each heroes as hero}
-        <HeroCard hero={hero.hero} />
+        <CompactHeroCard hero={hero} />
     {/each}
 {/if}
 
