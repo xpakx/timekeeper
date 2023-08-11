@@ -1,7 +1,52 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { getToken } from "../token-manager";
     import type { EquipmentEntry } from "../types/EquipmentEntry";
 
     export let item: EquipmentEntry;
+    const INCUBATOR = 7;
+    const SUPER_INCUBATOR = 16;
+    let apiUri = "http://localhost:8000";
+
+    async function installIncubator(id: number) {
+        if (id != INCUBATOR && id != SUPER_INCUBATOR) {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        let body = {
+            item_id: id,
+        };
+        try {
+            let response = await fetch(`${apiUri}/incubators`, {
+                method: "POST",
+                body: JSON.stringify(body),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                item.amount = item.amount - 1;
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                // TODO: send error msg to parent
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                // TODO: send error msg to parent
+            }
+        }
+    }
 </script>
 
 <div class="item-container {item.item.rarity}">
@@ -18,6 +63,14 @@
             #{item.item.num}
         </div>
     </div>
+
+    {#if item.item.num == INCUBATOR || item.item.num == SUPER_INCUBATOR}
+        <div class="actions">
+            <button on:click={() => installIncubator(item.item.num)}
+                >Install</button
+            >
+        </div>
+    {/if}
 </div>
 
 <style>
@@ -35,7 +88,6 @@
         display: flex;
         justify-content: space-between;
     }
-
 
     .item-name-container {
         display: flex;

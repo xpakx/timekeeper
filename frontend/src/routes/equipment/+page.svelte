@@ -11,6 +11,7 @@
     let apiUri = "http://localhost:8000";
     let message: String;
     let page: number = 0;
+
     getItems();
 
     let items: EquipmentEntry[];
