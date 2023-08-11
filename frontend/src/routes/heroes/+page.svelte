@@ -8,12 +8,15 @@
     } from "@fortawesome/free-solid-svg-icons";
     import HeroCard from "../../components/HeroCard.svelte";
     import type { UserHero } from "../../types/UserHero";
+    import type { Incubator } from "../../types/Incubator";
     let apiUri = "http://localhost:8000";
     let message: String;
     let page: number = 0;
     getHeroes();
+    getIncubators();
 
     let heroes: UserHero[];
+    let incubators: Incubator[];
 
     async function getHeroes(new_page: number = 0) {
         if (new_page < 0) {
@@ -54,6 +57,48 @@
             }
         }
     }
+
+    async function getIncubators(new_page: number = 0) {
+        if (new_page < 0) {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        try {
+            let response = await fetch(
+                `${apiUri}/incubators${
+                    new_page > 0 ? "?page=" + new_page : ""
+                }`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                page = new_page;
+                incubators = fromEndpoint;
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
+            }
+        }
+    }
 </script>
 
 <svelte:head>
@@ -61,6 +106,17 @@
 </svelte:head>
 
 <h2>Heroes</h2>
+
+{#if incubators && incubators.length > 0}
+    <h4>Incubators</h4>
+    {#each incubators as incubator}
+        {#if incubator.hero}
+            <HeroCard hero={incubator.hero.hero} />
+        {:else}
+            empty
+        {/if}
+    {/each}
+{/if}
 
 {#if heroes && heroes.length > 0}
     {#each heroes as hero}
