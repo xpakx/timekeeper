@@ -6,10 +6,10 @@
         faArrowLeft,
         faArrowRight,
     } from "@fortawesome/free-solid-svg-icons";
-    import HeroCard from "../../components/HeroCard.svelte";
     import type { UserHero } from "../../types/UserHero";
     import type { Incubator } from "../../types/Incubator";
     import CompactHeroCard from "../../components/CompactHeroCard.svelte";
+    import IncubatorCard from "../../components/IncubatorCard.svelte";
     let apiUri = "http://localhost:8000";
     let message: String;
     let page: number = 0;
@@ -110,18 +110,16 @@
 
 {#if incubators && incubators.length > 0}
     <h4>Incubators</h4>
-    {#each incubators as incubator}
-        {#if incubator.hero}
-            <HeroCard hero={incubator.hero.hero} />
-        {:else}
-            empty
-        {/if}
-    {/each}
+    <div class="incubators-container">
+        {#each incubators as incubator}
+            <IncubatorCard {incubator} />
+        {/each}
+    </div>
 {/if}
 
 {#if heroes && heroes.length > 0}
     {#each heroes as hero}
-        <CompactHeroCard hero={hero} />
+        <CompactHeroCard {hero} />
     {/each}
 {/if}
 
@@ -161,5 +159,9 @@
     button.btn-icon:disabled {
         background-color: #313244;
         color: #585b70;
+    }
+
+    .incubators-container {
+        display: flex;
     }
 </style>
