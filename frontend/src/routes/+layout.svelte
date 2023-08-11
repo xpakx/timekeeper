@@ -7,6 +7,7 @@
     faGift,
         faHistory,
         faHourglass,
+        faShield,
         faSignOut,
     } from "@fortawesome/free-solid-svg-icons";
 
@@ -22,6 +23,7 @@
         <a href="/history"><Fa icon={faHistory} /></a>
         <a href="/reward"><Fa icon={faGift} /></a>
         <a href="/equipment"><Fa icon={faBox} /></a>
+        <a href="/heroes"><Fa icon={faShield} /></a>
     </div>
     <div class="nav-component">
         <div class="user">
