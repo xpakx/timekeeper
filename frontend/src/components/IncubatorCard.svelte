@@ -74,7 +74,8 @@
 
             if (response.ok) {
                 // TODO: send event to parent
-                incubator.hero = hero;
+                let fromEndpoint = await response.json();
+                incubator.hero = fromEndpoint.hero;
             } else {
                 if (response.status == 401) {
                     goto("/logout");
