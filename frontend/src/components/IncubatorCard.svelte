@@ -8,7 +8,7 @@
     export let incubator: Incubator;
     export let hero: UserHero | undefined;
     let apiUri = "http://localhost:8000";
-	const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher();
 
     async function deleteIncubator() {
         if (!incubator) {
@@ -54,19 +54,20 @@
         if (!token || token == "") {
             return;
         }
-        
 
         let body = {
             hero_id: hero.id,
         };
+        console.log(body);
 
-		dispatch('endChoice');
+        dispatch("endChoice");
+        console.log(body);
         try {
             let response = await fetch(`${apiUri}/incubators/${incubator.id}`, {
                 method: "POST",
+                body: JSON.stringify(body),
                 headers: {
                     "Content-Type": "application/json",
-                    body: JSON.stringify(body),
                     Authorization: `Bearer ${token}`,
                 },
             });
@@ -74,7 +75,6 @@
             if (response.ok) {
                 // TODO: send event to parent
                 incubator.hero = hero;
-
             } else {
                 if (response.status == 401) {
                     goto("/logout");

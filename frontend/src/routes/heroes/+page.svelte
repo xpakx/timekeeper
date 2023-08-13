@@ -128,7 +128,7 @@
 
 {#if heroes && heroes.length > 0}
     {#each heroes as hero}
-        <CompactHeroCard {hero} />
+        <CompactHeroCard {hero} on:startChoice={() => startIncubatorChoice(hero)}/>
     {/each}
 {/if}
 

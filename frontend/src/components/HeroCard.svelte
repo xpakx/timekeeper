@@ -6,7 +6,7 @@
 
 <div class="hero-modal {hero.rarity}">
     <div class="hero-header">
-        <div class="spacer"></div>
+        <div class="spacer" />
         <div class="hero-name">
             {hero.name}
         </div>

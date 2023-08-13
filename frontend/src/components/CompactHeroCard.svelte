@@ -1,7 +1,13 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
     import type { UserHero } from "../types/UserHero";
 
     export let hero: UserHero;
+	const dispatch = createEventDispatcher();
+
+    function incubate() {
+		dispatch('startChoice');
+    }
 </script>
 
 <div class="hero-card {hero.hero.rarity}">
@@ -17,6 +23,7 @@
     <div class="hero-image">
         <img src="heroes/hero_{hero.hero.num}.png" alt="" />
     </div>
+    <button on:click={incubate}>Incubate</button>
 </div>
 
 <style>
