@@ -4,5 +4,5 @@ export type Incubator  = {
     id: number;
     usages: number;
     permanent: boolean;
-    hero: UserHero;
+    hero?: UserHero;
 }

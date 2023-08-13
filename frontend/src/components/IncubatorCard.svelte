@@ -89,6 +89,43 @@
             }
         }
     }
+
+    async function retrieve() {
+        if (!incubator || !incubator.hero) {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        try {
+            let response = await fetch(`${apiUri}/incubators/${incubator.id}/hero`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                // TODO: send event to parent
+                let fromEndpoint = await response.json();
+                incubator.hero = undefined;
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                // TODO: send error msg to parent
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                // TODO: send error msg to parent
+            }
+        }
+    }
 </script>
 
 <div class="incubator-card">
@@ -102,6 +139,7 @@
                 <img src="heroes/hero_{incubator.hero.hero.num}.png" alt="" />
             </div>
         </div>
+            <button on:click={retrieve}>Stop incubation</button>
     {:else}
         <div class="empty">Empty</div>
         <button on:click={deleteIncubator}>Delete</button>
