@@ -1,7 +1,45 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { getToken } from "../token-manager";
     import type { Incubator } from "../types/Incubator";
 
     export let incubator: Incubator;
+    let apiUri = "http://localhost:8000";
+
+    async function deleteIncubator() {
+        if (!incubator) {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        try {
+            let response = await fetch(`${apiUri}/incubators/${incubator.id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                // TODO: send delete event to parent
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                // TODO: send error msg to parent
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                // TODO: send error msg to parent
+            }
+        }
+    }
 </script>
 
 <div class="incubator-card">
@@ -17,6 +55,7 @@
         </div>
     {:else}
         <div class="empty">Empty</div>
+        <button on:click={deleteIncubator}>Delete</button>
     {/if}
 </div>
 
