@@ -1,10 +1,14 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { createEventDispatcher } from "svelte";
     import { getToken } from "../token-manager";
     import type { Incubator } from "../types/Incubator";
+    import type { UserHero } from "../types/UserHero";
 
     export let incubator: Incubator;
+    export let hero: UserHero | undefined;
     let apiUri = "http://localhost:8000";
+	const dispatch = createEventDispatcher();
 
     async function deleteIncubator() {
         if (!incubator) {
@@ -40,6 +44,50 @@
             }
         }
     }
+
+    async function incubate() {
+        if (!incubator || !hero) {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+        
+
+        let body = {
+            hero_id: hero.id,
+        };
+
+		dispatch('endChoice');
+        try {
+            let response = await fetch(`${apiUri}/incubators/${incubator.id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    body: JSON.stringify(body),
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                // TODO: send event to parent
+                incubator.hero = hero;
+
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                // TODO: send error msg to parent
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                // TODO: send error msg to parent
+            }
+        }
+    }
 </script>
 
 <div class="incubator-card">
@@ -56,6 +104,9 @@
     {:else}
         <div class="empty">Empty</div>
         <button on:click={deleteIncubator}>Delete</button>
+        {#if hero}
+            <button on:click={incubate}>Incubate</button>
+        {/if}
     {/if}
 </div>
 

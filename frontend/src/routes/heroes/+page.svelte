@@ -18,6 +18,15 @@
 
     let heroes: UserHero[];
     let incubators: Incubator[];
+    let toIncubate: UserHero | undefined = undefined;
+
+    function startIncubatorChoice(hero: UserHero) {
+        toIncubate = hero;
+    }
+
+    function stopIncubatorChoice() {
+        toIncubate = undefined;
+    }
 
     async function getHeroes(new_page: number = 0) {
         if (new_page < 0) {
@@ -112,7 +121,7 @@
     <h4>Incubators</h4>
     <div class="incubators-container">
         {#each incubators as incubator}
-            <IncubatorCard {incubator} />
+            <IncubatorCard {incubator} hero={toIncubate} on:endChoice={stopIncubatorChoice}/>
         {/each}
     </div>
 {/if}
