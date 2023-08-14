@@ -184,4 +184,15 @@
         border-radius: 50%;
         box-shadow: 0 2px 4px #11111b;
     }
+
+    button {
+        font-size: 14px;
+        padding: 5px 10px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #9399b2;
+        color: #313244;
+    }
 </style>
