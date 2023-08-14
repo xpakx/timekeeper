@@ -53,7 +53,8 @@ def get_hero(user_id: int, incubator_id: int, db: Session):
     hero = incubator.hero
     points_obj = point_repo.get_points(user_id, db)
     points = points_obj.points if points_obj else 0
-    exp = hero.experience + points - incubator.initial_points
+    hero_exp = hero.experience if hero.experience else 0
+    exp = hero_exp + points - incubator.initial_points
     hero.incubated = False
     hero.experience = exp
     incubator.hero = None
