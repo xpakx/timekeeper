@@ -3,17 +3,17 @@
     import type { UserHero } from "../types/UserHero";
 
     export let hero: UserHero;
-	const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher();
 
     function incubate() {
-		dispatch('startChoice');
+        dispatch("startChoice");
     }
 </script>
 
 <div class="hero-card {hero.hero.rarity}">
     <div class="hero-container">
         <div class="hero-header">
-            <span class="hero-name">{hero.hero.name}</span>, 
+            <span class="hero-name">{hero.hero.name}</span>,
             <span class="hero-title">{hero.hero.title}</span>
             <span class="hero-id">
                 [#{hero.hero.num}]
@@ -23,7 +23,9 @@
     <div class="hero-image">
         <img src="heroes/hero_{hero.hero.num}.png" alt="" />
     </div>
-    <button on:click={incubate}>Incubate</button>
+    <div class="buttons-container">
+        <button on:click={incubate}>Incubate</button>
+    </div>
 </div>
 
 <style>
@@ -77,5 +79,20 @@
         object-fit: cover;
         border-radius: 50%;
         box-shadow: 0 2px 4px #11111b;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 5px 10px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #9399b2;
+        color: #313244;
+    }
+
+    .buttons-container {
+        padding-top: 10px;
     }
 </style>
