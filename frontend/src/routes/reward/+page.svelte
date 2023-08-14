@@ -94,4 +94,15 @@
     <HeroCard {hero} />
 {/if}
 
-<style></style>
+<style>
+    button {
+        font-size: 14px;
+        padding: 5px 10px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #9399b2;
+        color: #313244;
+    }
+</style>

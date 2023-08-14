@@ -122,4 +122,16 @@
     .item-container.rare .item-name {
         color: #f2cdcd;
     }
+
+
+    button {
+        font-size: 14px;
+        padding: 5px 10px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #9399b2;
+        color: #313244;
+    }
 </style>
