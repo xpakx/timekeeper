@@ -32,7 +32,7 @@
     <div class="hero-image">
         <img src="heroes/hero_{hero.hero.num}.png" alt="" />
     </div>
-    {#if active}
+    {#if active && active.id == hero.id}
         <div class="buttons-container">
             <button on:click={stopIncubation}>Stop</button>
         </div>
