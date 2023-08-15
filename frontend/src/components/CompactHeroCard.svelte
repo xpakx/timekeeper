@@ -3,14 +3,23 @@
     import type { UserHero } from "../types/UserHero";
 
     export let hero: UserHero;
+    export let active: UserHero | undefined = undefined;
     const dispatch = createEventDispatcher();
 
     function incubate() {
         dispatch("startChoice");
     }
+
+    function stopIncubation() {
+        dispatch("stopChoice");
+    }
 </script>
 
-<div class="hero-card {hero.hero.rarity}">
+<div
+    class="hero-card {hero.hero.rarity} {active && active.id == hero.id
+        ? 'active'
+        : ''}"
+>
     <div class="hero-container">
         <div class="hero-header">
             <span class="hero-name">{hero.hero.name}</span>,
@@ -23,9 +32,15 @@
     <div class="hero-image">
         <img src="heroes/hero_{hero.hero.num}.png" alt="" />
     </div>
-    <div class="buttons-container">
-        <button on:click={incubate}>Incubate</button>
-    </div>
+    {#if active}
+        <div class="buttons-container">
+            <button on:click={stopIncubation}>Stop</button>
+        </div>
+    {:else}
+        <div class="buttons-container">
+            <button on:click={incubate}>Incubate</button>
+        </div>
+    {/if}
 </div>
 
 <style>
@@ -49,6 +64,11 @@
 
     .hero-card.rare {
         border: 2px solid #f2cdcd;
+    }
+
+    .hero-card.active {
+        border: 4px solid #f2cdcd;
+        background-color: #313244;
     }
 
     .hero-header {
