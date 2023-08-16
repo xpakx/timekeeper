@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from ...db.models import ItemRarity
+from typing import Optional
 
 
 class HeroBase(BaseModel):
@@ -16,6 +17,7 @@ class HeroBase(BaseModel):
 class UserHeroBase(BaseModel):
     id: int
     hero: HeroBase
+    incubated: Optional[bool]  # TODO: delete optional, it's temporary for legacy test db
 
     class Config:
         orm_mode = True
