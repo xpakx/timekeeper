@@ -1,6 +1,9 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import type { UserHero } from "../types/UserHero";
+    import { identity } from "svelte/internal";
+    import Fa from "svelte-fa";
+    import { faSnowflake } from "@fortawesome/free-solid-svg-icons";
 
     export let hero: UserHero;
     export let active: UserHero | undefined = undefined;
@@ -27,19 +30,24 @@
             <span class="hero-id">
                 [#{hero.hero.num}]
             </span>
+            {#if hero.incubated}
+                <Fa icon={faSnowflake} />
+            {/if}
         </div>
     </div>
     <div class="hero-image">
         <img src="heroes/hero_{hero.hero.num}.png" alt="" />
     </div>
-    {#if active && active.id == hero.id}
-        <div class="buttons-container">
-            <button on:click={stopIncubation}>Stop</button>
-        </div>
-    {:else}
-        <div class="buttons-container">
-            <button on:click={incubate}>Incubate</button>
-        </div>
+    {#if !hero.incubated}
+        {#if active && active.id == hero.id}
+            <div class="buttons-container">
+                <button on:click={stopIncubation}>Stop</button>
+            </div>
+        {:else}
+            <div class="buttons-container">
+                <button on:click={incubate}>Incubate</button>
+            </div>
+        {/if}
     {/if}
 </div>
 
