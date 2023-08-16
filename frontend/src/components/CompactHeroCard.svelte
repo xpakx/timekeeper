@@ -25,14 +25,14 @@
 >
     <div class="hero-container">
         <div class="hero-header">
+            {#if hero.incubated}
+                <Fa icon={faSnowflake} />
+            {/if}
             <span class="hero-name">{hero.hero.name}</span>,
             <span class="hero-title">{hero.hero.title}</span>
             <span class="hero-id">
                 [#{hero.hero.num}]
             </span>
-            {#if hero.incubated}
-                <Fa icon={faSnowflake} />
-            {/if}
         </div>
     </div>
     <div class="hero-image">
@@ -41,7 +41,7 @@
     {#if !hero.incubated}
         {#if active && active.id == hero.id}
             <div class="buttons-container">
-                <button on:click={stopIncubation}>Stop</button>
+                <button on:click={stopIncubation}>Cancel</button>
             </div>
         {:else}
             <div class="buttons-container">

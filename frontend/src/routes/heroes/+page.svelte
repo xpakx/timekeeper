@@ -28,6 +28,11 @@
         toIncubate = undefined;
     }
 
+    function changeIncubationState(id: number, state: boolean) {
+        heroes.filter((h) => h.id == id).forEach((h) => (h.incubated = state));
+        heroes = heroes;
+    }
+
     async function getHeroes(new_page: number = 0) {
         if (new_page < 0) {
             return;
@@ -121,14 +126,24 @@
     <h4>Incubators</h4>
     <div class="incubators-container">
         {#each incubators as incubator}
-            <IncubatorCard {incubator} hero={toIncubate} on:endChoice={stopIncubatorChoice}/>
+            <IncubatorCard
+                {incubator}
+                hero={toIncubate}
+                on:endChoice={stopIncubatorChoice}
+                on:incubatedHero ={(event) => changeIncubationState(event.detail.id, event.detail.state)}
+            />
         {/each}
     </div>
 {/if}
 
 {#if heroes && heroes.length > 0}
     {#each heroes as hero}
-        <CompactHeroCard {hero} active={toIncubate} on:startChoice={() => startIncubatorChoice(hero)} on:stopChoice={stopIncubatorChoice}/>
+        <CompactHeroCard
+            {hero}
+            active={toIncubate}
+            on:startChoice={() => startIncubatorChoice(hero)}
+            on:stopChoice={stopIncubatorChoice}
+        />
     {/each}
 {/if}
 

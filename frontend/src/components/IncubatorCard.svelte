@@ -76,6 +76,9 @@
                 // TODO: send event to parent
                 let fromEndpoint = await response.json();
                 incubator.hero = fromEndpoint.hero;
+                if (incubator && incubator.hero) {
+                    incubatedHero(incubator.hero.id, true);
+                }
             } else {
                 if (response.status == 401) {
                     goto("/logout");
@@ -101,17 +104,23 @@
         }
 
         try {
-            let response = await fetch(`${apiUri}/incubators/${incubator.id}/hero`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            let response = await fetch(
+                `${apiUri}/incubators/${incubator.id}/hero`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
             if (response.ok) {
                 // TODO: send event to parent
                 let fromEndpoint = await response.json();
+                if (incubator && incubator.hero) {
+                    incubatedHero(incubator.hero.id, false);
+                }
                 incubator.hero = undefined;
             } else {
                 if (response.status == 401) {
@@ -126,6 +135,10 @@
             }
         }
     }
+
+    function incubatedHero(id: number, state: boolean) {
+        dispatch("incubatedHero", { id: id, state: state });
+    }
 </script>
 
 <div class="incubator-card">
@@ -139,7 +152,7 @@
                 <img src="heroes/hero_{incubator.hero.hero.num}.png" alt="" />
             </div>
         </div>
-            <button on:click={retrieve}>Stop incubation</button>
+        <button on:click={retrieve}>Stop incubation</button>
     {:else}
         <div class="empty">Empty</div>
         <button on:click={deleteIncubator}>Delete</button>
