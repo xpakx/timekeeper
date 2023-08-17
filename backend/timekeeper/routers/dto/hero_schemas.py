@@ -6,7 +6,7 @@ from typing import Optional
 class HeroBase(BaseModel):
     id: int
     name: str
-    title: str
+    title: Optional[str]
     num: int
     rarity: ItemRarity
 
@@ -17,7 +17,7 @@ class HeroBase(BaseModel):
 class UserHeroBase(BaseModel):
     id: int
     hero: HeroBase
-    incubated: Optional[bool]  # TODO: delete optional, it's temporary for legacy test db
+    incubated: bool
 
     class Config:
         orm_mode = True

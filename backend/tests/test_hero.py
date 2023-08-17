@@ -120,6 +120,7 @@ def create_user_hero(hero_id: int, user_id: int):
     item = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
+            incubated=False
             )
     db.add(item)
     db.commit()

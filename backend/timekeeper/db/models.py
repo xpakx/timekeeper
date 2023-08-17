@@ -124,6 +124,26 @@ class Hero(Base):
     secondary_hero_type = Column(Enum(HeroType))
 
 
+class Skill(Base):
+    __tablename__ = "skills"
+    id = Column(Integer, primary_key=True, index=True)
+
+
+class SkillSet(Base):
+    __tablename__ = "hero_skills"
+    id = Column(Integer, primary_key=True, index=True)
+    hero_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero = relationship("UserHero")
+    skill_1_id = Column(Integer, ForeignKey("skills.id"))
+    skill_1 = relationship("Skill", primaryjoin="Skill.id==SkillSet.skill_1_id")
+    skill_2_id = Column(Integer, ForeignKey("skills.id"))
+    skill_2 = relationship("Skill", primaryjoin="Skill.id==SkillSet.skill_2_id")
+    skill_3_id = Column(Integer, ForeignKey("skills.id"))
+    skill_3 = relationship("Skill", primaryjoin="Skill.id==SkillSet.skill_3_id")
+    skill_4_id = Column(Integer, ForeignKey("skills.id"))
+    skill_4 = relationship("Skill", primaryjoin="Skill.id==SkillSet.skill_4_id")
+
+
 class UserHero(Base):
     __tablename__ = "user_heroes"
     id = Column(Integer, primary_key=True, index=True)
@@ -139,6 +159,7 @@ class UserHero(Base):
     hero = relationship("Hero")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
+    skills = relationship("SkillSet", back_populates="hero")
 
 
 class Battle(Base):
