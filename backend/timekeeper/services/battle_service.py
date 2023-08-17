@@ -5,6 +5,19 @@ from typing import Optional
 from ..db.models import Battle
 
 
+def create_battle(user_id: int, hero_id: int, db: Session):
+    hero = user_hero_repo.get_hero(user_id, hero_id, db)
+    if not hero:
+        raise not_such_hero_exception()
+    enemy = hero_repo.get_random_hero(db)
+    if not enemy:
+        raise not_initialized_exception()
+    user_hero_repo.create_entry(enemy.id, None, db)
+    battle_repo.create_entry(hero.id, enemy.id, user_id, db)
+    db.commit()
+    return hero
+
+
 def get_battle(user_id: int, battle_id: int, db: Session) -> Optional[Battle]:
     return battle_repo.get_battle(user_id, battle_id, db)
 
