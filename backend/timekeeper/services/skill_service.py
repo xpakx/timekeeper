@@ -15,7 +15,7 @@ def teach_hero(user_id: int, hero_id: int, item_id: int, db: Session):
     skill = skillset_repo.get_skill(item.item.id, db)
     if not skill:
         raise not_initialized_exception()
-    skillset_repo.teach_skill(hero.id, None, db)
+    skillset_repo.teach_skill(hero.id, skill.id, db)
     db.commit()
     return hero
 

@@ -138,13 +138,25 @@ class SkillSet(Base):
     hero_id = Column(Integer, ForeignKey("user_heroes.id"))
     hero = relationship("UserHero")
     skill_1_id = Column(Integer, ForeignKey("skills.id"))
-    skill_1 = relationship("Skill", primaryjoin="Skill.id==SkillSet.skill_1_id")
+    skill_1 = relationship(
+            "Skill",
+            primaryjoin="Skill.id==SkillSet.skill_1_id"
+            )
     skill_2_id = Column(Integer, ForeignKey("skills.id"))
-    skill_2 = relationship("Skill", primaryjoin="Skill.id==SkillSet.skill_2_id")
+    skill_2 = relationship(
+            "Skill",
+            primaryjoin="Skill.id==SkillSet.skill_2_id"
+            )
     skill_3_id = Column(Integer, ForeignKey("skills.id"))
-    skill_3 = relationship("Skill", primaryjoin="Skill.id==SkillSet.skill_3_id")
+    skill_3 = relationship(
+            "Skill",
+            primaryjoin="Skill.id==SkillSet.skill_3_id"
+            )
     skill_4_id = Column(Integer, ForeignKey("skills.id"))
-    skill_4 = relationship("Skill", primaryjoin="Skill.id==SkillSet.skill_4_id")
+    skill_4 = relationship(
+            "Skill",
+            primaryjoin="Skill.id==SkillSet.skill_4_id"
+            )
 
 
 class UserHero(Base):
@@ -191,3 +203,40 @@ class Incubator(Base):
     hero = relationship("UserHero")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
+
+
+class Team(Base):
+    __tablename__ = "user_teams"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    user = relationship("User")
+    hero_1_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero_1 = relationship(
+            "UserHero",
+            primaryjoin="UserHero.id==Team.hero_1_id"
+            )
+    hero_2_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero_2 = relationship(
+            "UserHero",
+            primaryjoin="UserHero.id==Team.hero_2_id"
+            )
+    hero_3_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero_3 = relationship(
+            "UserHero",
+            primaryjoin="UserHero.id==Team.hero_3_id"
+            )
+    hero_4_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero_4 = relationship(
+            "UserHero",
+            primaryjoin="UserHero.id==Team.hero_4_id"
+            )
+    hero_5_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero_5 = relationship(
+            "UserHero",
+            primaryjoin="UserHero.id==Team.hero_5_id"
+            )
+    hero_6_id = Column(Integer, ForeignKey("user_heroes.id"))
+    hero_6 = relationship(
+            "UserHero",
+            primaryjoin="UserHero.id==Team.hero_6_id"
+            )
