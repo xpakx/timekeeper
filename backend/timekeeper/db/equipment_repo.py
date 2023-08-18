@@ -65,3 +65,14 @@ def get_crystals(user_id, db: Session):
     if not entry:
         return 0
     return entry.amount
+
+
+def get_item_entry(item_id, user_id, db: Session):
+    return db\
+        .query(EquipmentEntry)\
+        .join(Item, EquipmentEntry.item)\
+        .where(
+             and_(
+                 EquipmentEntry.owner_id == user_id,
+                 Item.num == item_id)
+            ) .first()

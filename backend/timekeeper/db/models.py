@@ -83,6 +83,7 @@ class Item(Base):
     name = Column(String)
     description = Column(String)
     rarity = Column(Enum(ItemRarity))
+    skill = Column(Boolean)
 
 
 class EquipmentEntry(Base):
@@ -127,6 +128,8 @@ class Hero(Base):
 class Skill(Base):
     __tablename__ = "skills"
     id = Column(Integer, primary_key=True, index=True)
+    item_id = Column(Integer, ForeignKey("items.id"))
+    item = relationship("Item")
 
 
 class SkillSet(Base):
