@@ -1,4 +1,4 @@
-from ..db import hero_repo, user_hero_repo, equipment_repo
+from ..db import hero_repo, user_hero_repo, equipment_repo, skillset_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
@@ -11,7 +11,8 @@ def get_hero(user_id: int, db: Session):
     hero = hero_repo.get_random_hero(db)
     if not hero:
         raise not_initialized_exception()
-    user_hero_repo.create_entry(hero.id, user_id, db)
+    user_hero = user_hero_repo.create_entry(hero.id, user_id, db)
+    skillset_repo.create_entry(user_hero, db)
     db.commit()
     return hero
 

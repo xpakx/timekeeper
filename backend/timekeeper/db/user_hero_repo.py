@@ -17,6 +17,7 @@ def create_entry(hero_id, user_id, db: Session):
             incubated=False
             )
     db.add(entry)
+    return entry
 
 
 def get_heroes(page: int, size: int, user_id: int, db: Session):

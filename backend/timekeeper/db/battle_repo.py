@@ -14,6 +14,7 @@ def create_entry(hero_id: int, enemy_id: int, user_id, db: Session):
             finished=False
             )
     db.add(entry)
+    return entry
 
 
 def get_battle(user_id: int, battle_id: int, db: Session) -> Optional[Battle]:
