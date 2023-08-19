@@ -208,7 +208,7 @@ class Incubator(Base):
 class Team(Base):
     __tablename__ = "user_teams"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User")
     hero_1_id = Column(Integer, ForeignKey("user_heroes.id"))
     hero_1 = relationship(
