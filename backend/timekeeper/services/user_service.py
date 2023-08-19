@@ -1,5 +1,5 @@
 from ..routers.dto import user_schemas
-from ..db import user_repo, point_repo
+from ..db import user_repo, point_repo, team_repo
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from typing import Optional
@@ -32,6 +32,7 @@ def register(
     user = user_repo.create_user(request, db)
     if user:
         point_repo.create_points(user.id, db)
+        team_repo.create_team(user.id, db)
         token = create_token({"sub": user.username, "id": user.id})
         refresh_token = create_refresh_token({"id": user.id})
         response = user_schemas.AuthResponse(
