@@ -28,7 +28,7 @@ def insert_hero(user_id: int, hero_id: int, incubator_id: int, db: Session):
     hero = user_hero_repo.get_hero(user_id, hero_id, db)
     if not hero:
         raise no_such_hero_exception()
-    if hero.incubated:
+    if hero.incubated or hero.in_team:
         raise hero_not_available_exception()
     incubator = incubator_repo.get_incubator(user_id, incubator_id, db)
     if not incubator:
