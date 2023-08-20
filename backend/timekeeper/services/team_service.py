@@ -19,17 +19,25 @@ def add_hero(user_id: int, hero_id: int, num: int, db: Session) -> Team:
     hero: Optional[UserHero] = user_hero_repo.get_hero(user_id, hero_id, db)
     if hero is None:
         raise no_such_hero_exception()
+    if hero.incubated:
+        raise hero_not_available_exception()
     if num == 1:
+        team.hero_1_id.in_team = False
         team.hero_1_id = hero.id
     elif num == 2:
+        team.hero_2_id.in_team = False
         team.hero_2_id = hero.id
     elif num == 3:
+        team.hero_3_id.in_team = False
         team.hero_3_id = hero.id
     elif num == 4:
+        team.hero_4_id.in_team = False
         team.hero_4_id = hero.id
     elif num == 5:
+        team.hero_5_id.in_team = False
         team.hero_5_id = hero.id
     elif num == 6:
+        team.hero_6_id.in_team = False
         team.hero_6_id = hero.id
     hero.in_team = True
     db.commit()
@@ -48,4 +56,11 @@ def no_such_hero_exception():
     return HTTPException(
         status_code=400,
         detail="No such hero!",
+    )
+
+
+def hero_not_available_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Hero unavailable!",
     )
