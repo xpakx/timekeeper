@@ -14,7 +14,8 @@ def create_entry(hero_id, user_id, db: Session):
             speed=random.randint(0, 16),
             special=random.randint(0, 16),
             experience=0,
-            incubated=False
+            incubated=False,
+            in_team=False
             )
     db.add(entry)
     return entry

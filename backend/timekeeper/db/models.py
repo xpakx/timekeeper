@@ -168,6 +168,7 @@ class UserHero(Base):
     speed = Column(Integer)
     special = Column(Integer)
     incubated = Column(Boolean)
+    in_team = Column(Boolean)
     damage = Column(Integer)
     experience = Column(Integer)
     hero_id = Column(Integer, ForeignKey("heroes.id"))

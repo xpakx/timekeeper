@@ -31,6 +31,7 @@ def add_hero(user_id: int, hero_id: int, num: int, db: Session) -> Team:
         team.hero_5_id = hero.id
     elif num == 6:
         team.hero_6_id = hero.id
+    hero.in_team = True
     db.commit()
     db.refresh(team)
     return team
