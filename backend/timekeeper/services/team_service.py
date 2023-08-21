@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..db.models import Team, UserHero
 from typing import Optional
+from ..routers.dto.team_schemas import TeamRequest, TeamAction
 
 
 def get_team(user_id: int, db: Session) -> Team:
@@ -12,15 +13,22 @@ def get_team(user_id: int, db: Session) -> Team:
     return team
 
 
-def add_hero(user_id: int, hero_id: int, num: int, db: Session) -> Team:
+def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:
+    if request.action != TeamAction.add:
+        return None
     team = team_repo.get_team(user_id, db)
     if team is None:
         raise no_team_object_exception()
-    hero: Optional[UserHero] = user_hero_repo.get_hero(user_id, hero_id, db)
+    hero: Optional[UserHero] = user_hero_repo.get_hero(
+            user_id,
+            request.hero_id,
+            db
+            )
     if hero is None:
         raise no_such_hero_exception()
     if hero.incubated:
         raise hero_not_available_exception()
+    num = request.num
     if num == 1:
         team.hero_1_id.in_team = False
         team.hero_1_id = hero.id

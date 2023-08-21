@@ -15,4 +15,4 @@ async def change_team(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return team_service.add_hero(user.id, request.hero_id, request.num, db)
+    return team_service.add_hero(user.id, request, db)
