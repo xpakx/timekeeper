@@ -16,3 +16,11 @@ async def change_team(
         db: Session = Depends(get_db)
         ):
     return team_service.add_hero(user.id, request, db)
+
+
+@router.get("/", response_model=team_schemas.TeamResponse)
+async def get_team(
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return team_service.get_team(user.id, db)

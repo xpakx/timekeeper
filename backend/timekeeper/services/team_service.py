@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..db.models import Team, UserHero
 from typing import Optional
-from ..routers.dto.team_schemas import TeamRequest, TeamAction
+from ..routers.dto.team_schemas import TeamRequest, TeamAction, TeamResponse
 
 
-def get_team(user_id: int, db: Session) -> Team:
+def get_team(user_id: int, db: Session) -> TeamResponse:
     team = team_repo.get_team(user_id, db)
     if team is None:
         raise no_team_object_exception()
-    return team
+    return TeamResponse.transform_data(team)
 
 
 def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:
