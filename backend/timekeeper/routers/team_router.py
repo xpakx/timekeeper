@@ -1,0 +1,18 @@
+from fastapi import APIRouter, Depends
+from .dto import team_schemas
+from ..services import team_service
+from typing import Annotated
+from ..security.jwt import get_current_user, CurrentUser
+from ..db.manager import get_db
+from sqlalchemy.orm import Session
+
+router = APIRouter(prefix="/teams")
+
+
+@router.post("/", response_model=list[team_schemas.TeamRequest])
+async def change_team(
+        request: team_schemas.TeamRequest,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return team_service.add_hero(user.id, request.hero_id, request.num, db)

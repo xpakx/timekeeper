@@ -9,7 +9,8 @@ from .routers import (
                       item_router,
                       hero_router,
                       incubator_router,
-                      battle_router
+                      battle_router,
+                      team_router
 )
 from .db.models import Base
 from .db.base import engine
@@ -25,6 +26,7 @@ app.include_router(item_router.router)
 app.include_router(hero_router.router)
 app.include_router(incubator_router.router)
 app.include_router(battle_router.router)
+app.include_router(team_router.router)
 
 app.add_middleware(
     CORSMiddleware,
