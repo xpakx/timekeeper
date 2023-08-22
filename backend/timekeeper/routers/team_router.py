@@ -24,3 +24,12 @@ async def get_team(
         db: Session = Depends(get_db)
         ):
     return team_service.get_team(user.id, db)
+
+
+@router.delete("/{num}", response_model=team_schemas.TeamResponse)
+async def delete_team_member(
+        num: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return team_service.delete_hero(user.id, num, db)
