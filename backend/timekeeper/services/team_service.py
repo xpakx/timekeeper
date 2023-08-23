@@ -33,7 +33,7 @@ def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:
         raise no_such_hero_exception()
     if hero.incubated or hero.in_team:
         raise hero_not_available_exception()
-    old_hero = insert_hero(hero.id, request.num, team)
+    old_hero = insert_hero(hero, request.num, team)
     if old_hero:
         old_hero.in_team = False
     db.commit()
@@ -41,30 +41,37 @@ def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:
     return team
 
 
-def insert_hero(hero_id: Optional[int], num: int, team: Team) -> UserHero:
+def insert_hero(hero: Optional[UserHero], num: int, team: Team) -> UserHero:
+    hero_id = hero.id if hero else None
     if num == 1:
         result = team.hero_1
         team.hero_1_id = hero_id
+        team.hero_1 = hero
         return result
     if num == 2:
         result = team.hero_2
         team.hero_2_id = hero_id
+        team.hero_2 = hero
         return result
     if num == 3:
         result = team.hero_3
         team.hero_3_id = hero_id
+        team.hero_3 = hero
         return result
     if num == 4:
         result = team.hero_4
         team.hero_4_id = hero_id
+        team.hero_4 = hero
         return result
     if num == 5:
         result = team.hero_5
         team.hero_5_id = hero_id
+        team.hero_5 = hero
         return result
     if num == 6:
         result = team.hero_6
         team.hero_6_id = hero_id
+        team.hero_6 = hero
         return result
 
 
@@ -81,9 +88,8 @@ def switch_heroes(user_id: int, request: TeamRequest, db: Session) -> Team:
         raise no_such_hero_exception()
     if hero.incubated or not hero.in_team:
         raise hero_not_available_exception()
-    secondary_hero = insert_hero(hero.id, request.switch_num, team)
-    secondary_hero_id = secondary_hero.id if secondary_hero else None
-    insert_hero(secondary_hero_id, request.num, team)
+    secondary_hero = insert_hero(hero, request.switch_num, team)
+    insert_hero(secondary_hero, request.num, team)
     db.commit()
     db.refresh(team)
     return team
