@@ -33,29 +33,39 @@ def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:
         raise no_such_hero_exception()
     if hero.incubated or hero.in_team:
         raise hero_not_available_exception()
-    num = request.num
-    if num == 1:
-        team.hero_1_id.in_team = False
-        team.hero_1_id = hero.id
-    elif num == 2:
-        team.hero_2_id.in_team = False
-        team.hero_2_id = hero.id
-    elif num == 3:
-        team.hero_3_id.in_team = False
-        team.hero_3_id = hero.id
-    elif num == 4:
-        team.hero_4_id.in_team = False
-        team.hero_4_id = hero.id
-    elif num == 5:
-        team.hero_5_id.in_team = False
-        team.hero_5_id = hero.id
-    elif num == 6:
-        team.hero_6_id.in_team = False
-        team.hero_6_id = hero.id
-    hero.in_team = True
+    old_hero = insert_hero(hero.id, request.num, team)
+    if old_hero:
+        old_hero.in_team = False
     db.commit()
     db.refresh(team)
     return team
+
+
+def insert_hero(hero_id: Optional[int], num: int, team: Team) -> UserHero:
+    if num == 1:
+        result = team.hero_1
+        team.hero_1_id = hero_id
+        return result
+    if num == 2:
+        result = team.hero_2
+        team.hero_2_id = hero_id
+        return result
+    if num == 3:
+        result = team.hero_3
+        team.hero_3_id = hero_id
+        return result
+    if num == 4:
+        result = team.hero_4
+        team.hero_4_id = hero_id
+        return result
+    if num == 5:
+        result = team.hero_5
+        team.hero_5_id = hero_id
+        return result
+    if num == 6:
+        result = team.hero_6
+        team.hero_6_id = hero_id
+        return result
 
 
 def switch_heroes(user_id: int, request: TeamRequest, db: Session) -> Team:
@@ -71,39 +81,9 @@ def switch_heroes(user_id: int, request: TeamRequest, db: Session) -> Team:
         raise no_such_hero_exception()
     if hero.incubated or not hero.in_team:
         raise hero_not_available_exception()
-    num = request.switch_num
-    secondary_hero_id: Optional[int] = None
-    if num == 1:
-        secondary_hero_id = team.hero_1_id
-        team.hero_1_id = hero.id
-    elif num == 2:
-        secondary_hero_id = team.hero_2_id
-        team.hero_2_id = hero.id
-    elif num == 3:
-        secondary_hero_id = team.hero_3_id
-        team.hero_3_id = hero.id
-    elif num == 4:
-        secondary_hero_id = team.hero_4_id
-        team.hero_4_id = hero.id
-    elif num == 5:
-        secondary_hero_id = team.hero_5_id
-        team.hero_5_id = hero.id
-    elif num == 6:
-        secondary_hero_id = team.hero_6_id
-        team.hero_6_id = hero.id
-    num = request.num
-    if num == 1:
-        team.hero_1_id = secondary_hero_id
-    elif num == 2:
-        team.hero_2_id = secondary_hero_id
-    elif num == 3:
-        team.hero_3_id = secondary_hero_id
-    elif num == 4:
-        team.hero_4_id = secondary_hero_id
-    elif num == 5:
-        team.hero_5_id = secondary_hero_id
-    elif num == 6:
-        team.hero_6_id = secondary_hero_id
+    secondary_hero = insert_hero(hero.id, request.switch_num, team)
+    secondary_hero_id = secondary_hero.id if secondary_hero else None
+    insert_hero(secondary_hero_id, request.num, team)
     db.commit()
     db.refresh(team)
     return team
@@ -113,18 +93,7 @@ def delete_hero(user_id: int, num: int, db: Session):
     team = team_repo.get_team(user_id, db)
     if team is None:
         raise no_team_object_exception()
-    if num == 1:
-        team.hero_1_id = None
-    elif num == 2:
-        team.hero_2_id = None
-    elif num == 3:
-        team.hero_3_id = None
-    elif num == 4:
-        team.hero_4_id = None
-    elif num == 5:
-        team.hero_5_id = None
-    elif num == 6:
-        team.hero_6_id = None
+    insert_hero(None, num, team)
     db.commit()
     db.refresh(team)
     return team
