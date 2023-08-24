@@ -1,12 +1,15 @@
-from ..db import hero_repo, user_hero_repo, battle_repo
+from ..db import hero_repo, user_hero_repo, battle_repo, team_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
 from ..db.models import Battle
 
 
-def create_battle(user_id: int, hero_id: int, db: Session):
-    hero = user_hero_repo.get_hero(user_id, hero_id, db)
+def create_battle(user_id: int, db: Session):
+    team = team_repo.get_team(user_id, db)
+    if not team:
+        raise not_initialized_exception()
+    hero = team.hero_1
     if not hero:
         raise not_such_hero_exception()
     enemy = hero_repo.get_random_hero(db)
