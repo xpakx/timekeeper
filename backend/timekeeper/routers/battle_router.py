@@ -17,6 +17,15 @@ async def get_current_battle(
     return battle_service.get_current_battle(user.id, db)
 
 
+@router.post("/", response_model=battle_schemas.BattleBase)
+async def create_battle(
+        request: battle_schemas.NewBattleRequest,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return battle_service.create_battle(user.id, db)
+
+
 @router.get("/{id}", response_model=battle_schemas.BattleBase)
 async def get_battle(
         id: int,

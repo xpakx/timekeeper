@@ -11,3 +11,10 @@ class BattleBase(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class NewBattleRequest(BaseModel):
+    id: int
+
+    class Config:
+        orm_mode = True
