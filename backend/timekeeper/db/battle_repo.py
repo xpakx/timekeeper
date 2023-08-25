@@ -5,12 +5,18 @@ from typing import Optional
 from sqlalchemy.sql.expression import false
 
 
-def create_entry(hero_id: int, enemy_id: int, user_id, db: Session):
+def create_entry(
+        hero_id: int,
+        enemy_id: int,
+        enemies: int,
+        user_id,
+        db: Session):
     entry = Battle(
             hero_id=hero_id,
             enemy_id=enemy_id,
             owner_id=user_id,
             turn=1,
+            enemies=enemies,
             finished=False
             )
     db.add(entry)

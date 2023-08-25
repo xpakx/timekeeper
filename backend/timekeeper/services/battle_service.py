@@ -16,7 +16,7 @@ def create_battle(user_id: int, db: Session):
     if not enemy:
         raise not_initialized_exception()
     user_hero_repo.create_entry(enemy.id, None, db)
-    battle = battle_repo.create_entry(hero.id, enemy.id, user_id, db)
+    battle = battle_repo.create_entry(hero.id, enemy.id, 1, user_id, db)
     db.commit()
     return battle
 

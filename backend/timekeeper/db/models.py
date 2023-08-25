@@ -182,6 +182,7 @@ class Battle(Base):
     __tablename__ = "battles"
     id = Column(Integer, primary_key=True, index=True)
     turn = Column(Integer)
+    enemies = Column(Integer)
     finished = Column(Boolean)
     hero_id = Column(Integer, ForeignKey("user_heroes.id"))
     hero = relationship("UserHero", primaryjoin="UserHero.id==Battle.hero_id")
