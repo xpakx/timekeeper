@@ -35,7 +35,7 @@ async def get_crystals(
     return {'crystals': hero_service.get_crystals(user.id, db)}
 
 
-@router.get("/{id}", response_model=list[hero_schemas.UserHeroBase])
+@router.post("/{id}/skills", response_model=list[hero_schemas.UserHeroBase])
 async def teach_skill(
         request: hero_schemas.SkillRequest,
         id: int,
