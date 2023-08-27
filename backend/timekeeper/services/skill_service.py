@@ -3,7 +3,12 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 
-def teach_hero(user_id: int, hero_id: int, item_id: int, num: int, db: Session):
+def teach_hero(
+        user_id: int,
+        hero_id: int,
+        item_id: int,
+        num: int,
+        db: Session):
     item = equipment_repo.get_item_entry(user_id, item_id, db)
     if not item or item.amount < 1:
         raise no_item_exception()
@@ -13,6 +18,7 @@ def teach_hero(user_id: int, hero_id: int, item_id: int, num: int, db: Session):
     if not hero:
         raise no_such_hero_exception()
     skill = skillset_repo.get_skill(item.item.id, db)
+    item.amount = item.amount - 1
     if not skill:
         raise not_initialized_exception()
     skillset_repo.teach_skill(hero.id, skill.id, num, db)
