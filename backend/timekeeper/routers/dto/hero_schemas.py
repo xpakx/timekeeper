@@ -25,3 +25,11 @@ class UserHeroBase(BaseModel):
 
 class Crystals(BaseModel):
     crystals: int
+
+
+class SkillRequest(BaseModel):
+    item_id: int
+    num: int
+
+    class Config:
+        orm_mode = True

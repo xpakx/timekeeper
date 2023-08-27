@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from .dto import hero_schemas
-from ..services import hero_service
+from ..services import hero_service, skill_service
 from typing import Annotated
 from ..security.jwt import get_current_user, CurrentUser
 from ..db.manager import get_db
@@ -33,3 +33,19 @@ async def get_crystals(
         db: Session = Depends(get_db)
         ):
     return {'crystals': hero_service.get_crystals(user.id, db)}
+
+
+@router.get("/{id}", response_model=list[hero_schemas.UserHeroBase])
+async def teach_skill(
+        request: hero_schemas.SkillRequest,
+        id: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return skill_service.teach_hero(
+            user.id,
+            id,
+            request.item_id,
+            request.num,
+            db
+            )
