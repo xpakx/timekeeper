@@ -2,7 +2,7 @@ from ..db import hero_repo, user_hero_repo, battle_repo, team_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
-from ..db.models import Battle, Skill, UserHero
+from ..db.models import Battle, Skill, UserHero, ExpGroup
 import math
 
 
@@ -72,8 +72,22 @@ def calculate_speed(hero: UserHero):
             hero.hero.base_speed,
             hero.speed,
             0,
-            exp_to_level(hero.experience))
+            exp_to_level(hero.hero.exp_group, hero.experience))
 
 
-def exp_to_level(exp: int) -> int:
-    return 1
+def exp_to_level(group: ExpGroup, exp: int) -> int:
+    for i in range(1, 100):
+        if level_to_exp(group, i) <= exp:
+            return i
+    return 100
+
+
+def level_to_exp(group: ExpGroup, lvl: int) -> int:
+    if group == ExpGroup.slow:
+        return math.floor((5*lvl*lvl*lvl)/4)
+    if group == ExpGroup.medium_slow:
+        return math.floor((6*lvl*lvl*lvl)/5 - 15*lvl*lvl + 100*lvl - 140)
+    if group == ExpGroup.medium_fast:
+        return lvl*lvl*lvl
+    if group == ExpGroup.fast:
+        return math.floor((4*lvl*lvl*lvl)/5)

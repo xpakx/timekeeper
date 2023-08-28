@@ -108,6 +108,13 @@ class HeroType(enum.Enum):
     nature = "nature"
 
 
+class ExpGroup(enum.Enum):
+    slow = "slow"
+    medium_slow = "medium slow"
+    fast = "fast"
+    medium_fast = "medium fast"
+
+
 class Hero(Base):
     __tablename__ = "heroes"
     id = Column(Integer, primary_key=True, index=True)
@@ -123,6 +130,7 @@ class Hero(Base):
     rarity = Column(Enum(ItemRarity))
     hero_type = Column(Enum(HeroType))
     secondary_hero_type = Column(Enum(HeroType))
+    exp_group = Column(Enum(ExpGroup))
 
 
 class Skill(Base):
