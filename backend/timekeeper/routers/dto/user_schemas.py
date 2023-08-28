@@ -1,15 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UserBase(BaseModel):
-    username: str
+    username: str = Field(min_length=4, max_lenth=20)
 
     class Config:
         orm_mode = True
 
 
 class AuthRequest(UserBase):
-    password: str
+    password: str = Field(min_length=1)
 
 
 class RegistrationRequest(AuthRequest):
