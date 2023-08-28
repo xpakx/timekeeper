@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from ...db.models import ItemRarity
 from typing import Optional
 
@@ -28,8 +28,5 @@ class Crystals(BaseModel):
 
 
 class SkillRequest(BaseModel):
-    item_id: int
-    num: int
-
-    class Config:
-        orm_mode = True
+    item_id: int = Field(gt=0)
+    num: int = Field(gt=0, le=4)

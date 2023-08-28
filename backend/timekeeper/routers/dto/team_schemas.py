@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 import enum
 from .hero_schemas import UserHeroBase
@@ -13,11 +13,8 @@ class TeamAction(enum.Enum):
 class TeamRequest(BaseModel):
     hero_id: int
     action: TeamAction
-    num: int
-    switch_num: Optional[int]
-
-    class Config:
-        orm_mode = True
+    num: int = Field(gt=0, le=4)
+    switch_num: Optional[int] = Field(gt=0, le=4)
 
 
 class TeamResponse(BaseModel):

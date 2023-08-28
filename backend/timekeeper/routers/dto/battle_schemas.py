@@ -15,6 +15,3 @@ class BattleBase(BaseModel):
 
 class NewBattleRequest(BaseModel):
     id: int
-
-    class Config:
-        orm_mode = True
