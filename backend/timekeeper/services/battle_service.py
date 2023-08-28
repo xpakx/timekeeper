@@ -2,7 +2,8 @@ from ..db import hero_repo, user_hero_repo, battle_repo, team_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
-from ..db.models import Battle
+from ..db.models import Battle, Skill, UserHero
+import math
 
 
 def create_battle(user_id: int, db: Session):
@@ -41,3 +42,38 @@ def not_such_hero_exception():
         status_code=400,
         detail="Not such hero!",
     )
+
+
+def calculate_if_player_moves_first(
+        hero: UserHero,
+        skill: Skill,
+        enemy: UserHero,
+        enemy_skill: Skill,
+        flee: bool = False,
+        switch: bool = False) -> bool:
+    if (switch):
+        return True
+    priority = 0 if flee else skill.priority
+    if (priority > enemy_skill.priority):
+        return True
+    if (enemy_skill.priority > priority):
+        return False
+    speed = calculate_speed(hero)
+    enemy_speed = calculate_speed(enemy)
+    return speed >= enemy_speed
+
+
+def calculate_stat(base: int, iv: int, effort: int, lvl: int) -> int:
+    return math.floor((2 * base + iv + effort) * lvl/100 + 5)
+
+
+def calculate_speed(hero: UserHero):
+    return calculate_stat(
+            hero.hero.base_speed,
+            hero.speed,
+            0,
+            exp_to_level(hero.experience))
+
+
+def exp_to_level(exp: int) -> int:
+    return 1
