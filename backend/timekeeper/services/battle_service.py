@@ -6,6 +6,31 @@ from ..db.models import Battle, Skill, UserHero, ExpGroup
 import math
 
 
+def level_to_exp(group: ExpGroup, lvl: int) -> int:
+    if group == ExpGroup.slow:
+        return math.floor((5*lvl*lvl*lvl)/4)
+    if group == ExpGroup.medium_slow:
+        return math.floor((6*lvl*lvl*lvl)/5 - 15*lvl*lvl + 100*lvl - 140)
+    if group == ExpGroup.medium_fast:
+        return lvl*lvl*lvl
+    if group == ExpGroup.fast:
+        return math.floor((4*lvl*lvl*lvl)/5)
+
+
+level_dict = {
+        ExpGroup.slow: {},
+        ExpGroup.medium_slow: {},
+        ExpGroup.medium_fast: {},
+        ExpGroup.fast: {}
+        }
+
+for i in range(1, 101):
+    level_dict[ExpGroup.slow][i] = level_to_exp(ExpGroup.slow, i)
+    level_dict[ExpGroup.medium_slow][i] = level_to_exp(ExpGroup.medium_slow, i)
+    level_dict[ExpGroup.medium_fast][i] = level_to_exp(ExpGroup.medium_fast, i)
+    level_dict[ExpGroup.fast][i] = level_to_exp(ExpGroup.fast, i)
+
+
 def create_battle(user_id: int, db: Session):
     team = team_repo.get_team(user_id, db)
     if not team:
@@ -76,18 +101,7 @@ def calculate_speed(hero: UserHero):
 
 
 def exp_to_level(group: ExpGroup, exp: int) -> int:
-    for i in range(1, 100):
-        if level_to_exp(group, i) <= exp:
-            return i
+    for i in range(1, 101):
+        if level_dict[group][i] > exp:
+            return i-1
     return 100
-
-
-def level_to_exp(group: ExpGroup, lvl: int) -> int:
-    if group == ExpGroup.slow:
-        return math.floor((5*lvl*lvl*lvl)/4)
-    if group == ExpGroup.medium_slow:
-        return math.floor((6*lvl*lvl*lvl)/5 - 15*lvl*lvl + 100*lvl - 140)
-    if group == ExpGroup.medium_fast:
-        return lvl*lvl*lvl
-    if group == ExpGroup.fast:
-        return math.floor((4*lvl*lvl*lvl)/5)
