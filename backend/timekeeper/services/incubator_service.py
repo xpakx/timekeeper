@@ -1,4 +1,5 @@
 from ..db import equipment_repo, incubator_repo, user_hero_repo, point_repo
+from .mechanics import battle_mech_service as battle_mech
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
@@ -57,6 +58,7 @@ def get_hero(user_id: int, incubator_id: int, db: Session):
     exp = hero_exp + points - incubator.initial_points
     hero.incubated = False
     hero.experience = exp
+    hero.level = battle_mech.check_level_change(hero)
     incubator.hero = None
     incubator.initial_points = 0
     incubator.usages = incubator.usages - 1

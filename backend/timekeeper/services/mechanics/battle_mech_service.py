@@ -10,15 +10,23 @@ def level_to_exp(group: ExpGroup, lvl: int) -> int:
         return math.floor((6*lvl*lvl*lvl)/5 - 15*lvl*lvl + 100*lvl - 140)
     if group == ExpGroup.medium_fast:
         return lvl*lvl*lvl
-    if group == ExpGroup.fast:
-        return math.floor((4*lvl*lvl*lvl)/5)
+    return math.floor((4*lvl*lvl*lvl)/5)
 
 
 def test_level_up(hero: UserHero, additional_levels: int = 1) -> bool:
+    level = hero.level if hero.level else 0
     exp_needed = level_to_exp(
             hero.hero.exp_group,
-            hero.level + additional_levels)
-    return hero.level >= exp_needed
+            level + additional_levels)
+    return level >= exp_needed
+
+
+def check_level_change(hero: UserHero) -> int:
+    level = hero.level if hero.level else 0
+    for i in range(level+1, 101):
+        if not test_level_up(hero, i):
+            return i-1
+    return 100
 
 
 def calculate_if_player_moves_first(
@@ -113,3 +121,16 @@ def stage_to_modifier(stage: int) -> float:
     if stage > 0:
         return (3+stage)/3
     return 1
+
+
+def test_crit(crit_mod: int) -> float:
+    max = 16
+    if crit_mod > 3:
+        max = 2
+    elif crit_mod == 3:
+        max = 3
+    elif crit_mod == 2:
+        max = 4
+    elif crit_mod == 1:
+        max = 8
+    return random(0, max) == 0
