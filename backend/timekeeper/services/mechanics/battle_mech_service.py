@@ -13,19 +13,11 @@ def level_to_exp(group: ExpGroup, lvl: int) -> int:
         return math.floor((4*lvl*lvl*lvl)/5)
 
 
-level_dict = {
-        ExpGroup.slow: {},
-        ExpGroup.medium_slow: {},
-        ExpGroup.medium_fast: {},
-        ExpGroup.fast: {}
-        }
-
-
-for i in range(1, 101):
-    level_dict[ExpGroup.slow][i] = level_to_exp(ExpGroup.slow, i)
-    level_dict[ExpGroup.medium_slow][i] = level_to_exp(ExpGroup.medium_slow, i)
-    level_dict[ExpGroup.medium_fast][i] = level_to_exp(ExpGroup.medium_fast, i)
-    level_dict[ExpGroup.fast][i] = level_to_exp(ExpGroup.fast, i)
+def test_level_up(hero: UserHero, additional_levels: int = 1) -> bool:
+    exp_needed = level_to_exp(
+            hero.hero.exp_group,
+            hero.level + additional_levels)
+    return hero.level >= exp_needed
 
 
 def calculate_if_player_moves_first(
@@ -56,7 +48,7 @@ def calculate_speed(hero: UserHero):
             hero.hero.base_speed,
             hero.speed,
             0,
-            exp_to_level(hero.hero.exp_group, hero.experience))
+            hero.level)
 
 
 def exp_to_level(group: ExpGroup, exp: int) -> int:

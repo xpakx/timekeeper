@@ -180,6 +180,7 @@ class UserHero(Base):
     in_team = Column(Boolean)
     damage = Column(Integer)
     experience = Column(Integer)
+    level = Column(Integer)
     hero_id = Column(Integer, ForeignKey("heroes.id"))
     hero = relationship("Hero")
     owner_id = Column(Integer, ForeignKey("users.id"))
