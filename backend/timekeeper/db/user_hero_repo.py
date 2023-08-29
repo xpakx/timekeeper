@@ -9,11 +9,12 @@ def create_entry(hero_id, user_id, db: Session):
     entry = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
-            attack=random.randint(0, 16),
-            defense=random.randint(0, 16),
-            speed=random.randint(0, 16),
-            special_attack=random.randint(0, 16),
-            special_defense=random.randint(0, 16),
+            attack=random.randint(0, 32),
+            defense=random.randint(0, 32),
+            speed=random.randint(0, 32),
+            special_attack=random.randint(0, 32),
+            special_defense=random.randint(0, 32),
+            level=1,
             experience=0,
             incubated=False,
             in_team=False

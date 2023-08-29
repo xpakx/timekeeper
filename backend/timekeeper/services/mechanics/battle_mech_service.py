@@ -1,5 +1,6 @@
 from ...db.models import Skill, UserHero, ExpGroup
 import math
+import random
 
 
 def level_to_exp(group: ExpGroup, lvl: int) -> int:
@@ -87,3 +88,28 @@ def calculate_special_def(hero: UserHero):
             hero.special_defense,
             0,
             hero.level)
+
+
+def test_accuracy(
+        hero: UserHero,
+        move: Skill,
+        target: UserHero,
+        hero_accuracy: int,
+        target_evasion: int):
+    stat_stage = hero_accuracy - target_evasion
+    if stat_stage < -6:
+        stat_stage = -6
+    if stat_stage > 6:
+        stat_stage = 6
+    modifier = stage_to_modifier(stat_stage)
+    stat = move.accuracy*modifier
+    return random.randint(0, 100) < stat
+
+
+def stage_to_modifier(stage: int) -> float:
+    if stage < 0:
+        stage = -1 * stage
+        return 3/(stage+3)
+    if stage > 0:
+        return (3+stage)/3
+    return 1
