@@ -43,6 +43,12 @@ def calculate_stat(base: int, iv: int, effort: int, lvl: int) -> int:
     return math.floor((2 * base + iv + effort) * lvl/100 + 5)
 
 
+def calculate_hp(hero: UserHero) -> int:
+    return math.floor(
+            (2 * hero.hero.base_hp + hero.hp + 0)
+            * hero.level/100 + hero.level + 10)
+
+
 def calculate_speed(hero: UserHero):
     return calculate_stat(
             hero.hero.base_speed,
@@ -51,8 +57,33 @@ def calculate_speed(hero: UserHero):
             hero.level)
 
 
-def exp_to_level(group: ExpGroup, exp: int) -> int:
-    for i in range(1, 101):
-        if level_dict[group][i] > exp:
-            return i-1
-    return 100
+def calculate_attack(hero: UserHero):
+    return calculate_stat(
+            hero.hero.base_attack,
+            hero.attack,
+            0,
+            hero.level)
+
+
+def calculate_defense(hero: UserHero):
+    return calculate_stat(
+            hero.hero.base_defense,
+            hero.defense,
+            0,
+            hero.level)
+
+
+def calculate_special_atk(hero: UserHero):
+    return calculate_stat(
+            hero.hero.base_special_attack,
+            hero.special_attack,
+            0,
+            hero.level)
+
+
+def calculate_special_def(hero: UserHero):
+    return calculate_stat(
+            hero.hero.base_special_defense,
+            hero.special_defense,
+            0,
+            hero.level)

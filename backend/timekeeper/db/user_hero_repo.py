@@ -12,7 +12,8 @@ def create_entry(hero_id, user_id, db: Session):
             attack=random.randint(0, 16),
             defense=random.randint(0, 16),
             speed=random.randint(0, 16),
-            special=random.randint(0, 16),
+            special_attack=random.randint(0, 16),
+            special_defense=random.randint(0, 16),
             experience=0,
             incubated=False,
             in_team=False
