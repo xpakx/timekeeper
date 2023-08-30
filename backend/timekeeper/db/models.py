@@ -97,15 +97,23 @@ class EquipmentEntry(Base):
 
 
 class HeroType(enum.Enum):
+    normal = "normal"
+    fighting = "fighting"
+    flying = "flying"
+    poison = "poison"
+    ground = "ground"
+    rock = "rock"
+    bug = "bug"
+    ghost = "ghost"
+    steel = "steel"
     fire = "fire"
-    steam = "steam"
     water = "water"
-    air = "air"
-    earth = "earth"
+    grass = "grass"
+    electric = "electric"
+    psychic = "psychic"
+    ice = "ice"
+    dragon = "dragon"
     dark = "dark"
-    light = "light"
-    celestial = "celestial"
-    nature = "nature"
 
 
 class ExpGroup(enum.Enum):
@@ -134,12 +142,20 @@ class Hero(Base):
     exp_group = Column(Enum(ExpGroup))
 
 
+class MoveCategory(enum.Enum):
+    physical = "physical"
+    special = "special"
+    status = "status"
+
+
 class Skill(Base):
     __tablename__ = "skills"
     id = Column(Integer, primary_key=True, index=True)
     priority = Column(Integer)
     accuracy = Column(Integer)
     power = Column(Integer)
+    move_type = Column(Enum(HeroType))
+    move_category = Column(Enum(HeroType))
     item_id = Column(Integer, ForeignKey("items.id"))
     item = relationship("Item")
 

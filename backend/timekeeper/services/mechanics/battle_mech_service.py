@@ -1,7 +1,7 @@
-from ...db.models import Skill, UserHero, ExpGroup
+from ...db.models import Skill, UserHero, ExpGroup, MoveCategory
 import math
 import random
-
+from .type_service import get_effectiveness
 
 def level_to_exp(group: ExpGroup, lvl: int) -> int:
     if group == ExpGroup.slow:
@@ -153,12 +153,37 @@ def calculate_damage(
         def_stage: int,
         critical: bool) -> int:
     level = hero.level
-    attack = calculate_attack(hero) * stage_to_modifier(atk_stage)
-    defense = calculate_attack(enemy) * stage_to_modifier(def_stage)
+    attack = stage_to_modifier(atk_stage)
+    defense = stage_to_modifier(def_stage)
+    if (move.move_category == MoveCategory.special):
+        attack = attack * calculate_special_atk(hero)
+        defense = defense * calculate_special_def(enemy)
+    else:
+        attack = attack * calculate_attack(hero)
+        defense = defense * calculate_defense(enemy)
+    stab = 1
+    if (test_hero_move_type(hero, move)):
+        stab = 1.5
+    type_mod = get_effectiveness(move.move_type, enemy.hero)
     crit = 2 if critical else 1
     rand = random.randint(85, 101)/100
     return (math.floor(
             math.floor(
                 math.floor((2*level)/5+2)
                 * attack * move.power / defense)
-            / 50) + 2)*crit*rand
+            / 50) + 2)*crit*rand*stab*type_mod
+
+
+def test_hero_move_type(hero: UserHero, move: Skill) -> bool:
+    return (
+            (
+                hero.hero.hero_type
+                and
+                hero.hero.hero_type == move.move_type)
+            or
+            (
+                hero.hero.secondary_hero_type
+                and
+                hero.hero.secondary_hero_type == move.move_type
+            )
+        )
