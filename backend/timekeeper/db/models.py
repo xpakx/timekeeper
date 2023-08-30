@@ -139,6 +139,7 @@ class Skill(Base):
     id = Column(Integer, primary_key=True, index=True)
     priority = Column(Integer)
     accuracy = Column(Integer)
+    power = Column(Integer)
     item_id = Column(Integer, ForeignKey("items.id"))
     item = relationship("Item")
 

@@ -109,17 +109,26 @@ def test_accuracy(
         stat_stage = -6
     if stat_stage > 6:
         stat_stage = 6
-    modifier = stage_to_modifier(stat_stage)
+    modifier = acc_stage_to_modifier(stat_stage)
     stat = move.accuracy*modifier
     return random.randint(0, 100) < stat
 
 
-def stage_to_modifier(stage: int) -> float:
+def acc_stage_to_modifier(stage: int) -> float:
     if stage < 0:
         stage = -1 * stage
         return 3/(stage+3)
     if stage > 0:
         return (3+stage)/3
+    return 1
+
+
+def stage_to_modifier(stage: int) -> float:
+    if stage < 0:
+        stage = -1 * stage
+        return 2/(stage+2)
+    if stage > 0:
+        return (2+stage)/2
     return 1
 
 
@@ -134,3 +143,22 @@ def test_crit(crit_mod: int) -> float:
     elif crit_mod == 1:
         max = 8
     return random(0, max) == 0
+
+
+def calculate_damage(
+        hero: UserHero,
+        atk_stage: int,
+        move: Skill,
+        enemy: UserHero,
+        def_stage: int,
+        critical: bool) -> int:
+    level = hero.level
+    attack = calculate_attack(hero) * stage_to_modifier(atk_stage)
+    defense = calculate_attack(enemy) * stage_to_modifier(def_stage)
+    crit = 2 if critical else 1
+    rand = random.randint(85, 101)/100
+    return (math.floor(
+            math.floor(
+                math.floor((2*level)/5+2)
+                * attack * move.power / defense)
+            / 50) + 2)*crit*rand
