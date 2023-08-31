@@ -3,6 +3,7 @@ import math
 import random
 from .type_service import get_effectiveness
 
+
 def level_to_exp(group: ExpGroup, lvl: int) -> int:
     if group == ExpGroup.slow:
         return math.floor((5*lvl*lvl*lvl)/4)

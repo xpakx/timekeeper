@@ -154,6 +154,7 @@ class Skill(Base):
     priority = Column(Integer)
     accuracy = Column(Integer)
     power = Column(Integer)
+    max_usages = Column(Integer)
     move_type = Column(Enum(HeroType))
     move_category = Column(Enum(HeroType))
     item_id = Column(Integer, ForeignKey("items.id"))
@@ -170,21 +171,25 @@ class SkillSet(Base):
             "Skill",
             primaryjoin="Skill.id==SkillSet.skill_1_id"
             )
+    usages_1 = Column(Integer)
     skill_2_id = Column(Integer, ForeignKey("skills.id"))
     skill_2 = relationship(
             "Skill",
             primaryjoin="Skill.id==SkillSet.skill_2_id"
             )
+    usages_2 = Column(Integer)
     skill_3_id = Column(Integer, ForeignKey("skills.id"))
     skill_3 = relationship(
             "Skill",
             primaryjoin="Skill.id==SkillSet.skill_3_id"
             )
+    usages_3 = Column(Integer)
     skill_4_id = Column(Integer, ForeignKey("skills.id"))
     skill_4 = relationship(
             "Skill",
             primaryjoin="Skill.id==SkillSet.skill_4_id"
             )
+    usages_4 = Column(Integer)
 
 
 class UserHero(Base):

@@ -5,6 +5,10 @@ from sqlalchemy.orm import Session
 def create_entry(hero, db: Session):
     entry = SkillSet(
             hero=hero,
+            usages_1=0,
+            usages_2=0,
+            usages_3=0,
+            usages_4=0
             )
     db.add(entry)
 
