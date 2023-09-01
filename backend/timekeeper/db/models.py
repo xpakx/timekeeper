@@ -92,6 +92,7 @@ class Item(Base):
     rarity = Column(Enum(ItemRarity))
     item_type = Column(Enum(ItemType))
     skill = Column(Boolean)
+    incubator_usages = Column(Integer)
 
 
 class EquipmentEntry(Base):

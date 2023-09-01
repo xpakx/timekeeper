@@ -15,14 +15,13 @@ from timekeeper.db.models import (
         Incubator,
         Points)
 from timekeeper.db.models import Hero, UserHero
-from timekeeper.services.incubator_service import (
-        INCUBATOR,
-        SUPER_INCUBATOR)
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from typing import Optional
 
 NOT_INCUBATOR = 1
+INCUBATOR = 2
+SUPER_INCUBATOR = 3
 
 url = URL.create(
         "postgresql",
@@ -85,14 +84,18 @@ def create_user_and_return_id() -> int:
     return create_user_with_username("User")
 
 
-def create_item(id: int, incubator: bool = True) -> int:
+def create_item(id: int, incubator: bool = True, super_incubator: bool = False) -> int:
     db = TestingSessionLocal()
+    usages = 5 if incubator else 0
+    if super_incubator:
+        usages = 10
     item = Item(
             num=id,
             name="",
             description="",
             rarity=ItemRarity.uncommon,
-            item_type=ItemType.incubator if incubator else ItemType.crystal
+            item_type=ItemType.incubator if incubator else ItemType.crystal,
+            incubator_usages=usages
             )
     db.add(item)
     db.commit()
@@ -335,7 +338,7 @@ def test_installing_normal_incubator(test_db):
     id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(id)}"}
     create_equipment_item(create_item(INCUBATOR), id, 1)
-    create_item(SUPER_INCUBATOR)
+    create_item(SUPER_INCUBATOR, super_incubator=True)
     response = client.post("/incubators/",
                            headers=headers,
                            json={
@@ -353,7 +356,7 @@ def test_installing_super_incubator(test_db):
     id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(id)}"}
     create_item(INCUBATOR)
-    create_equipment_item(create_item(SUPER_INCUBATOR), id, 1)
+    create_equipment_item(create_item(SUPER_INCUBATOR, super_incubator=True), id, 1)
     response = client.post("/incubators/",
                            headers=headers,
                            json={

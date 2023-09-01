@@ -4,9 +4,6 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..db.models import ItemType
 
-INCUBATOR = 7
-SUPER_INCUBATOR = 16
-
 
 def install_incubator(user_id: int, item_id: int, db: Session):
     entry = equipment_repo.get_item_entry(item_id, user_id, db)
@@ -17,7 +14,11 @@ def install_incubator(user_id: int, item_id: int, db: Session):
     entry.amount = entry.amount - 1
     if incubator_repo.get_installed(user_id, db) >= 5:
         raise too_many_incubators_exceotion()
-    incubator = incubator_repo.install_incubator(item_id, user_id, db)
+    incubator = incubator_repo.install_incubator(
+            item_id,
+            entry.item.incubator_usages,
+            user_id,
+            db)
     db.commit()
     db.refresh(incubator)
     return incubator
