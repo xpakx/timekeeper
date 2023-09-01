@@ -10,6 +10,7 @@ from timekeeper.db.models import (
         User,
         Item,
         ItemRarity,
+        ItemType,
         EquipmentEntry,
         Incubator,
         Points)
@@ -84,13 +85,14 @@ def create_user_and_return_id() -> int:
     return create_user_with_username("User")
 
 
-def create_item(id: int) -> int:
+def create_item(id: int, incubator: bool = True) -> int:
     db = TestingSessionLocal()
     item = Item(
             num=id,
             name="",
             description="",
-            rarity=ItemRarity.uncommon
+            rarity=ItemRarity.uncommon,
+            item_type=ItemType.incubator if incubator else ItemType.crystal
             )
     db.add(item)
     db.commit()
@@ -274,7 +276,7 @@ def test_installing_incubator_with_wrong_token(test_db):
 def test_installing_incubator_with_bad_item(test_db):
     id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(id)}"}
-    create_equipment_item(create_item(NOT_INCUBATOR), id, 1)
+    create_equipment_item(create_item(NOT_INCUBATOR, incubator=False), id, 1)
     response = client.post("/incubators/",
                            headers=headers,
                            json={

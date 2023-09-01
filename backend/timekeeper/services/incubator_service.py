@@ -2,17 +2,19 @@ from ..db import equipment_repo, incubator_repo, user_hero_repo, point_repo
 from .mechanics import battle_mech_service as battle_mech
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from ..db.models import ItemType
 
 INCUBATOR = 7
 SUPER_INCUBATOR = 16
-incubators = [INCUBATOR, SUPER_INCUBATOR]
 
 
 def install_incubator(user_id: int, item_id: int, db: Session):
-    if item_id not in incubators:
-        raise not_an_incubator_exception()
-    if not equipment_repo.subtract_items(item_id, 1, user_id, db):
+    entry = equipment_repo.get_item_entry(item_id, user_id, db)
+    if not entry or entry.amount < 1:
         raise not_incubators_exception()
+    if not entry.item.item_type == ItemType.incubator:
+        raise not_an_incubator_exception()
+    entry.amount = entry.amount - 1
     if incubator_repo.get_installed(user_id, db) >= 5:
         raise too_many_incubators_exceotion()
     incubator = incubator_repo.install_incubator(item_id, user_id, db)
