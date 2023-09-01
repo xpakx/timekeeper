@@ -76,6 +76,13 @@ class ItemRarity(enum.Enum):
     rare = "rare"
 
 
+class ItemType(enum.Enum):
+    crystal = "crystal"
+    incubator = "incubator"
+    battle_ticket = "battle ticket"
+    skill = "skill"
+
+
 class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
@@ -83,6 +90,7 @@ class Item(Base):
     name = Column(String)
     description = Column(String)
     rarity = Column(Enum(ItemRarity))
+    item_type = Column(Enum(ItemType))
     skill = Column(Boolean)
 
 
