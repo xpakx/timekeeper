@@ -23,7 +23,7 @@ async def create_battle(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return battle_service.create_battle(user.id, db)
+    return battle_service.create_battle(user.id, request.id, db)
 
 
 @router.get("/{id}", response_model=battle_schemas.BattleBase)
