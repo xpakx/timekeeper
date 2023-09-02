@@ -89,27 +89,31 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
             enemy_skill,
             flee,
             switch)
-    player_hit = battle_mech.test_accuracy(hero, skill, enemy, 0, 0)  # TODO: skill stages
-    enemy_hit = battle_mech.test_accuracy(enemy, enemy_skill, hero, 0, 0)
-    if player_hit:
-        crit = battle_mech.test_crit(0)  # TODO: crit mod
-        dmg = battle_mech.calculate_damage(
-                hero,
-                0,
-                skill,
-                enemy,
-                0,
-                crit)
-        enemy.damage = enemy.damage + dmg
-    if enemy_hit and battle_mech.calculate_hp(enemy) > enemy.damage:
-        crit = battle_mech.test_crit(0)  # TODO: crit mod
-        dmg = battle_mech.calculate_damage(
-                enemy,
-                0,
-                enemy_skill,
-                hero,
-                0,
-                crit)
-        enemy.damage = enemy.damage + dmg
+    if player_first:
+        player_hit = battle_mech.test_accuracy(hero, skill, enemy, 0, 0)  # TODO: skill stages
+        if player_hit:
+            apply_damage(hero, skill, enemy, 0, 0)
+        enemy_hit = battle_mech.test_accuracy(enemy, enemy_skill, hero, 0, 0)
+        if enemy_hit and battle_mech.calculate_hp(enemy) > enemy.damage:
+            apply_damage(enemy, enemy_skill, hero, 0, 0)
+    else:
+        enemy_hit = battle_mech.test_accuracy(enemy, enemy_skill, hero, 0, 0)
+        if enemy_hit:
+            apply_damage(enemy, enemy_skill, hero, 0, 0)
+        player_hit = battle_mech.test_accuracy(hero, skill, enemy, 0, 0)
+        if player_hit and battle_mech.calculate_hp(hero) > hero.damage:
+            apply_damage(hero, skill, enemy, 0, 0)
     battle.turn = battle.turn + 1
     db.commit()
+
+
+def apply_damage(hero, skill, other_hero, atk_stage, def_stage):
+    crit = battle_mech.test_crit(0)  # TODO: crit mod
+    dmg = battle_mech.calculate_damage(
+            hero,
+            atk_stage,
+            skill,
+            other_hero,
+            def_stage,
+            crit)
+    other_hero.damage = other_hero.damage + dmg
