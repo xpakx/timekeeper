@@ -15,6 +15,10 @@ def create_entry(
             hero_id=hero_id,
             enemy_id=enemy_id,
             owner_id=user_id,
+            hero_accuracy=0,
+            hero_evasion=0,
+            enemy_accuracy=0,
+            enemy_evasion=0,
             turn=1,
             enemies=enemies,
             finished=False

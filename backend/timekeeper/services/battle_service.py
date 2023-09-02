@@ -1,4 +1,9 @@
-from ..db import hero_repo, user_hero_repo, battle_repo, team_repo, equipment_repo
+from ..db import (
+        hero_repo,
+        user_hero_repo,
+        battle_repo,
+        team_repo,
+        equipment_repo)
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
@@ -75,11 +80,11 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
     if move.move == MoveType.skill:
         if move.id == 1:
             skill = hero.skills.skill_1
-        if move.id == 2:
+        elif move.id == 2:
             skill = hero.skills.skill_2
-        if move.id == 3:
+        elif move.id == 3:
             skill = hero.skills.skill_3
-        if move.id == 4:
+        elif move.id == 4:
             skill = hero.skills.skill_4
     enemy_skill = enemy.skills.skill_1  # TODO
     player_first = battle_mech.calculate_if_player_moves_first(
@@ -90,17 +95,37 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
             flee,
             switch)
     if player_first:
-        player_hit = battle_mech.test_accuracy(hero, skill, enemy, 0, 0)  # TODO: skill stages
+        player_hit = battle_mech.test_accuracy(
+                hero,
+                skill,
+                enemy,
+                battle.hero_accuracy,
+                battle.enemy_evasion)
         if player_hit:
             apply_damage(hero, skill, enemy, 0, 0)
-        enemy_hit = battle_mech.test_accuracy(enemy, enemy_skill, hero, 0, 0)
+        enemy_hit = battle_mech.test_accuracy(
+                enemy,
+                enemy_skill,
+                hero,
+                battle.enemy_accuracy,
+                battle.hero_evasion)
         if enemy_hit and battle_mech.calculate_hp(enemy) > enemy.damage:
             apply_damage(enemy, enemy_skill, hero, 0, 0)
     else:
-        enemy_hit = battle_mech.test_accuracy(enemy, enemy_skill, hero, 0, 0)
+        enemy_hit = battle_mech.test_accuracy(
+                enemy,
+                enemy_skill,
+                hero,
+                battle.enemy_accuracy,
+                battle.hero_evasion)
         if enemy_hit:
             apply_damage(enemy, enemy_skill, hero, 0, 0)
-        player_hit = battle_mech.test_accuracy(hero, skill, enemy, 0, 0)
+        player_hit = battle_mech.test_accuracy(
+                hero,
+                skill,
+                enemy,
+                battle.hero_accuracy,
+                battle.hero_evasion)
         if player_hit and battle_mech.calculate_hp(hero) > hero.damage:
             apply_damage(hero, skill, enemy, 0, 0)
     battle.turn = battle.turn + 1

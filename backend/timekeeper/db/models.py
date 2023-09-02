@@ -230,10 +230,14 @@ class Battle(Base):
     finished = Column(Boolean)
     hero_id = Column(Integer, ForeignKey("user_heroes.id"))
     hero = relationship("UserHero", primaryjoin="UserHero.id==Battle.hero_id")
+    hero_accuracy = Column(Integer)
+    hero_evasion = Column(Integer)
     enemy_id = Column(Integer, ForeignKey("user_heroes.id"))
     enemy = relationship(
             "UserHero",
             primaryjoin="UserHero.id==Battle.enemy_id")
+    enemy_accuracy = Column(Integer)
+    enemy_evasion = Column(Integer)
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
 
