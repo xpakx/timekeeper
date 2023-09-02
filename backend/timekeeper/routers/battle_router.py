@@ -33,3 +33,13 @@ async def get_battle(
         db: Session = Depends(get_db)
         ):
     return battle_service.get_battle(user.id, id, db)
+
+
+@router.post("/{id}", response_model=battle_schemas.BattleBase)
+async def make_move(
+        request: battle_schemas.MoveRequest,
+        id: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return battle_service.make_move(user.id, id, request, db)

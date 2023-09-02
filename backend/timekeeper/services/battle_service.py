@@ -2,7 +2,8 @@ from ..db import hero_repo, user_hero_repo, battle_repo, team_repo, equipment_re
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
-from ..db.models import Battle, ItemType
+from ..db.models import Battle, ItemType, UserHero
+from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 
 
@@ -62,3 +63,51 @@ def no_battle_tickets_exception():
         status_code=404,
         detail="Not enough battle tickets!",
     )
+
+
+def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
+    battle: Battle = battle_repo.get_battle(user_id, battle_id, db)
+    hero: UserHero = battle.hero
+    enemy: UserHero = battle.enemy
+    skill = None
+    flee = move.move == MoveType.flee
+    switch = False
+    if move.move == MoveType.skill:
+        if move.id == 1:
+            skill = hero.skills.skill_1
+        if move.id == 2:
+            skill = hero.skills.skill_2
+        if move.id == 3:
+            skill = hero.skills.skill_3
+        if move.id == 4:
+            skill = hero.skills.skill_4
+    enemy_skill = enemy.skills.skill_1  # TODO
+    player_first = battle_mech.calculate_if_player_moves_first(
+            hero,
+            skill,
+            enemy,
+            enemy_skill,
+            flee,
+            switch)
+    player_hit = battle_mech.test_accuracy(hero, skill, enemy, 0, 0)  # TODO: skill stages
+    enemy_hit = battle_mech.test_accuracy(enemy, enemy_skill, hero, 0, 0)
+    if player_hit:
+        crit = battle_mech.test_crit(0)  # TODO: crit mod
+        dmg = battle_mech.calculate_damage(
+                hero,
+                0,
+                skill,
+                enemy,
+                0,
+                crit)
+        enemy.damage = enemy.damage + dmg
+    if enemy_hit and battle_mech.calculate_hp(enemy) > enemy.damage:
+        crit = battle_mech.test_crit(0)  # TODO: crit mod
+        dmg = battle_mech.calculate_damage(
+                enemy,
+                0,
+                enemy_skill,
+                hero,
+                0,
+                crit)
+        enemy.damage = enemy.damage + dmg
