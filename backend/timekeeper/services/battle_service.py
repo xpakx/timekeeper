@@ -111,3 +111,5 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
                 0,
                 crit)
         enemy.damage = enemy.damage + dmg
+    battle.turn = battle.turn + 1
+    db.commit()
