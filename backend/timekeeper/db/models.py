@@ -290,3 +290,12 @@ class Team(Base):
             "UserHero",
             primaryjoin="UserHero.id==Team.hero_6_id"
             )
+
+
+class SkillHero(Base):
+    __tablename__ = "skill_hero_pairs"
+    id = Column(Integer, primary_key=True, index=True)
+    hero_id = Column(Integer, ForeignKey("heroes.id"))
+    hero = relationship("Hero")
+    skill_id = Column(Integer, ForeignKey("skills.id"))
+    skill = relationship("Skill")

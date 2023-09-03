@@ -1,5 +1,6 @@
-from .models import SkillSet, Skill
+from .models import SkillSet, Skill, SkillHero
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 
 
 def create_entry(hero, db: Session):
@@ -36,3 +37,16 @@ def get_skill(item_id: int, db: Session):
         .query(Skill)\
         .where(Skill.item_id == item_id)\
         .first()
+
+
+def test_skill(hero_id: int, skill_id: int, db: Session) -> bool:
+    entry: SkillHero = db\
+        .query(SkillHero)\
+        .where(
+                and_(SkillHero.hero_id == hero_id,
+                     SkillHero.skill_id == skill_id)
+                )\
+        .first()
+    if entry:
+        return True
+    return False

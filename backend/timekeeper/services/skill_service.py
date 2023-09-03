@@ -21,6 +21,8 @@ def teach_hero(
     item.amount = item.amount - 1
     if not skill:
         raise not_initialized_exception()
+    if not skillset_repo.test_skill(hero.id, skill.id, db):
+        raise not_teachable_exception()
     skillset_repo.teach_skill(hero.id, skill.id, num, db)
     db.commit()
     return hero
@@ -51,4 +53,11 @@ def not_initialized_exception():
     return HTTPException(
         status_code=500,
         detail="Heroes not initialized",
+    )
+
+
+def not_teachable_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Not teachable!",
     )
