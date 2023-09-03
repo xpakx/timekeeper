@@ -18,11 +18,11 @@ def teach_hero(
     if not hero:
         raise no_such_hero_exception()
     skill = skillset_repo.get_skill(item.item.id, db)
-    item.amount = item.amount - 1
     if not skill:
         raise not_initialized_exception()
     if not skillset_repo.test_skill(hero.id, skill.id, db):
         raise not_teachable_exception()
+    item.amount = item.amount - 1
     skillset_repo.teach_skill(hero.id, skill.id, num, db)
     db.commit()
     return hero
