@@ -232,12 +232,22 @@ class Battle(Base):
     hero = relationship("UserHero", primaryjoin="UserHero.id==Battle.hero_id")
     hero_accuracy = Column(Integer)
     hero_evasion = Column(Integer)
+    hero_attack = Column(Integer)
+    hero_defense = Column(Integer)
+    hero_special_attack = Column(Integer)
+    hero_special_defense = Column(Integer)
+    hero_speed = Column(Integer)
     enemy_id = Column(Integer, ForeignKey("user_heroes.id"))
     enemy = relationship(
             "UserHero",
             primaryjoin="UserHero.id==Battle.enemy_id")
     enemy_accuracy = Column(Integer)
     enemy_evasion = Column(Integer)
+    enemy_attack = Column(Integer)
+    enemy_defense = Column(Integer)
+    enemy_special_attack = Column(Integer)
+    enemy_special_defense = Column(Integer)
+    enemy_speed = Column(Integer)
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
 
