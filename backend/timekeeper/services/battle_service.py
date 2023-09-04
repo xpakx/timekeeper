@@ -102,7 +102,14 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
                 battle.hero_accuracy,
                 battle.enemy_evasion)
         if player_hit:
-            apply_damage(hero, skill, enemy, 0, 0)
+            apply_damage(
+                    hero,
+                    skill,
+                    enemy,
+                    battle.hero_attack,
+                    battle.hero_special_attack,
+                    battle.enemy_defense,
+                    battle.enemy_special_defense)
         enemy_hit = battle_mech.test_accuracy(
                 enemy,
                 enemy_skill,
@@ -110,7 +117,14 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
                 battle.enemy_accuracy,
                 battle.hero_evasion)
         if enemy_hit and battle_mech.calculate_hp(enemy) > enemy.damage:
-            apply_damage(enemy, enemy_skill, hero, 0, 0)
+            apply_damage(
+                    enemy,
+                    enemy_skill,
+                    hero,
+                    battle.enemy_attack,
+                    battle.enemy_special_attack,
+                    battle.hero_defense,
+                    battle.hero_special_defense)
     else:
         enemy_hit = battle_mech.test_accuracy(
                 enemy,
@@ -119,7 +133,14 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
                 battle.enemy_accuracy,
                 battle.hero_evasion)
         if enemy_hit:
-            apply_damage(enemy, enemy_skill, hero, 0, 0)
+            apply_damage(
+                    enemy,
+                    enemy_skill,
+                    hero,
+                    battle.enemy_attack,
+                    battle.enemy_special_attack,
+                    battle.hero_defense,
+                    battle.hero_special_defense)
         player_hit = battle_mech.test_accuracy(
                 hero,
                 skill,
@@ -127,18 +148,34 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
                 battle.hero_accuracy,
                 battle.hero_evasion)
         if player_hit and battle_mech.calculate_hp(hero) > hero.damage:
-            apply_damage(hero, skill, enemy, 0, 0)
+            apply_damage(
+                    hero,
+                    skill,
+                    enemy,
+                    battle.hero_attack,
+                    battle.hero_special_attack,
+                    battle.enemy_defense,
+                    battle.enemy_special_defense)
     battle.turn = battle.turn + 1
     db.commit()
 
 
-def apply_damage(hero, skill, other_hero, atk_stage, def_stage):
+def apply_damage(
+        hero,
+        skill,
+        other_hero,
+        atk_stage,
+        spec_atk_stage,
+        def_stage,
+        spec_def_stage):
     crit = battle_mech.test_crit(0)  # TODO: crit mod
     dmg = battle_mech.calculate_damage(
             hero,
             atk_stage,
+            spec_atk_stage,
             skill,
             other_hero,
             def_stage,
+            spec_def_stage,
             crit)
     other_hero.damage = other_hero.damage + dmg

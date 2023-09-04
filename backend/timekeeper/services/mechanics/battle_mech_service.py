@@ -149,19 +149,23 @@ def test_crit(crit_mod: int) -> float:
 def calculate_damage(
         hero: UserHero,
         atk_stage: int,
+        spec_atk_stage: int,
         move: Skill,
         enemy: UserHero,
         def_stage: int,
+        spec_def_stage: int,
         critical: bool) -> int:
     level = hero.level
-    attack = stage_to_modifier(atk_stage)
-    defense = stage_to_modifier(def_stage)
+    attack = 0
+    defense = 0
     if (move.move_category == MoveCategory.special):
-        attack = attack * calculate_special_atk(hero)
-        defense = defense * calculate_special_def(enemy)
+        attack = stage_to_modifier(spec_atk_stage)
+        * calculate_special_atk(hero)
+        defense = stage_to_modifier(spec_def_stage)
+        * calculate_special_def(enemy)
     else:
-        attack = attack * calculate_attack(hero)
-        defense = defense * calculate_defense(enemy)
+        attack = stage_to_modifier(atk_stage) * calculate_attack(hero)
+        defense = stage_to_modifier(def_stage) * calculate_defense(enemy)
     stab = 1
     if (test_hero_move_type(hero, move)):
         stab = 1.5
