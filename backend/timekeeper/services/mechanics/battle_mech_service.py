@@ -161,8 +161,10 @@ def calculate_damage(
     attack = 0
     defense = 0
     if (move.move_category == MoveCategory.special):
-        attack = stage_to_modifier(spec_atk_stage) * calculate_special_atk(hero)
-        defense = stage_to_modifier(spec_def_stage) * calculate_special_def(enemy)
+        attack = stage_to_modifier(spec_atk_stage) *\
+                calculate_special_atk(hero)
+        defense = stage_to_modifier(spec_def_stage) *\
+                calculate_special_def(enemy)
     else:
         attack = stage_to_modifier(atk_stage) * calculate_attack(hero)
         defense = stage_to_modifier(def_stage) * calculate_defense(enemy)
