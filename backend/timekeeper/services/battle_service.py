@@ -90,8 +90,10 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
     player_first = battle_mech.calculate_if_player_moves_first(
             hero,
             skill,
+            battle.hero_speed,
             enemy,
             enemy_skill,
+            battle.enemy_speed,
             flee,
             switch)
     if player_first:

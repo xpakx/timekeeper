@@ -33,8 +33,10 @@ def check_level_change(hero: UserHero) -> int:
 def calculate_if_player_moves_first(
         hero: UserHero,
         skill: Skill,
+        hero_speed_stage: int,
         enemy: UserHero,
         enemy_skill: Skill,
+        enemy_speed_stage: int,
         flee: bool = False,
         switch: bool = False) -> bool:
     if (switch):
@@ -44,8 +46,8 @@ def calculate_if_player_moves_first(
         return True
     if (enemy_skill.priority > priority):
         return False
-    speed = calculate_speed(hero)
-    enemy_speed = calculate_speed(enemy)
+    speed = calculate_speed(hero) * stage_to_modifier(hero_speed_stage)
+    enemy_speed = calculate_speed(enemy) * stage_to_modifier(enemy_speed_stage)
     return speed >= enemy_speed
 
 
@@ -159,10 +161,8 @@ def calculate_damage(
     attack = 0
     defense = 0
     if (move.move_category == MoveCategory.special):
-        attack = stage_to_modifier(spec_atk_stage)
-        * calculate_special_atk(hero)
-        defense = stage_to_modifier(spec_def_stage)
-        * calculate_special_def(enemy)
+        attack = stage_to_modifier(spec_atk_stage) * calculate_special_atk(hero)
+        defense = stage_to_modifier(spec_def_stage) * calculate_special_def(enemy)
     else:
         attack = stage_to_modifier(atk_stage) * calculate_attack(hero)
         defense = stage_to_modifier(def_stage) * calculate_defense(enemy)
