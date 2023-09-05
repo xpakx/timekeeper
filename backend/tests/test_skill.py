@@ -79,8 +79,7 @@ def create_item(id: int, skill: bool = False) -> int:
             name=f"Item {id}",
             description="",
             rarity=ItemRarity.common,
-            item_type=ItemType.skill if skill else ItemType.crystal,
-            skill=skill
+            item_type=ItemType.skill if skill else ItemType.crystal
             )
     db.add(item)
     db.commit()
