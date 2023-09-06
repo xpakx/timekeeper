@@ -1,6 +1,7 @@
 from .models import SkillSet, Skill, SkillHero
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from fastapi import HTTPException
 
 
 def create_entry(hero, db: Session):
@@ -20,7 +21,7 @@ def teach_skill(hero_id: int, skill_id: int, num: int, db: Session):
         .where(SkillSet.hero_id == hero_id)\
         .first()
     if not entry:
-        pass
+        raise not_initialized_exception()
     if num == 1:
         entry.skill_1_id = skill_id
     elif num == 2:
@@ -50,3 +51,10 @@ def test_skill(hero_id: int, skill_id: int, db: Session) -> bool:
     if entry:
         return True
     return False
+
+
+def not_initialized_exception():
+    return HTTPException(
+        status_code=500,
+        detail="Skillset not initialized",
+    )
