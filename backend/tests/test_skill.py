@@ -336,3 +336,24 @@ def test_teaching_skill_without_skillset(test_db):
                                }
                            )
     assert response.status_code == 500
+
+
+def test_teaching_skill_to_other_users_hero(test_db):
+    user_id = create_user_and_return_id()
+    other_id = create_user_with_username("Other")
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_hero(1, 'Hero'), other_id)
+    item_id = create_item(10, skill=True)
+    create_skillset(hero_id)
+    skill_id = create_skill(item_id)
+    make_skill_teachable_for(skill_id, hero_id)
+    create_equipment_item(item_id, user_id, 1)
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               "item_id": 10,
+                               "num": 1
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 404
