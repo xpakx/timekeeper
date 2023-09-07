@@ -357,3 +357,71 @@ def test_teaching_skill_to_other_users_hero(test_db):
                            )
     print(response.text)
     assert response.status_code == 404
+
+
+def test_teaching_skill_with_no_item_id(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               "num": 1
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 400
+
+
+def test_teaching_skill_with_no_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               "item_id": 10,
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 400
+
+
+def test_teaching_skill_with_negative_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               "item_id": 10,
+                               "num": -1
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 400
+
+
+def test_teaching_skill_with_zero_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               "item_id": 10,
+                               "num": 0
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 400
+
+
+def test_teaching_skill_with_num_higher_than_four(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               "item_id": 10,
+                               "num": 5
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 400
