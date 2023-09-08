@@ -102,6 +102,7 @@ def delete_hero(user_id: int, num: int, db: Session):
     if team is None:
         raise no_team_object_exception()
     insert_hero(None, num, team)
+    move_up(num, team)
     db.commit()
     db.refresh(team)
     return team
@@ -150,3 +151,17 @@ def test_for_gap(team: Team):
             raise gap_in_team_exception
         if i and not initial_gap_ended:
             initial_gap_ended = True
+
+
+def move_up(num: int, team: Team):
+    if num < 2:
+        team.hero_1 = team.hero_2
+    if num < 3:
+        team.hero_2 = team.hero_3
+    if num < 4:
+        team.hero_3 = team.hero_4
+    if num < 5:
+        team.hero_4 = team.hero_5
+    if num < 6:
+        team.hero_5 = team.hero_6
+    team.hero_6 = None
