@@ -36,6 +36,7 @@ def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:
     old_hero = insert_hero(hero, request.num, team)
     if old_hero:
         old_hero.in_team = False
+    test_for_gap(team)
     db.commit()
     db.refresh(team)
     return team
@@ -90,6 +91,7 @@ def switch_heroes(user_id: int, request: TeamRequest, db: Session) -> Team:
         raise hero_not_available_exception()
     secondary_hero = insert_hero(hero, request.switch_num, team)
     insert_hero(secondary_hero, request.num, team)
+    test_for_gap(team)
     db.commit()
     db.refresh(team)
     return team
@@ -124,3 +126,27 @@ def hero_not_available_exception():
         status_code=400,
         detail="Hero unavailable!",
     )
+
+
+def gap_in_team_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Team cannot have gaps!",
+    )
+
+
+def test_for_gap(team: Team):
+    team_list = [
+            team.hero_1,
+            team.hero_2,
+            team.hero_3,
+            team.hero_4,
+            team.hero_5,
+            team.hero_6
+            ]
+    initial_gap_ended = False
+    for i in reversed(team_list):
+        if initial_gap_ended and not i:
+            raise gap_in_team_exception
+        if i and not initial_gap_ended:
+            initial_gap_ended = True
