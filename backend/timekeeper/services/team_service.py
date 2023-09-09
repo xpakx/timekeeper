@@ -110,7 +110,7 @@ def delete_hero(user_id: int, num: int, db: Session):
 
 def no_team_object_exception():
     return HTTPException(
-        status_code=501,
+        status_code=500,
         detail="No team object!",
     )
 
