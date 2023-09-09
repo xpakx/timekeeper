@@ -76,6 +76,18 @@ def create_user_and_return_id() -> int:
     return create_user_with_username("User")
 
 
+def create_team(user_id: int) -> int:
+    db = TestingSessionLocal()
+    team = Team(
+            user_id=user_id
+            )
+    db.add(team)
+    db.commit()
+    db.refresh(team)
+    db.close()
+    return team.id
+
+
 def create_hero(id: int, name: str) -> int:
     db = TestingSessionLocal()
     item = Hero(
@@ -134,3 +146,13 @@ def test_getting_team_without_team_object(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.get("/teams", headers=headers)
     assert response.status_code == 500
+
+
+def test_getting_empty_team(test_db):
+    user_id = create_user_and_return_id()
+    create_team(user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/teams", headers=headers)
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result['heroes']) == 0
