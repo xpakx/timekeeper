@@ -25,17 +25,17 @@ class TeamResponse(BaseModel):
                 'heroes': []
                 }
         if team.hero_1:
-            transformed_data['heroes'].push(team.hero1)
+            transformed_data['heroes'].append(team.hero_1)
         if team.hero_2:
-            transformed_data['heroes'].push(team.hero2)
+            transformed_data['heroes'].append(team.hero_2)
         if team.hero_3:
-            transformed_data['heroes'].push(team.hero3)
+            transformed_data['heroes'].append(team.hero_3)
         if team.hero_4:
-            transformed_data['heroes'].push(team.hero4)
+            transformed_data['heroes'].append(team.hero_4)
         if team.hero_5:
-            transformed_data['heroes'].push(team.hero5)
+            transformed_data['heroes'].append(team.hero_5)
         if team.hero_6:
-            transformed_data['heroes'].push(team.hero6)
+            transformed_data['heroes'].append(team.hero_6)
         return TeamResponse(**transformed_data)
 
     class Config:
