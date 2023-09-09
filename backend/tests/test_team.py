@@ -88,6 +88,25 @@ def create_team(user_id: int) -> int:
     return team.id
 
 
+def add_to_team(team_id: int, hero_id: int, num: int):
+    db = TestingSessionLocal()
+    team = db.get(Team, team_id)
+    if num == 1:
+        team.hero_1_id = hero_id
+    if num == 2:
+        team.hero_2_id = hero_id
+    if num == 3:
+        team.hero_3_id = hero_id
+    if num == 4:
+        team.hero_4_id = hero_id
+    if num == 5:
+        team.hero_5_id = hero_id
+    if num == 6:
+        team.hero_6_id = hero_id
+    db.commit()
+    db.close()
+
+
 def create_hero(id: int, name: str) -> int:
     db = TestingSessionLocal()
     item = Hero(
@@ -156,3 +175,19 @@ def test_getting_empty_team(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result['heroes']) == 0
+
+
+def test_getting_team(test_db):
+    user_id = create_user_and_return_id()
+    team_id = create_team(user_id)
+    add_to_team(team_id, create_user_hero(create_hero(1, "Hero 1"), user_id), 1)
+    add_to_team(team_id, create_user_hero(create_hero(2, "Hero 2"), user_id), 2)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/teams", headers=headers)
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result['heroes']) == 2
+    assert result['heroes'][0]['hero']['name'] == "Hero 1"
+    assert result['heroes'][0]['hero']['id'] == 1
+    assert result['heroes'][1]['hero']['name'] == "Hero 2"
+    assert result['heroes'][1]['hero']['id'] == 2
