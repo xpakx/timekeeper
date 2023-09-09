@@ -125,5 +125,12 @@ def test_getting_team_without_authentication(test_db):
 
 def test_getting_team_with_wrong_token(test_db):
     headers = {"Authorization": "Bearer wrong_token"}
-    response = client.get("/teams", headers=headers,)
+    response = client.get("/teams", headers=headers)
     assert response.status_code == 401
+
+
+def test_getting_team_without_team_object(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/teams", headers=headers)
+    assert response.status_code == 500
