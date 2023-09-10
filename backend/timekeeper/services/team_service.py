@@ -33,6 +33,7 @@ def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:
         raise no_such_hero_exception()
     if hero.incubated or hero.in_team:
         raise hero_not_available_exception()
+    hero.in_team = True
     old_hero = insert_hero(hero, request.num, team)
     if old_hero:
         old_hero.in_team = False
