@@ -180,8 +180,14 @@ def test_getting_empty_team(test_db):
 def test_getting_team(test_db):
     user_id = create_user_and_return_id()
     team_id = create_team(user_id)
-    add_to_team(team_id, create_user_hero(create_hero(1, "Hero 1"), user_id), 1)
-    add_to_team(team_id, create_user_hero(create_hero(2, "Hero 2"), user_id), 2)
+    add_to_team(
+            team_id,
+            create_user_hero(create_hero(1, "Hero 1"), user_id),
+            1)
+    add_to_team(
+            team_id,
+            create_user_hero(create_hero(2, "Hero 2"), user_id),
+            2)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.get("/teams", headers=headers)
     assert response.status_code == 200
@@ -191,3 +197,103 @@ def test_getting_team(test_db):
     assert result['heroes'][0]['hero']['id'] == 1
     assert result['heroes'][1]['hero']['name'] == "Hero 2"
     assert result['heroes'][1]['hero']['id'] == 2
+
+
+# add hero
+def test_adding_hero_without_authentication(test_db):
+    response = client.post("/teams")
+    assert response.status_code == 401
+
+
+def test_adding_hero_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 1,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 401
+
+
+def test_adding_hero_without_hero_id(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_without_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_without_action(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 1,
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_with_negative_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": -1,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_with_num_zero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 0,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_with_num_greater_than_6(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 7,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
