@@ -122,12 +122,17 @@ def create_hero(id: int, name: str) -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int):
+def create_user_hero(
+        hero_id: int,
+        user_id: int,
+        incubated: bool = False,
+        in_team: bool = False):
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
-            incubated=False
+            incubated=incubated,
+            in_team=in_team
             )
     db.add(item)
     db.commit()
@@ -296,4 +301,67 @@ def test_adding_hero_with_num_greater_than_6(test_db):
                                "action": "add"
                                }
                            )
+    assert response.status_code == 400
+
+
+def test_adding_hero_without_team_initialized(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id,
+                               "num": 1,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 500
+
+
+def test_adding_hero_without_hero(test_db):
+    user_id = create_user_and_return_id()
+    create_team(user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 1,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_with_incubated_hero(test_db):
+    user_id = create_user_and_return_id()
+    create_team(user_id)
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id, incubated=True)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id,
+                               "num": 1,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_with_hero_already_in_team(test_db):
+    user_id = create_user_and_return_id()
+    create_team(user_id)
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id, in_team=True)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id,
+                               "num": 1,
+                               "action": "add"
+                               }
+                           )
+    print(response.text)
     assert response.status_code == 400
