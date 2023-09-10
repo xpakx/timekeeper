@@ -380,5 +380,47 @@ def test_adding_hero(test_db):
                                "action": "add"
                                }
                            )
-    print(response.text)
     assert response.status_code == 200
+    result = response.json()
+    assert len(result['heroes']) == 1
+    assert result['heroes'][0]['id'] == hero_id
+
+
+def test_changing_added_hero_in_db(test_db):
+    user_id = create_user_and_return_id()
+    create_team(user_id)
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    client.post("/teams",
+                headers=headers,
+                json={
+                    "hero_id": hero_id,
+                    "num": 1,
+                    "action": "add"
+                    }
+                )
+    db = TestingSessionLocal()
+    hero: UserHero = db.get(UserHero, hero_id)
+    db.close()
+    assert hero.in_team
+
+
+def test_changing_old_hero_in_db_after_addition(test_db):
+    user_id = create_user_and_return_id()
+    team_id = create_team(user_id)
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id)
+    old_hero_id = create_user_hero(create_hero(2, "Hero 2"), user_id, in_team=True)
+    add_to_team(team_id, old_hero_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    client.post("/teams",
+                headers=headers,
+                json={
+                    "hero_id": hero_id,
+                    "num": 1,
+                    "action": "add"
+                    }
+                )
+    db = TestingSessionLocal()
+    hero: UserHero = db.get(UserHero, old_hero_id)
+    db.close()
+    assert not hero.in_team
