@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 router = APIRouter(prefix="/teams")
 
 
-@router.post("/", response_model=list[team_schemas.TeamRequest])
+@router.post("/", response_model=list[team_schemas.TeamResponse])
 async def change_team(
         request: team_schemas.TeamRequest,
         user: Annotated[CurrentUser, Depends(get_current_user)],
