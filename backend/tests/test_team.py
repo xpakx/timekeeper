@@ -365,3 +365,20 @@ def test_adding_hero_with_hero_already_in_team(test_db):
                            )
     print(response.text)
     assert response.status_code == 400
+
+
+def test_adding_hero(test_db):
+    user_id = create_user_and_return_id()
+    create_team(user_id)
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id,
+                               "num": 1,
+                               "action": "add"
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 200
