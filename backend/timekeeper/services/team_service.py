@@ -39,7 +39,7 @@ def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:
     test_for_gap(team)
     db.commit()
     db.refresh(team)
-    return team
+    return TeamResponse.transform_data(team)
 
 
 def insert_hero(hero: Optional[UserHero], num: int, team: Team) -> UserHero:
@@ -94,7 +94,7 @@ def switch_heroes(user_id: int, request: TeamRequest, db: Session) -> Team:
     test_for_gap(team)
     db.commit()
     db.refresh(team)
-    return team
+    return TeamResponse.transform_data(team)
 
 
 def delete_hero(user_id: int, num: int, db: Session):
