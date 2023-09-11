@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, root_validator
 from typing import Optional
 import enum
 from .hero_schemas import UserHeroBase
@@ -15,6 +15,14 @@ class TeamRequest(BaseModel):
     action: TeamAction
     num: int = Field(gt=0, le=4)
     switch_num: Optional[int] = Field(gt=0, le=4)
+
+    @root_validator()
+    def validate_switch_num(cls, values):
+        action = values.get('action')
+        value = values.get('switch_num')
+        if action == TeamAction.switch and value is None:
+            raise ValueError("Position to switch cannot be empty")
+        return values
 
 
 class TeamResponse(BaseModel):
