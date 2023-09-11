@@ -115,7 +115,7 @@ def delete_hero(user_id: int, num: int, db: Session):
     move_up(num, team)
     db.commit()
     db.refresh(team)
-    return team
+    return TeamResponse.transform_data(team)
 
 
 def no_team_object_exception():
