@@ -77,19 +77,28 @@ def insert_hero(hero: Optional[UserHero], num: int, team: Team) -> UserHero:
         return result
 
 
+def get_hero_from_position(num: int, team: Team) -> UserHero:
+    if num == 1:
+        return team.hero_1
+    if num == 2:
+        return team.hero_2
+    if num == 3:
+        return team.hero_3
+    if num == 4:
+        return team.hero_4
+    if num == 5:
+        return team.hero_5
+    if num == 6:
+        return team.hero_6
+
+
 def switch_heroes(user_id: int, request: TeamRequest, db: Session) -> Team:
     team = team_repo.get_team(user_id, db)
     if team is None:
         raise no_team_object_exception()
-    hero: Optional[UserHero] = user_hero_repo.get_hero(
-            user_id,
-            request.hero_id,
-            db
-            )
+    hero: Optional[UserHero] = get_hero_from_position(request.num, team)
     if hero is None:
         raise no_such_hero_exception()
-    if hero.incubated or not hero.in_team:
-        raise hero_not_available_exception()
     secondary_hero = insert_hero(hero, request.switch_num, team)
     insert_hero(secondary_hero, request.num, team)
     test_for_gap(team)
