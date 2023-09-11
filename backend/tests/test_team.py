@@ -548,3 +548,131 @@ def test_switching_hero_without_switch_num(test_db):
                                }
                            )
     assert response.status_code == 400
+
+
+def test_switching_hero_with_no_team_initialized(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "switch_num": 2,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 500
+
+
+def test_switching_hero_if_no_first_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    create_team(user_id)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "switch_num": 2,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_switching_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    team_id = create_team(user_id)
+    first_hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, first_hero_id, 1)
+    second_hero_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, second_hero_id, 2)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "switch_num": 2,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result['heroes']) == 2
+    assert result['heroes'][0]['id'] == second_hero_id
+    assert result['heroes'][1]['id'] == first_hero_id
+
+
+def test_switching_hero_and_making_initial_gap(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    team_id = create_team(user_id)
+    first_hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, first_hero_id, 1)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "switch_num": 2,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_switching_hero_and_making_initial_gap_with_jump(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    team_id = create_team(user_id)
+    first_hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, first_hero_id, 1)
+    second_hero_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, second_hero_id, 2)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "switch_num": 3,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_switching_hero_and_making_gap(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    team_id = create_team(user_id)
+    first_hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, first_hero_id, 1)
+    second_hero_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, second_hero_id, 2)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 2,
+                               "switch_num": 4,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 400
