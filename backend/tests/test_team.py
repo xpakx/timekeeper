@@ -492,3 +492,63 @@ def test_adding_hero_at_second_position(test_db):
     assert len(result['heroes']) == 2
     assert result['heroes'][0]['id'] == old_hero_id
     assert result['heroes'][1]['id'] == hero_id
+
+
+# switching hero
+def test_switching_hero_with_negative_switch_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 1,
+                               "switch_num": -1,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_switching_hero_with_zero_switch_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 1,
+                               "switch_num": 0,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_switching_hero_with_switch_num_greater_than_six(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 1,
+                               "switch_num": 7,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_switching_hero_without_switch_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": 1,
+                               "num": 1,
+                               "action": "switch"
+                               }
+                           )
+    assert response.status_code == 400
