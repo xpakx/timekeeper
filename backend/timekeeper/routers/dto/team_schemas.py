@@ -11,7 +11,7 @@ class TeamAction(enum.Enum):
 
 
 class TeamRequest(BaseModel):
-    hero_id: int
+    hero_id: Optional[int]
     action: TeamAction
     num: int = Field(gt=0, le=4)
     switch_num: Optional[int] = Field(gt=0, le=4)
@@ -22,6 +22,14 @@ class TeamRequest(BaseModel):
         value = values.get('switch_num')
         if action == TeamAction.switch and value is None:
             raise ValueError("Position to switch cannot be empty")
+        return values
+
+    @root_validator()
+    def validate_hero_id(cls, values):
+        action = values.get('action')
+        value = values.get('hero_id')
+        if action != TeamAction.switch and value is None:
+            raise ValueError("Hero id cannot be empty")
         return values
 
 

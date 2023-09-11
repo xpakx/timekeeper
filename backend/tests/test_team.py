@@ -501,7 +501,6 @@ def test_switching_hero_with_negative_switch_num(test_db):
     response = client.post("/teams",
                            headers=headers,
                            json={
-                               "hero_id": 1,
                                "num": 1,
                                "switch_num": -1,
                                "action": "switch"
@@ -516,7 +515,6 @@ def test_switching_hero_with_zero_switch_num(test_db):
     response = client.post("/teams",
                            headers=headers,
                            json={
-                               "hero_id": 1,
                                "num": 1,
                                "switch_num": 0,
                                "action": "switch"
@@ -531,7 +529,6 @@ def test_switching_hero_with_switch_num_greater_than_six(test_db):
     response = client.post("/teams",
                            headers=headers,
                            json={
-                               "hero_id": 1,
                                "num": 1,
                                "switch_num": 7,
                                "action": "switch"
@@ -546,7 +543,6 @@ def test_switching_hero_without_switch_num(test_db):
     response = client.post("/teams",
                            headers=headers,
                            json={
-                               "hero_id": 1,
                                "num": 1,
                                "action": "switch"
                                }
