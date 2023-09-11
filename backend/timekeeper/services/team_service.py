@@ -149,7 +149,7 @@ def test_for_gap(team: Team):
     initial_gap_ended = False
     for i in reversed(team_list):
         if initial_gap_ended and not i:
-            raise gap_in_team_exception
+            raise gap_in_team_exception()
         if i and not initial_gap_ended:
             initial_gap_ended = True
 
