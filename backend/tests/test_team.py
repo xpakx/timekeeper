@@ -337,7 +337,10 @@ def test_adding_hero_without_hero(test_db):
 def test_adding_hero_with_incubated_hero(test_db):
     user_id = create_user_and_return_id()
     create_team(user_id)
-    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id, incubated=True)
+    hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            incubated=True)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post("/teams",
                            headers=headers,
@@ -409,7 +412,10 @@ def test_changing_old_hero_in_db_after_addition(test_db):
     user_id = create_user_and_return_id()
     team_id = create_team(user_id)
     hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id)
-    old_hero_id = create_user_hero(create_hero(2, "Hero 2"), user_id, in_team=True)
+    old_hero_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
     add_to_team(team_id, old_hero_id, 1)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     client.post("/teams",
@@ -424,3 +430,65 @@ def test_changing_old_hero_in_db_after_addition(test_db):
     hero: UserHero = db.get(UserHero, old_hero_id)
     db.close()
     assert not hero.in_team
+
+
+def test_adding_hero_with_initial_gap(test_db):
+    user_id = create_user_and_return_id()
+    create_team(user_id)
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id,
+                               "num": 2,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_with_gap_between_heroes(test_db):
+    user_id = create_user_and_return_id()
+    team_id = create_team(user_id)
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id)
+    old_hero_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, old_hero_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id,
+                               "num": 3,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_adding_hero_at_second_position(test_db):
+    user_id = create_user_and_return_id()
+    team_id = create_team(user_id)
+    hero_id = create_user_hero(create_hero(1, "Hero 1"), user_id)
+    old_hero_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, old_hero_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "hero_id": hero_id,
+                               "num": 2,
+                               "action": "add"
+                               }
+                           )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result['heroes']) == 2
+    assert result['heroes'][0]['id'] == old_hero_id
+    assert result['heroes'][1]['id'] == hero_id
