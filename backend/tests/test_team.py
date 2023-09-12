@@ -762,3 +762,98 @@ def test_deleting_hero(test_db):
     assert response.status_code == 200
     result = response.json()
     assert len(result['heroes']) == 0
+
+
+def test_deleting_hero_from_two_hero_team(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    team_id = create_team(user_id)
+    hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_id, 1)
+    hero_2_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_2_id, 2)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result['heroes']) == 1
+    assert result['heroes'][0]['id'] == hero_2_id
+
+
+def test_closing_initial_gap_while_deleting_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    team_id = create_team(user_id)
+    hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_id, 1)
+    hero_2_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_2_id, 2)
+    hero_3_id = create_user_hero(
+            create_hero(3, "Hero 3"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_3_id, 3)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    team = db.get(Team, team_id)
+    db.close()
+    assert team.hero_1_id == hero_2_id
+    assert team.hero_2_id == hero_3_id
+
+
+def test_closing_gap_while_deleting_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    team_id = create_team(user_id)
+    hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_id, 1)
+    hero_2_id = create_user_hero(
+            create_hero(2, "Hero 2"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_2_id, 2)
+    hero_3_id = create_user_hero(
+            create_hero(3, "Hero 3"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_3_id, 3)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 2,
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    team = db.get(Team, team_id)
+    db.close()
+    assert team.hero_1_id == hero_id
+    assert team.hero_2_id == hero_3_id
