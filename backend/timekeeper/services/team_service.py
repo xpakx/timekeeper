@@ -16,8 +16,10 @@ def get_team(user_id: int, db: Session) -> TeamResponse:
 def change_team(user_id: int, request: TeamRequest, db: Session) -> Team:
     if request.action == TeamAction.add:
         return add_hero(user_id, request, db)
-    else:
+    elif request.action == TeamAction.switch:
         return switch_heroes(user_id, request, db)
+    elif request.action == TeamAction.delete:
+        return delete_hero(user_id, request.num, db)
 
 
 def add_hero(user_id: int, request: TeamRequest, db: Session) -> Team:

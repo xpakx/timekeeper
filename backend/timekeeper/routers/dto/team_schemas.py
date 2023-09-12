@@ -8,6 +8,7 @@ from ...db.models import Team
 class TeamAction(enum.Enum):
     add = "add"
     switch = "switch"
+    delete = "delete"
 
 
 class TeamRequest(BaseModel):
@@ -28,7 +29,7 @@ class TeamRequest(BaseModel):
     def validate_hero_id(cls, values):
         action = values.get('action')
         value = values.get('hero_id')
-        if action != TeamAction.switch and value is None:
+        if action == TeamAction.add and value is None:
             raise ValueError("Hero id cannot be empty")
         return values
 
