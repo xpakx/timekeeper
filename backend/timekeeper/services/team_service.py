@@ -50,32 +50,26 @@ def insert_hero(hero: Optional[UserHero], num: int, team: Team) -> UserHero:
     if num == 1:
         result = team.hero_1
         team.hero_1_id = hero_id
-        team.hero_1 = hero
         return result
     if num == 2:
         result = team.hero_2
         team.hero_2_id = hero_id
-        team.hero_2 = hero
         return result
     if num == 3:
         result = team.hero_3
         team.hero_3_id = hero_id
-        team.hero_3 = hero
         return result
     if num == 4:
         result = team.hero_4
         team.hero_4_id = hero_id
-        team.hero_4 = hero
         return result
     if num == 5:
         result = team.hero_5
         team.hero_5_id = hero_id
-        team.hero_5 = hero
         return result
     if num == 6:
         result = team.hero_6
         team.hero_6_id = hero_id
-        team.hero_6 = hero
         return result
 
 
@@ -150,12 +144,12 @@ def gap_in_team_exception():
 
 def test_for_gap(team: Team):
     team_list = [
-            team.hero_1,
-            team.hero_2,
-            team.hero_3,
-            team.hero_4,
-            team.hero_5,
-            team.hero_6
+            team.hero_1_id,
+            team.hero_2_id,
+            team.hero_3_id,
+            team.hero_4_id,
+            team.hero_5_id,
+            team.hero_6_id
             ]
     initial_gap_ended = False
     for i in reversed(team_list):
@@ -167,13 +161,13 @@ def test_for_gap(team: Team):
 
 def move_up(num: int, team: Team):
     if num < 2:
-        team.hero_1 = team.hero_2
+        team.hero_1_id = team.hero_2_id
     if num < 3:
-        team.hero_2 = team.hero_3
+        team.hero_2_id = team.hero_3_id
     if num < 4:
-        team.hero_3 = team.hero_4
+        team.hero_3_id = team.hero_4_id
     if num < 5:
-        team.hero_4 = team.hero_5
+        team.hero_4_id = team.hero_5_id
     if num < 6:
-        team.hero_5 = team.hero_6
-    team.hero_6 = None
+        team.hero_5_id = team.hero_6_id
+    team.hero_6_id = None
