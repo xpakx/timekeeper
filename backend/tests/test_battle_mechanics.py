@@ -61,3 +61,33 @@ def test_100th_lvl_to_exp_for_fast_group():
 def test_25th_lvl_to_exp_for_fast_group():
     result = service.level_to_exp(ExpGroup.fast, 25)
     assert result == 12_500
+
+
+def test_1th_lvl_to_exp_for_erratic_group():
+    result = service.level_to_exp(ExpGroup.erratic, 1)
+    assert result == 1
+
+
+def test_100th_lvl_to_exp_for_erratic_group():
+    result = service.level_to_exp(ExpGroup.erratic, 100)
+    assert result == 600_000
+
+
+def test_25th_lvl_to_exp_for_erratic_group():
+    result = service.level_to_exp(ExpGroup.erratic, 25)
+    assert result == 23_437
+
+
+def test_1th_lvl_to_exp_for_fluctuating_group():
+    result = service.level_to_exp(ExpGroup.fluctuating, 1)
+    assert result == 0
+
+
+def test_100th_lvl_to_exp_for_fluctuating_group():
+    result = service.level_to_exp(ExpGroup.fluctuating, 100)
+    assert result == 1_640_000
+
+
+def test_25th_lvl_to_exp_for_fluctuating_group():
+    result = service.level_to_exp(ExpGroup.fluctuating, 25)
+    assert result == 12_187
