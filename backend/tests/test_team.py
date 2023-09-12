@@ -676,3 +676,89 @@ def test_switching_hero_and_making_gap(test_db):
                                }
                            )
     assert response.status_code == 400
+
+
+# deleting hero from team
+def test_deleting_hero_with_negative_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": -1,
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_deleting_hero_with_zero_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 0,
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_deleting_hero_with_num_greater_than_six(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 7,
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_deleting_hero_without_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_deleting_hero_with_no_team_initialized(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 500
+
+
+def test_deleting_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    team_id = create_team(user_id)
+    hero_id = create_user_hero(
+            create_hero(1, "Hero 1"),
+            user_id,
+            in_team=True)
+    add_to_team(team_id, hero_id, 1)
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "num": 1,
+                               "action": "delete"
+                               }
+                           )
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result['heroes']) == 0
