@@ -129,6 +129,8 @@ class ExpGroup(enum.Enum):
     medium_slow = "medium slow"
     fast = "fast"
     medium_fast = "medium fast"
+    erratic = "erratic"
+    fluctuating = "fluctuating"
 
 
 class Hero(Base):

@@ -11,7 +11,23 @@ def level_to_exp(group: ExpGroup, lvl: int) -> int:
         return math.floor((6*lvl*lvl*lvl)/5 - 15*lvl*lvl + 100*lvl - 140)
     if group == ExpGroup.medium_fast:
         return lvl*lvl*lvl
-    return math.floor((4*lvl*lvl*lvl)/5)
+    if group == ExpGroup.fast:
+        return math.floor((4*lvl*lvl*lvl)/5)
+    if group == ExpGroup.erratic:
+        if lvl < 50:
+            return math.floor((lvl*lvl*lvl*(100-lvl))/50)
+        if lvl < 68:
+            return math.floor((lvl*lvl*lvl*(150-lvl))/100)
+        if lvl < 98:
+            return math.floor((lvl*lvl*lvl*math.floor((1911-10*lvl)/3))/500)
+        return math.floor((lvl*lvl*lvl*(160-lvl))/100)
+    if group == ExpGroup.fluctuating:
+        if lvl < 15:
+            return math.floor((lvl*lvl*lvl*(math.floor((lvl+1)/3)+24))/50)
+        if lvl < 36:
+            return math.floor((lvl*lvl*lvl*(lvl+14))/50)
+        return math.floor((lvl*lvl*lvl*(math.floor(lvl/2)+32))/50)
+    return 0
 
 
 def test_level_up(hero: UserHero, additional_levels: int = 1) -> bool:
