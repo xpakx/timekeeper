@@ -140,3 +140,40 @@ def test_level_up_multiple_levels_without_enough_experience():
             )
     result = service.test_level_up(hero, 10)
     assert not result
+
+
+# checking level change
+def test_level_change_without_level_up():
+    hero = UserHero(
+            hero=Hero(
+                exp_group=ExpGroup.fast
+                ),
+            experience=1800,
+            level=13
+            )
+    result = service.check_level_change(hero)
+    assert result == 13
+
+
+def test_level_change_with_level_up():
+    hero = UserHero(
+            hero=Hero(
+                exp_group=ExpGroup.fast
+                ),
+            experience=1800,
+            level=9
+            )
+    result = service.check_level_change(hero)
+    assert result == 13
+
+
+def test_level_change_at_level_100():
+    hero = UserHero(
+            hero=Hero(
+                exp_group=ExpGroup.fast
+                ),
+            experience=1_000_000,
+            level=100
+            )
+    result = service.check_level_change(hero)
+    assert result == 100
