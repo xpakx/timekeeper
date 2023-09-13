@@ -41,9 +41,9 @@ def test_level_up(hero: UserHero, additional_levels: int = 1) -> bool:
 
 def check_level_change(hero: UserHero) -> int:
     level = hero.level if hero.level else 0
-    for i in range(level+1, 101):
+    for i in range(1, 101-level):
         if not test_level_up(hero, i):
-            return i-1
+            return level+i-1
     return 100
 
 
