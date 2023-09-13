@@ -32,10 +32,11 @@ def level_to_exp(group: ExpGroup, lvl: int) -> int:
 
 def test_level_up(hero: UserHero, additional_levels: int = 1) -> bool:
     level = hero.level if hero.level else 0
+    exp = hero.experience if hero.experience else 0
     exp_needed = level_to_exp(
             hero.hero.exp_group,
             level + additional_levels)
-    return level >= exp_needed
+    return exp >= exp_needed
 
 
 def check_level_change(hero: UserHero) -> int:
