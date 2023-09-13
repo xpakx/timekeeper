@@ -1,4 +1,4 @@
-from ...db.models import Skill, UserHero, ExpGroup, MoveCategory
+from ...db.models import Skill, UserHero, ExpGroup, MoveCategory, HeroMods
 import math
 import random
 from .type_service import get_effectiveness
@@ -48,11 +48,11 @@ def check_level_change(hero: UserHero) -> int:
 
 def calculate_if_player_moves_first(
         hero: UserHero,
+        hero_mods: HeroMods,
         skill: Skill,
-        hero_speed_stage: int,
         enemy: UserHero,
+        enemy_mods: HeroMods,
         enemy_skill: Skill,
-        enemy_speed_stage: int,
         flee: bool = False,
         switch: bool = False) -> bool:
     if (switch):
@@ -62,8 +62,8 @@ def calculate_if_player_moves_first(
         return True
     if (enemy_skill.priority > priority):
         return False
-    speed = calculate_speed(hero) * stage_to_modifier(hero_speed_stage)
-    enemy_speed = calculate_speed(enemy) * stage_to_modifier(enemy_speed_stage)
+    speed = calculate_speed(hero) * stage_to_modifier(hero_mods.speed)
+    enemy_speed = calculate_speed(enemy) * stage_to_modifier(enemy_mods.speed)
     return speed >= enemy_speed
 
 
@@ -119,11 +119,11 @@ def calculate_special_def(hero: UserHero):
 
 def test_accuracy(
         hero: UserHero,
+        hero_mods: HeroMods,
         move: Skill,
         target: UserHero,
-        hero_accuracy: int,
-        target_evasion: int):
-    stat_stage = hero_accuracy - target_evasion
+        target_mods: HeroMods):
+    stat_stage = hero_mods.accuracy - target_mods.evasion
     if stat_stage < -6:
         stat_stage = -6
     if stat_stage > 6:
@@ -166,24 +166,24 @@ def test_crit(crit_mod: int) -> float:
 
 def calculate_damage(
         hero: UserHero,
-        atk_stage: int,
-        spec_atk_stage: int,
+        hero_mods: HeroMods,
         move: Skill,
         enemy: UserHero,
-        def_stage: int,
-        spec_def_stage: int,
+        enemy_mods: HeroMods,
         critical: bool) -> int:
     level = hero.level
     attack = 0
     defense = 0
     if (move.move_category == MoveCategory.special):
-        attack = stage_to_modifier(spec_atk_stage) *\
-                calculate_special_atk(hero)
-        defense = stage_to_modifier(spec_def_stage) *\
-                calculate_special_def(enemy)
+        attack = stage_to_modifier(hero_mods.special_attack) *\
+            calculate_special_atk(hero)
+        defense = stage_to_modifier(enemy_mods.special_defense) *\
+            calculate_special_def(enemy)
     else:
-        attack = stage_to_modifier(atk_stage) * calculate_attack(hero)
-        defense = stage_to_modifier(def_stage) * calculate_defense(enemy)
+        attack = stage_to_modifier(hero_mods.attack) *\
+            calculate_attack(hero)
+        defense = stage_to_modifier(enemy_mods.defense) *\
+            calculate_defense(enemy)
     stab = 1
     if (test_hero_move_type(hero, move)):
         stab = 1.5

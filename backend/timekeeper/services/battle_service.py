@@ -7,7 +7,7 @@ from ..db import (
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
-from ..db.models import Battle, ItemType, UserHero
+from ..db.models import Battle, ItemType, UserHero, HeroMods
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 
@@ -73,7 +73,9 @@ def no_battle_tickets_exception():
 def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
     battle: Battle = battle_repo.get_battle(user_id, battle_id, db)
     hero: UserHero = battle.hero
+    hero_mods: HeroMods = battle.hero_mods
     enemy: UserHero = battle.enemy
+    enemy_mods: HeroMods = battle.enemy_mods
     skill = None
     flee = move.move == MoveType.flee
     switch = False
@@ -89,95 +91,83 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
     enemy_skill = enemy.skills.skill_1  # TODO
     player_first = battle_mech.calculate_if_player_moves_first(
             hero,
+            hero_mods,
             skill,
-            battle.hero_speed,
             enemy,
+            enemy_mods,
             enemy_skill,
-            battle.enemy_speed,
             flee,
             switch)
     if player_first:
         player_hit = battle_mech.test_accuracy(
                 hero,
+                hero_mods,
                 skill,
                 enemy,
-                battle.hero_accuracy,
-                battle.enemy_evasion)
+                enemy_mods)
         if player_hit:
             apply_damage(
                     hero,
+                    hero_mods,
                     skill,
                     enemy,
-                    battle.hero_attack,
-                    battle.hero_special_attack,
-                    battle.enemy_defense,
-                    battle.enemy_special_defense)
+                    enemy_mods)
         enemy_hit = battle_mech.test_accuracy(
                 enemy,
+                enemy_mods,
                 enemy_skill,
                 hero,
-                battle.enemy_accuracy,
-                battle.hero_evasion)
+                hero_mods)
         if enemy_hit and battle_mech.calculate_hp(enemy) > enemy.damage:
             apply_damage(
                     enemy,
+                    enemy_mods,
                     enemy_skill,
                     hero,
-                    battle.enemy_attack,
-                    battle.enemy_special_attack,
-                    battle.hero_defense,
-                    battle.hero_special_defense)
+                    hero_mods)
     else:
         enemy_hit = battle_mech.test_accuracy(
                 enemy,
+                enemy_mods,
                 enemy_skill,
                 hero,
-                battle.enemy_accuracy,
-                battle.hero_evasion)
+                hero_mods)
         if enemy_hit:
             apply_damage(
                     enemy,
+                    enemy_mods,
                     enemy_skill,
                     hero,
-                    battle.enemy_attack,
-                    battle.enemy_special_attack,
-                    battle.hero_defense,
-                    battle.hero_special_defense)
+                    hero_mods)
         player_hit = battle_mech.test_accuracy(
                 hero,
+                hero_mods,
                 skill,
                 enemy,
-                battle.hero_accuracy,
-                battle.hero_evasion)
+                enemy_mods)
         if player_hit and battle_mech.calculate_hp(hero) > hero.damage:
             apply_damage(
                     hero,
+                    hero_mods,
                     skill,
                     enemy,
-                    battle.hero_attack,
-                    battle.hero_special_attack,
-                    battle.enemy_defense,
-                    battle.enemy_special_defense)
+                    enemy_mods)
     battle.turn = battle.turn + 1
     db.commit()
 
 
 def apply_damage(
         hero,
+        hero_mods,
         skill,
         other_hero,
-        atk_stage,
-        spec_atk_stage,
-        def_stage,
-        spec_def_stage):
+        other_mods):
     crit = battle_mech.test_crit(0)  # TODO: crit mod
     dmg = battle_mech.calculate_damage(
             hero,
-            atk_stage,
-            spec_atk_stage,
+            hero_mods,
             skill,
             other_hero,
-            def_stage,
-            spec_def_stage,
+            other_mods,
             crit)
     other_hero.damage = other_hero.damage + dmg

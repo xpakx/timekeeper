@@ -1,4 +1,4 @@
-from .models import Battle
+from .models import Battle, HeroMods
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from typing import Optional
@@ -11,14 +11,30 @@ def create_entry(
         enemies: int,
         user_id,
         db: Session):
+    hero = HeroMods(
+            accuracy=0,
+            evasion=0,
+            accuracy=0,
+            attack=0,
+            defense=0,
+            special_attack=0,
+            special_defense=0,
+            speed=0)
+    enemy = HeroMods(
+            accuracy=0,
+            evasion=0,
+            accuracy=0,
+            attack=0,
+            defense=0,
+            special_attack=0,
+            special_defense=0,
+            speed=0)
     entry = Battle(
             hero_id=hero_id,
+            hero_mods=hero,
             enemy_id=enemy_id,
+            enemy_mods=enemy,
             owner_id=user_id,
-            hero_accuracy=0,
-            hero_evasion=0,
-            enemy_accuracy=0,
-            enemy_evasion=0,
             turn=1,
             enemies=enemies,
             finished=False

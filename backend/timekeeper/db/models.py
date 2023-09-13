@@ -223,6 +223,18 @@ class UserHero(Base):
     skills = relationship("SkillSet", back_populates="hero")
 
 
+class HeroMods(Base):
+    __tablename__ = "hero_mods"
+    id = Column(Integer, primary_key=True, index=True)
+    accuracy = Column(Integer)
+    evasion = Column(Integer)
+    attack = Column(Integer)
+    defense = Column(Integer)
+    special_attack = Column(Integer)
+    special_defense = Column(Integer)
+    speed = Column(Integer)
+
+
 class Battle(Base):
     __tablename__ = "battles"
     id = Column(Integer, primary_key=True, index=True)
@@ -231,24 +243,14 @@ class Battle(Base):
     finished = Column(Boolean)
     hero_id = Column(Integer, ForeignKey("user_heroes.id"))
     hero = relationship("UserHero", primaryjoin="UserHero.id==Battle.hero_id")
-    hero_accuracy = Column(Integer)
-    hero_evasion = Column(Integer)
-    hero_attack = Column(Integer)
-    hero_defense = Column(Integer)
-    hero_special_attack = Column(Integer)
-    hero_special_defense = Column(Integer)
-    hero_speed = Column(Integer)
+    hero_mods_id = Column(Integer, ForeignKey("hero_mods.id"))
+    hero_mods = relationship("HeroMods", primaryjoin="HeroMods.id==Battle.hero_mods_id")
     enemy_id = Column(Integer, ForeignKey("user_heroes.id"))
     enemy = relationship(
             "UserHero",
             primaryjoin="UserHero.id==Battle.enemy_id")
-    enemy_accuracy = Column(Integer)
-    enemy_evasion = Column(Integer)
-    enemy_attack = Column(Integer)
-    enemy_defense = Column(Integer)
-    enemy_special_attack = Column(Integer)
-    enemy_special_defense = Column(Integer)
-    enemy_speed = Column(Integer)
+    enemy_mods_id = Column(Integer, ForeignKey("hero_mods.id"))
+    enemy_mods = relationship("HeroMods", primaryjoin="HeroMods.id==Battle.enemy_mods_id")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
 
