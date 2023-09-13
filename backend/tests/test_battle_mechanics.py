@@ -1,4 +1,4 @@
-from timekeeper.db.models import ExpGroup
+from timekeeper.db.models import ExpGroup, UserHero, Hero
 import timekeeper.services.mechanics.battle_mech_service as service
 
 
@@ -91,3 +91,52 @@ def test_100th_lvl_to_exp_for_fluctuating_group():
 def test_25th_lvl_to_exp_for_fluctuating_group():
     result = service.level_to_exp(ExpGroup.fluctuating, 25)
     assert result == 12_187
+
+
+# testing level up
+def test_level_up_without_enough_experience():
+    hero = UserHero(
+            hero=Hero(
+                exp_group=ExpGroup.fast
+                ),
+            experience=22,
+            level=3
+            )
+    result = service.test_level_up(hero, 1)
+    assert not result
+
+
+def test_level_up():
+    hero = UserHero(
+            hero=Hero(
+                exp_group=ExpGroup.fast
+                ),
+            experience=52,
+            level=3
+            )
+    result = service.test_level_up(hero, 1)
+    assert result
+
+
+def test_level_up_multiple_levels():
+    hero = UserHero(
+            hero=Hero(
+                exp_group=ExpGroup.fast
+                ),
+            experience=800,
+            level=3
+            )
+    result = service.test_level_up(hero, 5)
+    assert result
+
+
+def test_level_up_multiple_levels_without_enough_experience():
+    hero = UserHero(
+            hero=Hero(
+                exp_group=ExpGroup.fast
+                ),
+            experience=800,
+            level=3
+            )
+    result = service.test_level_up(hero, 10)
+    assert not result
