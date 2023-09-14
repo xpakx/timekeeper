@@ -1,4 +1,4 @@
-from timekeeper.db.models import ExpGroup, UserHero, Hero
+from timekeeper.db.models import ExpGroup, UserHero, Hero, Skill, HeroMods
 import timekeeper.services.mechanics.battle_mech_service as service
 
 
@@ -177,3 +177,158 @@ def test_level_change_at_level_100():
             )
     result = service.check_level_change(hero)
     assert result == 100
+
+
+# calculating move order
+def test_move_order_while_switching():
+    hero = UserHero(hero=Hero(base_speed=100), speed=30, level=15)
+    hero_mods = HeroMods(speed=6)
+    enemy = UserHero(hero=Hero(base_speed=1), speed=0, level=15)
+    enemy_mods = HeroMods(speed=-6)
+    enemy_skill = Skill(priority=0)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            None,
+            enemy,
+            enemy_mods,
+            enemy_skill,
+            switch=True)
+    assert result
+
+
+def test_move_order_with_different_priority():
+    hero = UserHero(hero=Hero(base_speed=100), speed=30, level=15)
+    hero_mods = HeroMods(speed=6)
+    hero_skill = Skill(priority=3)
+    enemy = UserHero(hero=Hero(base_speed=1), speed=0, level=15)
+    enemy_mods = HeroMods(speed=-6)
+    enemy_skill = Skill(priority=4)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods,
+            enemy_skill)
+    assert not result
+
+
+def test_move_order_with_flee_vs_positive_priority():
+    hero = UserHero(hero=Hero(base_speed=100), speed=30, level=15)
+    hero_mods = HeroMods(speed=6)
+    enemy = UserHero(hero=Hero(base_speed=100), speed=30, level=15)
+    enemy_mods = HeroMods(speed=6)
+    enemy_skill = Skill(priority=3)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            None,
+            enemy,
+            enemy_mods,
+            enemy_skill,
+            flee=True)
+    assert not result
+
+
+def test_move_order_with_flee_vs_negative_priority():
+    hero = UserHero(hero=Hero(base_speed=100), speed=30, level=15)
+    hero_mods = HeroMods(speed=6)
+    hero_skill = Skill(priority=3)
+    enemy = UserHero(hero=Hero(base_speed=100), speed=30, level=15)
+    enemy_mods = HeroMods(speed=6)
+    enemy_skill = Skill(priority=-3)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods,
+            enemy_skill,
+            flee=True)
+    assert result
+
+
+def test_move_order_with_same_priority_and_different_base_speed():
+    hero = UserHero(hero=Hero(base_speed=100), speed=30, level=15)
+    hero_mods = HeroMods(speed=6)
+    hero_skill = Skill(priority=0)
+    enemy = UserHero(hero=Hero(base_speed=110), speed=30, level=15)
+    enemy_mods = HeroMods(speed=6)
+    enemy_skill = Skill(priority=0)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods,
+            enemy_skill)
+    assert not result
+
+
+def test_move_order_with_same_priority_and_different_speed():
+    hero = UserHero(hero=Hero(base_speed=100), speed=0, level=15)
+    hero_mods = HeroMods(speed=6)
+    hero_skill = Skill(priority=0)
+    enemy = UserHero(hero=Hero(base_speed=100), speed=30, level=15)
+    enemy_mods = HeroMods(speed=6)
+    enemy_skill = Skill(priority=0)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods,
+            enemy_skill)
+    assert not result
+
+
+def test_move_order_with_same_priority_and_different_level():
+    hero = UserHero(hero=Hero(base_speed=100), speed=0, level=15)
+    hero_mods = HeroMods(speed=6)
+    hero_skill = Skill(priority=0)
+    enemy = UserHero(hero=Hero(base_speed=100), speed=0, level=16)
+    enemy_mods = HeroMods(speed=6)
+    enemy_skill = Skill(priority=0)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods,
+            enemy_skill)
+    assert not result
+
+
+def test_move_order_with_same_priority_and_different_stat_stages():
+    hero = UserHero(hero=Hero(base_speed=100), speed=0, level=15)
+    hero_mods = HeroMods(speed=5)
+    hero_skill = Skill(priority=0)
+    enemy = UserHero(hero=Hero(base_speed=100), speed=0, level=15)
+    enemy_mods = HeroMods(speed=6)
+    enemy_skill = Skill(priority=0)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods,
+            enemy_skill)
+    assert not result
+
+
+def test_move_order_with_same_priority_and_stats():
+    hero = UserHero(hero=Hero(base_speed=100), speed=0, level=15)
+    hero_mods = HeroMods(speed=6)
+    hero_skill = Skill(priority=0)
+    enemy = UserHero(hero=Hero(base_speed=100), speed=0, level=15)
+    enemy_mods = HeroMods(speed=6)
+    enemy_skill = Skill(priority=0)
+    result = service.calculate_if_player_moves_first(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods,
+            enemy_skill)
+    assert result
