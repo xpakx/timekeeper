@@ -1,5 +1,6 @@
 from timekeeper.db.models import ExpGroup, UserHero, Hero, Skill, HeroMods
 import timekeeper.services.mechanics.battle_mech_service as service
+from unittest.mock import patch, Mock
 
 
 # calculating experience
@@ -332,3 +333,132 @@ def test_move_order_with_same_priority_and_stats():
             enemy_mods,
             enemy_skill)
     assert result
+
+
+# accuracy test
+@patch('random.randint', Mock(return_value=60))
+def test_successful_accuracy_check():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=0)
+    hero_skill = Skill(accuracy=70)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=0)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert result
+
+
+@patch('random.randint', Mock(return_value=71))
+def test_failed_accuracy_check():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=0)
+    hero_skill = Skill(accuracy=70)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=0)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert not result
+
+
+@patch('random.randint', Mock(return_value=31))
+def test_failed_accuracy_check_with_minus_six_stage():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=-3)
+    hero_skill = Skill(accuracy=90)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=3)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert not result
+
+
+@patch('random.randint', Mock(return_value=30))
+def test_successful_accuracy_check_with_minus_six_stage():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=-3)
+    hero_skill = Skill(accuracy=90)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=3)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert not result
+
+
+@patch('random.randint', Mock(return_value=30))
+def test_if_stage_for_accuracy_check_is_capped_at_minus_six():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=-6)
+    hero_skill = Skill(accuracy=90)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=6)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert not result
+
+
+@patch('random.randint', Mock(return_value=90))
+def test_failed_accuracy_check_with_six_stage():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=3)
+    hero_skill = Skill(accuracy=30)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=-3)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert not result
+
+
+@patch('random.randint', Mock(return_value=89))
+def test_successful_accuracy_check_with_six_stage():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=3)
+    hero_skill = Skill(accuracy=30)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=-3)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert result
+
+
+@patch('random.randint', Mock(return_value=90))
+def test_if_stage_for_accuracy_check_is_capped_at_six():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=6)
+    hero_skill = Skill(accuracy=30)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=-6)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert not result

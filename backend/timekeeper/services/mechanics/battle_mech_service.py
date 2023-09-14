@@ -123,7 +123,7 @@ def test_accuracy(
         hero_mods: HeroMods,
         move: Skill,
         target: UserHero,
-        target_mods: HeroMods):
+        target_mods: HeroMods) -> bool:
     stat_stage = hero_mods.accuracy - target_mods.evasion
     if stat_stage < -6:
         stat_stage = -6
