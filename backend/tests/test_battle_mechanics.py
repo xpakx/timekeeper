@@ -1,4 +1,4 @@
-from timekeeper.db.models import ExpGroup, UserHero, Hero, Skill, HeroMods
+from timekeeper.db.models import ExpGroup, UserHero, Hero, Skill, HeroMods, HeroType
 import timekeeper.services.mechanics.battle_mech_service as service
 from unittest.mock import patch, Mock
 
@@ -462,3 +462,80 @@ def test_if_stage_for_accuracy_check_is_capped_at_six():
             enemy,
             enemy_mods)
     assert not result
+
+
+@patch('random.randint', Mock(return_value=99))
+def test_accuracy_check_with_100_accuracy():
+    hero = UserHero()
+    hero_mods = HeroMods(accuracy=0)
+    hero_skill = Skill(accuracy=100)
+    enemy = UserHero()
+    enemy_mods = HeroMods(evasion=0)
+    result = service.test_accuracy(
+            hero,
+            hero_mods,
+            hero_skill,
+            enemy,
+            enemy_mods)
+    assert result
+
+
+# check STAB
+def test_stab_while_different_types():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.water,
+                secondary_hero_type=HeroType.grass))
+    hero_skill = Skill(move_type=HeroType.fire)
+    result = service.test_hero_move_type(hero, hero_skill)
+    assert not result
+
+
+def test_stab_with_only_first_type_exists_and_is_different():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.water,
+                secondary_hero_type=None))
+    hero_skill = Skill(move_type=HeroType.fire)
+    result = service.test_hero_move_type(hero, hero_skill)
+    assert not result
+
+
+def test_stab_without_types():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=None,
+                secondary_hero_type=None))
+    hero_skill = Skill(move_type=HeroType.fire)
+    result = service.test_hero_move_type(hero, hero_skill)
+    assert not result
+
+
+def test_stab_with_only_first_type():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.fire,
+                secondary_hero_type=None))
+    hero_skill = Skill(move_type=HeroType.fire)
+    result = service.test_hero_move_type(hero, hero_skill)
+    assert result
+
+
+def test_stab_with_first_type_match():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.fire,
+                secondary_hero_type=HeroType.grass))
+    hero_skill = Skill(move_type=HeroType.fire)
+    result = service.test_hero_move_type(hero, hero_skill)
+    assert result
+
+
+def test_stab_with_second_type_match():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.water,
+                secondary_hero_type=HeroType.fire))
+    hero_skill = Skill(move_type=HeroType.fire)
+    result = service.test_hero_move_type(hero, hero_skill)
+    assert result

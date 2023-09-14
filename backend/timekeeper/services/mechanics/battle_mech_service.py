@@ -152,7 +152,7 @@ def stage_to_modifier(stage: int) -> float:
     return 1
 
 
-def test_crit(crit_mod: int) -> float:
+def test_crit(crit_mod: int) -> bool:
     max = 16
     if crit_mod > 3:
         max = 2
