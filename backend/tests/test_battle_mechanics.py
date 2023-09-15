@@ -835,3 +835,35 @@ def test_damage_calculation_with_double_super_effective_move():
             enemy_mods,
             False)
     assert result == approx(224.0)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_critical_hit():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_attack=20),
+            level=10,
+            attack=0)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_defense=10),
+            level=10,
+            defense=0)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.fire,
+            move_category=MoveCategory.physical,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            True)
+    assert result == approx(112.0)
