@@ -1,6 +1,7 @@
-from timekeeper.db.models import ExpGroup, UserHero, Hero, Skill, HeroMods, HeroType
+from timekeeper.db.models import ExpGroup, UserHero, Hero, Skill, HeroMods, HeroType, MoveCategory
 import timekeeper.services.mechanics.battle_mech_service as service
 from unittest.mock import patch, Mock
+from pytest import approx
 
 
 # calculating experience
@@ -539,3 +540,35 @@ def test_stab_with_second_type_match():
     hero_skill = Skill(move_type=HeroType.fire)
     result = service.test_hero_move_type(hero, hero_skill)
     assert result
+
+
+# calculating damage
+def test_damage_calc():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.water,
+                secondary_hero_type=HeroType.fire,
+                base_attack=100),
+            level=5,
+            attack=10)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.water,
+                secondary_hero_type=HeroType.fire,
+                base_defense=50),
+            level=5,
+            defense=10)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.grass,
+            move_category=MoveCategory.physical,
+            power=10)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert isinstance(result, float)
