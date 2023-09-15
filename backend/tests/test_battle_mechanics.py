@@ -1,4 +1,11 @@
-from timekeeper.db.models import ExpGroup, UserHero, Hero, Skill, HeroMods, HeroType, MoveCategory
+from timekeeper.db.models import (
+        ExpGroup,
+        UserHero,
+        Hero,
+        Skill,
+        HeroMods,
+        HeroType,
+        MoveCategory)
 import timekeeper.services.mechanics.battle_mech_service as service
 from unittest.mock import patch, Mock
 from pytest import approx
@@ -572,3 +579,259 @@ def test_damage_calc():
             enemy_mods,
             False)
     assert isinstance(result, float)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_physical_attack():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.water,
+                secondary_hero_type=None,
+                base_attack=20),
+            level=10,
+            attack=0)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_defense=10),
+            level=10,
+            defense=0)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.grass,
+            move_category=MoveCategory.physical,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert result == approx(56.0)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_special_attack():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.water,
+                secondary_hero_type=None,
+                base_special_attack=20),
+            level=10,
+            special_attack=0)
+    hero_mods = HeroMods(special_attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_special_defense=10),
+            level=10,
+            special_defense=0)
+    enemy_mods = HeroMods(special_defense=0)
+    skill = Skill(
+            move_type=HeroType.grass,
+            move_category=MoveCategory.special,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert result == approx(56.0)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_same_type_attack():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.grass,
+                secondary_hero_type=None,
+                base_attack=20),
+            level=10,
+            attack=0)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_defense=10),
+            level=10,
+            defense=0)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.grass,
+            move_category=MoveCategory.physical,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert result == approx(84.0)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_super_effective_move():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_attack=20),
+            level=10,
+            attack=0)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.grass,
+                secondary_hero_type=None,
+                base_defense=10),
+            level=10,
+            defense=0)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.fire,
+            move_category=MoveCategory.physical,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert result == approx(112.0)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_not_very_effective_move():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_attack=20),
+            level=10,
+            attack=0)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.water,
+                secondary_hero_type=None,
+                base_defense=10),
+            level=10,
+            defense=0)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.fire,
+            move_category=MoveCategory.physical,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert result == approx(28.0)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_invulnerable_type():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_attack=20),
+            level=10,
+            attack=0)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.ghost,
+                secondary_hero_type=None,
+                base_defense=10),
+            level=10,
+            defense=0)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.normal,
+            move_category=MoveCategory.physical,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert result == approx(0.0)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_both_weakness_and_strength():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_attack=20),
+            level=10,
+            attack=0)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.grass,
+                secondary_hero_type=HeroType.water,
+                base_defense=10),
+            level=10,
+            defense=0)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.fire,
+            move_category=MoveCategory.physical,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert result == approx(56.0)
+
+
+@patch('random.randint', Mock(return_value=100))
+def test_damage_calculation_with_double_super_effective_move():
+    hero = UserHero(
+            hero=Hero(
+                hero_type=HeroType.normal,
+                secondary_hero_type=None,
+                base_attack=20),
+            level=10,
+            attack=0)
+    hero_mods = HeroMods(attack=0)
+    enemy = UserHero(
+            hero=Hero(
+                hero_type=HeroType.grass,
+                secondary_hero_type=HeroType.bug,
+                base_defense=10),
+            level=10,
+            defense=0)
+    enemy_mods = HeroMods(defense=0)
+    skill = Skill(
+            move_type=HeroType.fire,
+            move_category=MoveCategory.physical,
+            power=350)
+    result = service.calculate_damage(
+            hero,
+            hero_mods,
+            skill,
+            enemy,
+            enemy_mods,
+            False)
+    assert result == approx(224.0)
