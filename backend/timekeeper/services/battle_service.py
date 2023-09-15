@@ -15,6 +15,9 @@ from .mechanics import battle_mech_service as battle_mech
 def create_battle(user_id: int, equipment_id: int, db: Session):
     team = team_repo.get_team(user_id, db)
     entry = equipment_repo.get_item_entry(equipment_id, user_id, db)
+    old_battle = battle_repo.get_current_battle(user_id, db)
+    if old_battle:
+        raise already_in_battle_exception()
     if not entry.item.item_type == ItemType.battle_ticket:
         raise not_battle_ticket_exception()
     if not entry or entry.amount < 1:
@@ -67,6 +70,13 @@ def no_battle_tickets_exception():
     return HTTPException(
         status_code=404,
         detail="Not enough battle tickets!",
+    )
+
+
+def already_in_battle_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Already in battle!",
     )
 
 
