@@ -5,11 +5,12 @@ from typing import Annotated
 from ..security.jwt import get_current_user, CurrentUser
 from ..db.manager import get_db
 from sqlalchemy.orm import Session
+from typing import Optional
 
 router = APIRouter(prefix="/battles")
 
 
-@router.get("/", response_model=battle_schemas.BattleBase)
+@router.get("/", response_model=Optional[battle_schemas.BattleBase])
 async def get_current_battle(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
