@@ -38,7 +38,10 @@ def create_battle(user_id: int, equipment_id: int, db: Session):
 
 
 def get_battle(user_id: int, battle_id: int, db: Session) -> Optional[Battle]:
-    return battle_repo.get_battle(user_id, battle_id, db)
+    battle = battle_repo.get_battle(user_id, battle_id, db)
+    if not battle:
+        raise not_battle_found_exception()
+    return battle
 
 
 def get_current_battle(user_id: int, db: Session) -> Optional[Battle]:
@@ -77,6 +80,13 @@ def already_in_battle_exception():
     return HTTPException(
         status_code=400,
         detail="Already in battle!",
+    )
+
+
+def not_battle_found_exception():
+    return HTTPException(
+        status_code=404,
+        detail="Battle not found!",
     )
 
 
