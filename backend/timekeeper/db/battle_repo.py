@@ -14,7 +14,6 @@ def create_entry(
     hero = HeroMods(
             accuracy=0,
             evasion=0,
-            accuracy=0,
             attack=0,
             defense=0,
             special_attack=0,
@@ -23,7 +22,6 @@ def create_entry(
     enemy = HeroMods(
             accuracy=0,
             evasion=0,
-            accuracy=0,
             attack=0,
             defense=0,
             special_attack=0,
