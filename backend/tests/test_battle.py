@@ -242,3 +242,40 @@ def test_getting_current_battle(test_db):
     assert response.status_code == 200
     result = response.json()
     assert result['id'] == battle_id
+
+
+# getting battle
+def test_getting_battle_without_authentication(test_db):
+    response = client.get("/battles/1")
+    assert response.status_code == 401
+
+
+def test_getting_battle_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/battles/1",
+                          headers=headers
+                          )
+    assert response.status_code == 401
+
+
+def test_getting_battle_while_not_found(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/battles/1",
+                          headers=headers
+                          )
+    assert response.status_code == 404
+
+
+def test_getting_battle(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.get(f"/battles/{battle_id}",
+                          headers=headers
+                          )
+    assert response.status_code == 200
+    result = response.json()
+    assert result['id'] == battle_id
