@@ -21,6 +21,7 @@ from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
+from unittest.mock import patch, Mock
 
 url = URL.create(
         "postgresql",
@@ -431,3 +432,57 @@ def test_starting_battle_with_battle_ticket_with_wrong_item_type(test_db):
     assert response.status_code == 400
     error = response.json()
     assert "no battle ticket" in error['detail'].lower()
+
+
+def test_starting_battle_with_not_team_initialized(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    create_equipment_item(create_battle_ticket(), user_id, 1)
+    response = client.post("/battles",
+                           headers=headers,
+                           json={
+                               "id": ITEM_NUM,
+                               }
+                           )
+    assert response.status_code == 500
+    error = response.json()
+    assert "team" in error['detail'].lower()
+    assert "initialized" in error['detail'].lower()
+
+
+def test_starting_battle_with_empty_team(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    create_user_hero(create_bulbasaur(), user_id)
+    create_team(user_id)
+    create_equipment_item(create_battle_ticket(), user_id, 1)
+    response = client.post("/battles",
+                           headers=headers,
+                           json={
+                               "id": ITEM_NUM,
+                               }
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "team" in error['detail'].lower()
+    assert "empty" in error['detail'].lower()
+
+
+@patch('random.randint', Mock(return_value=4))
+def test_starting_battle_without_heroes_initialized(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_id = create_team(user_id)
+    add_to_team(team_id, hero_id, 1)
+    create_equipment_item(create_battle_ticket(), user_id, 1)
+    response = client.post("/battles",
+                           headers=headers,
+                           json={
+                               "id": ITEM_NUM,
+                               }
+                           )
+    assert response.status_code == 500
+    error = response.json()
+    assert "heroes" in error['detail'].lower()
+    assert "initialized" in error['detail'].lower()
