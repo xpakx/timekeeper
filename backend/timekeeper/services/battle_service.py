@@ -18,6 +18,8 @@ def create_battle(user_id: int, equipment_id: int, db: Session):
     old_battle = battle_repo.get_current_battle(user_id, db)
     if old_battle:
         raise already_in_battle_exception()
+    if not entry:
+        raise not_battle_ticket_exception()
     if not entry.item.item_type == ItemType.battle_ticket:
         raise not_battle_ticket_exception()
     if not entry or entry.amount < 1:
@@ -65,13 +67,13 @@ def not_such_hero_exception():
 def not_battle_ticket_exception():
     return HTTPException(
         status_code=400,
-        detail="Not battle ticket!",
+        detail="No battle ticket!",
     )
 
 
 def no_battle_tickets_exception():
     return HTTPException(
-        status_code=404,
+        status_code=400,
         detail="Not enough battle tickets!",
     )
 
