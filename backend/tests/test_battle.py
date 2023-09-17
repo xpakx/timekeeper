@@ -279,3 +279,34 @@ def test_getting_battle(test_db):
     assert response.status_code == 200
     result = response.json()
     assert result['id'] == battle_id
+
+
+# starting battle
+def test_starting_battle_without_authentication(test_db):
+    response = client.post("/battles")
+    assert response.status_code == 401
+
+
+def test_starting_battle_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/battles",
+                           headers=headers
+                           )
+    assert response.status_code == 401
+
+
+def test_starting_battle_while_already_in_battle(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    create_battle(user_id, hero_id, enemy_id)
+    response = client.post("/battles",
+                           headers=headers,
+                           json={
+                               "id": 1,
+                               }
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "in battle" in error['detail']
