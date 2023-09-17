@@ -26,10 +26,10 @@ def create_battle(user_id: int, equipment_id: int, db: Session):
         raise no_battle_tickets_exception()
     entry.amount = entry.amount - 1
     if not team:
-        raise not_initialized_exception()
+        raise team_not_initialized_exception()
     hero = team.hero_1
     if not hero:
-        raise not_such_hero_exception()
+        raise empty_team_exception()
     enemy = hero_repo.get_random_hero(db)
     if not enemy:
         raise not_initialized_exception()
@@ -57,10 +57,24 @@ def not_initialized_exception():
     )
 
 
+def team_not_initialized_exception():
+    return HTTPException(
+        status_code=500,
+        detail="Team not initialized",
+    )
+
+
 def not_such_hero_exception():
     return HTTPException(
         status_code=400,
         detail="Not such hero!",
+    )
+
+
+def empty_team_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Team is empty!",
     )
 
 
