@@ -6,7 +6,11 @@ from timekeeper.db.models import (
         Battle,
         HeroMods,
         HeroType,
-        ItemRarity)
+        Item,
+        EquipmentEntry,
+        ItemType,
+        ItemRarity,
+        Team)
 from fastapi.testclient import TestClient
 import pytest
 from timekeeper.main import app
@@ -32,6 +36,7 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(autocommit=False,
                                    autoflush=False,
                                    bind=engine)
+ITEM_NUM = 123
 
 
 def override_get_db():
@@ -179,6 +184,65 @@ def create_battle(
     return item.id
 
 
+def create_battle_ticket(wrong_type: bool = False) -> int:
+    db = TestingSessionLocal()
+    item = Item(
+            num=ITEM_NUM,
+            name="Battle Ticket",
+            description="",
+            rarity=ItemRarity.uncommon,
+            item_type=ItemType.battle_ticket if not wrong_type else ItemType.skill
+            )
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    db.close()
+    return item.id
+
+
+def create_equipment_item(item_id: int, user_id: int, amount: int = 1):
+    db = TestingSessionLocal()
+    item = EquipmentEntry(
+            item_id=item_id,
+            owner_id=user_id,
+            amount=amount
+            )
+    db.add(item)
+    db.commit()
+    db.close()
+
+
+def create_team(user_id: int) -> int:
+    db = TestingSessionLocal()
+    team = Team(
+            user_id=user_id
+            )
+    db.add(team)
+    db.commit()
+    db.refresh(team)
+    db.close()
+    return team.id
+
+
+def add_to_team(team_id: int, hero_id: int, num: int):
+    db = TestingSessionLocal()
+    team = db.get(Team, team_id)
+    if num == 1:
+        team.hero_1_id = hero_id
+    if num == 2:
+        team.hero_2_id = hero_id
+    if num == 3:
+        team.hero_3_id = hero_id
+    if num == 4:
+        team.hero_4_id = hero_id
+    if num == 5:
+        team.hero_5_id = hero_id
+    if num == 6:
+        team.hero_6_id = hero_id
+    db.commit()
+    db.close()
+
+
 def get_token() -> str:
     return get_token_for(1)
 
@@ -265,6 +329,9 @@ def test_getting_battle_while_not_found(test_db):
                           headers=headers
                           )
     assert response.status_code == 404
+    error = response.json()
+    assert "battle" in error['detail'].lower()
+    assert "not found" in error['detail']
 
 
 def test_getting_battle(test_db):
@@ -310,3 +377,57 @@ def test_starting_battle_while_already_in_battle(test_db):
     assert response.status_code == 400
     error = response.json()
     assert "in battle" in error['detail']
+
+
+def test_starting_battle_without_battle_ticket_item(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_id = create_team(user_id)
+    add_to_team(team_id, hero_id, 1)
+    response = client.post("/battles",
+                           headers=headers,
+                           json={
+                               "id": 1,
+                               }
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "no battle ticket" in error['detail'].lower()
+
+
+def test_starting_battle_with_zero_battle_tickets(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_id = create_team(user_id)
+    add_to_team(team_id, hero_id, 1)
+    create_equipment_item(create_battle_ticket(), user_id, 0)
+    response = client.post("/battles",
+                           headers=headers,
+                           json={
+                               "id": ITEM_NUM,
+                               }
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "battle ticket" in error['detail']
+    assert "not enough" in error['detail'].lower()
+
+
+def test_starting_battle_with_battle_ticket_with_wrong_item_type(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_id = create_team(user_id)
+    add_to_team(team_id, hero_id, 1)
+    create_equipment_item(create_battle_ticket(wrong_type=True), user_id, 1)
+    response = client.post("/battles",
+                           headers=headers,
+                           json={
+                               "id": ITEM_NUM,
+                               }
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "no battle ticket" in error['detail'].lower()
