@@ -554,3 +554,27 @@ def test_creating_battle_in_db(test_db):
     db.close()
     assert battle is not None
     assert battle.hero_id == hero_id
+
+
+@patch('random.choice', Mock(return_value=4))
+def test_saving_mods_while_creating_battle(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    create_charmander()
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_id = create_team(user_id)
+    add_to_team(team_id, hero_id, 1)
+    create_equipment_item(create_battle_ticket(), user_id, 1)
+    response = client.post("/battles",
+                           headers=headers,
+                           json={
+                               "id": ITEM_NUM,
+                               }
+                           )
+    assert response.status_code == 200
+    battle_id = response.json()['id']
+    db = TestingSessionLocal()
+    battle: Battle = db.query(Battle).where(Battle.id == battle_id).first()
+    db.close()
+    assert battle.hero_mods_id is not None
+    assert battle.enemy_mods_id is not None
