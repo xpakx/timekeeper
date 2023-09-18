@@ -17,7 +17,8 @@ def create_entry(hero_id, user_id, db: Session):
             level=1,
             experience=0,
             incubated=False,
-            in_team=False
+            in_team=False,
+            fainted=False
             )
     db.add(entry)
     return entry

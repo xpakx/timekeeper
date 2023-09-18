@@ -7,7 +7,7 @@ from ..db import (
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
-from ..db.models import Battle, ItemType, UserHero, HeroMods
+from ..db.models import Battle, ItemType, UserHero, HeroMods, Team
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 
@@ -37,6 +37,24 @@ def create_battle(user_id: int, equipment_id: int, db: Session):
     battle = battle_repo.create_entry(hero.id, enemy_entry, 1, user_id, db)
     db.commit()
     return battle
+
+
+def select_first_hero_in_team(team: Team) -> UserHero:
+    heroes = [
+            team.hero_1,
+            team.hero_2,
+            team.hero_3,
+            team.hero_4,
+            team.hero_5,
+            team.hero_6
+            ]
+    for hero in heroes:
+        if hero is None:
+            return None
+        if hero.fainted:
+            return None
+        return hero
+    return None
 
 
 def get_battle(user_id: int, battle_id: int, db: Session) -> Optional[Battle]:

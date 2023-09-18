@@ -212,6 +212,7 @@ class UserHero(Base):
     special_attack = Column(Integer)
     special_defense = Column(Integer)
     incubated = Column(Boolean)
+    fainted = Column(Boolean)
     in_team = Column(Boolean)
     damage = Column(Integer)
     experience = Column(Integer)
