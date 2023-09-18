@@ -133,16 +133,8 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
     skill = None
     flee = move.move == MoveType.flee
     switch = False
-    if move.move == MoveType.skill:
-        if move.id == 1:
-            skill = hero.skills.skill_1
-        elif move.id == 2:
-            skill = hero.skills.skill_2
-        elif move.id == 3:
-            skill = hero.skills.skill_3
-        elif move.id == 4:
-            skill = hero.skills.skill_4
-    enemy_skill = enemy.skills.skill_1  # TODO
+    skill = get_current_skill(move, hero)
+    enemy_skill = get_enemy_skill(enemy)
     player_first = battle_mech.calculate_if_player_moves_first(
             hero,
             hero_mods,
@@ -153,59 +145,9 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
             flee,
             switch)
     if player_first:
-        player_hit = battle_mech.test_accuracy(
-                hero,
-                hero_mods,
-                skill,
-                enemy,
-                enemy_mods)
-        if player_hit:
-            apply_damage(
-                    hero,
-                    hero_mods,
-                    skill,
-                    enemy,
-                    enemy_mods)
-        enemy_hit = battle_mech.test_accuracy(
-                enemy,
-                enemy_mods,
-                enemy_skill,
-                hero,
-                hero_mods)
-        if enemy_hit and battle_mech.calculate_hp(enemy) > enemy.damage:
-            apply_damage(
-                    enemy,
-                    enemy_mods,
-                    enemy_skill,
-                    hero,
-                    hero_mods)
+        battle_turn(hero, hero_mods, skill, enemy, enemy_mods, enemy_skill)
     else:
-        enemy_hit = battle_mech.test_accuracy(
-                enemy,
-                enemy_mods,
-                enemy_skill,
-                hero,
-                hero_mods)
-        if enemy_hit:
-            apply_damage(
-                    enemy,
-                    enemy_mods,
-                    enemy_skill,
-                    hero,
-                    hero_mods)
-        player_hit = battle_mech.test_accuracy(
-                hero,
-                hero_mods,
-                skill,
-                enemy,
-                enemy_mods)
-        if player_hit and battle_mech.calculate_hp(hero) > hero.damage:
-            apply_damage(
-                    hero,
-                    hero_mods,
-                    skill,
-                    enemy,
-                    enemy_mods)
+        battle_turn(enemy, enemy_mods, enemy_skill, hero, hero_mods, skill)
     battle.turn = battle.turn + 1
     db.commit()
 
@@ -225,3 +167,49 @@ def apply_damage(
             other_mods,
             crit)
     other_hero.damage = other_hero.damage + dmg
+
+
+def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
+    hit = battle_mech.test_accuracy(
+            hero,
+            hero_mods,
+            skill,
+            other_hero,
+            other_mods)
+    if hit:
+        apply_damage(
+                hero,
+                hero_mods,
+                skill,
+                other_hero,
+                other_mods)
+    enemy_hit = battle_mech.test_accuracy(
+            other_hero,
+            other_mods,
+            other_skill,
+            hero,
+            hero_mods)
+    if enemy_hit and battle_mech.calculate_hp(other_hero) > other_hero.damage:
+        apply_damage(
+                other_hero,
+                other_mods,
+                other_skill,
+                hero,
+                hero_mods)
+
+
+def get_current_skill(move: MoveRequest, hero: UserHero):
+    if move.move == MoveType.skill:
+        if move.id == 1:
+            return hero.skills.skill_1
+        elif move.id == 2:
+            return hero.skills.skill_2
+        elif move.id == 3:
+            return hero.skills.skill_3
+        elif move.id == 4:
+            return hero.skills.skill_4
+
+
+# TODO
+def get_enemy_skill(hero: UserHero):
+    return hero.skills.skill_1
