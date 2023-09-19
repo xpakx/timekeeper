@@ -66,10 +66,17 @@ def calculate_if_player_moves_first(
         switch: bool = False) -> bool:
     if (switch):
         return True
-    priority = 0 if flee else skill.priority
-    if (priority > enemy_skill.priority):
+    priority = 0
+    if flee:
+        priority = 0
+    elif skill:
+        priority = skill.priority
+    enemy_priority = 0
+    if enemy_skill:
+        enemy_priority = enemy_skill.priority
+    if (priority > enemy_priority):
         return True
-    if (enemy_skill.priority > priority):
+    if (enemy_priority > priority):
         return False
     speed = calculate_speed(hero) * stage_to_modifier(hero_mods.speed)
     enemy_speed = calculate_speed(enemy) * stage_to_modifier(enemy_mods.speed)
@@ -138,7 +145,7 @@ def test_accuracy(
     if stat_stage > 6:
         stat_stage = 6
     modifier = acc_stage_to_modifier(stat_stage)
-    stat = move.accuracy*modifier
+    stat = move.accuracy*modifier if move else 100
     return random.randint(0, 100) < stat
 
 
