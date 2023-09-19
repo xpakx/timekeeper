@@ -7,6 +7,7 @@ from timekeeper.db.models import (
         HeroMods,
         HeroType,
         Item,
+        SkillSet,
         EquipmentEntry,
         ItemType,
         ItemRarity,
@@ -137,9 +138,25 @@ def create_user_hero(hero_id: int, user_id: int):
     item = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
-            incubated=False
+            incubated=False,
+            hp=0,
+            attack=0,
+            defense=0,
+            speed=0,
+            special_attack=0,
+            special_defense=0,
+            level=1,
+            damage=0
+            )
+    entry = SkillSet(
+            hero=item,
+            usages_1=0,
+            usages_2=0,
+            usages_3=0,
+            usages_4=0
             )
     db.add(item)
+    db.add(entry)
     db.commit()
     db.refresh(item)
     db.close()
