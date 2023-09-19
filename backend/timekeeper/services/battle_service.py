@@ -137,7 +137,7 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
     hero_mods: HeroMods = battle.hero_mods
     enemy: UserHero = battle.enemy
     enemy_mods: HeroMods = battle.enemy_mods
-    if not hero.skills or not enemy.skills:
+    if not hero.skillset or not enemy.skillset:
         raise skillset_not_initialized_exception()
     skill = None
     flee = move.move == MoveType.flee
@@ -212,15 +212,15 @@ def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
 def get_current_skill(move: MoveRequest, hero: UserHero):
     if move.move == MoveType.skill:
         if move.id == 1:
-            return hero.skills.skill_1
+            return hero.skillset.skill_1
         elif move.id == 2:
-            return hero.skills.skill_2
+            return hero.skillset.skill_2
         elif move.id == 3:
-            return hero.skills.skill_3
+            return hero.skillset.skill_3
         elif move.id == 4:
-            return hero.skills.skill_4
+            return hero.skillset.skill_4
 
 
 # TODO
 def get_enemy_skill(hero: UserHero):
-    return hero.skills.skill_1
+    return hero.skillset.skill_1

@@ -221,7 +221,7 @@ class UserHero(Base):
     hero = relationship("Hero")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User")
-    skills = relationship("SkillSet", back_populates="hero")
+    skillset = relationship("SkillSet", back_populates="hero", uselist=False)
 
 
 class HeroMods(Base):
