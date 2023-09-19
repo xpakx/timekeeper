@@ -604,3 +604,33 @@ def test_saving_enemy_while_creating_battle(test_db):
     db.close()
     assert battle.enemy_id is not None
     assert enemy_id == char_id
+
+
+# starting battle
+def test_making_move_without_authentication(test_db):
+    response = client.post("/battles/1")
+    assert response.status_code == 401
+
+
+def test_making_move_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/battles/1",
+                           headers=headers
+                           )
+    assert response.status_code == 401
+
+
+def test_fleeing(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'flee'
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 200
