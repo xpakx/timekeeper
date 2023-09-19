@@ -649,5 +649,23 @@ def test_fleeing(test_db):
                                'move': 'flee'
                                }
                            )
-    print(response.text)
     assert response.status_code == 200
+
+
+def test_advancing_turns(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    client.post(f"/battles/{battle_id}",
+                headers=headers,
+                json={
+                    'move': 'flee'
+                    }
+                )
+    db = TestingSessionLocal()
+    battle = db.query(Battle).where(Battle.id == battle_id).first()
+    db.close()
+    assert battle is not None
+    assert battle.turn == 2
