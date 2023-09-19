@@ -167,6 +167,8 @@ def apply_damage(
             other_mods,
             crit)
     other_hero.damage = other_hero.damage + dmg
+    if battle_mech.calculate_hp(other_hero) <= other_hero.damage:
+        other_hero.fainted = True
 
 
 def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
@@ -189,7 +191,7 @@ def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
             other_skill,
             hero,
             hero_mods)
-    if enemy_hit and battle_mech.calculate_hp(other_hero) > other_hero.damage:
+    if enemy_hit and not other_hero.fainted:
         apply_damage(
                 other_hero,
                 other_mods,
