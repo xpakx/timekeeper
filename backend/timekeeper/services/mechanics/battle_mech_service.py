@@ -177,7 +177,7 @@ def test_crit(crit_mod: int) -> bool:
         max = 4
     elif crit_mod == 1:
         max = 8
-    return random(0, max) == 0
+    return random.randint(0, max) == 0
 
 
 def calculate_damage(
@@ -187,6 +187,8 @@ def calculate_damage(
         enemy: UserHero,
         enemy_mods: HeroMods,
         critical: bool) -> int:
+    if not move:
+        return 0
     level = hero.level
     attack = 0
     defense = 0
