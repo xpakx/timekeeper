@@ -82,6 +82,13 @@ def team_not_initialized_exception():
     )
 
 
+def skillset_not_initialized_exception():
+    return HTTPException(
+        status_code=500,
+        detail="Skillset not initialized",
+    )
+
+
 def not_such_hero_exception():
     return HTTPException(
         status_code=400,
@@ -130,6 +137,8 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
     hero_mods: HeroMods = battle.hero_mods
     enemy: UserHero = battle.enemy
     enemy_mods: HeroMods = battle.enemy_mods
+    if not hero.skills or not enemy.skills:
+        raise skillset_not_initialized_exception()
     skill = None
     flee = move.move == MoveType.flee
     switch = False
