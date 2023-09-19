@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator
 from typing import Optional
 from .hero_schemas import UserHeroBase
 import enum
@@ -25,5 +25,13 @@ class MoveType(enum.Enum):
 
 
 class MoveRequest(BaseModel):
-    id: int
+    id: Optional[int]
     move: MoveType
+
+    @root_validator()
+    def validate_switch_num(cls, values):
+        move = values.get('move')
+        value = values.get('id')
+        if move in [MoveType.skill, MoveType.item] and value is None:
+            raise ValueError("Id cannot be empty")
+        return values
