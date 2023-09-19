@@ -159,6 +159,7 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
         battle_turn(enemy, enemy_mods, enemy_skill, hero, hero_mods, skill)
     battle.turn = battle.turn + 1
     db.commit()
+    return battle
 
 
 def apply_damage(
