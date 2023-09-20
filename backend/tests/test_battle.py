@@ -265,7 +265,7 @@ def add_to_team(team_id: int, hero_id: int, num: int):
     db.close()
 
 
-def teach_skill(hero_id: int, skill_id: int, num: int = 0):
+def teach_skill(hero_id: int, skill_id: int, num: int = 1):
     db = TestingSessionLocal()
     skillset: SkillSet = db\
         .query(SkillSet)\
@@ -287,7 +287,9 @@ def create_skill() -> int:
     db = TestingSessionLocal()
     skill = Skill(
             accuracy=100,
-            power=100
+            power=100,
+            priority=0,
+            move_type=HeroType.normal
             )
     db.add(skill)
     db.commit()
