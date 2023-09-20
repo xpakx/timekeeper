@@ -133,7 +133,7 @@ def create_charmander() -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int):
+def create_user_hero(hero_id: int, user_id: int, skillset: bool = True):
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
@@ -148,15 +148,16 @@ def create_user_hero(hero_id: int, user_id: int):
             level=1,
             damage=0
             )
-    entry = SkillSet(
-            hero=item,
-            usages_1=0,
-            usages_2=0,
-            usages_3=0,
-            usages_4=0
-            )
     db.add(item)
-    db.add(entry)
+    if skillset:
+        entry = SkillSet(
+                hero=item,
+                usages_1=0,
+                usages_2=0,
+                usages_3=0,
+                usages_4=0
+                )
+        db.add(entry)
     db.commit()
     db.refresh(item)
     db.close()
@@ -669,3 +670,36 @@ def test_advancing_turns(test_db):
     db.close()
     assert battle is not None
     assert battle.turn == 2
+
+
+def test_fleeing_without_battle(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/battles/1",
+                           headers=headers,
+                           json={
+                               'move': 'flee'
+                               }
+                           )
+    assert response.status_code == 404
+    error = response.json()
+    assert "battle" in error['detail'].lower()
+    assert "not found" in error['detail'].lower()
+
+
+def test_fleeing_without_user_skillset(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id, skillset=False)
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'flee'
+                               }
+                           )
+    assert response.status_code == 500
+    error = response.json()
+    assert "initialized" in error['detail'].lower()
+    assert "skillset" in error['detail'].lower()
