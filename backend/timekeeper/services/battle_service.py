@@ -182,6 +182,12 @@ def apply_damage(
 
 
 def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
+    hero_turn(hero, hero_mods, skill, other_hero, other_mods)
+    if not other_hero.fainted:
+        hero_turn(other_hero, other_mods, other_skill, hero, hero_mods)
+
+
+def hero_turn(hero, hero_mods, skill, other_hero, other_mods):
     hit = battle_mech.test_accuracy(
             hero,
             hero_mods,
@@ -195,19 +201,6 @@ def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
                 skill,
                 other_hero,
                 other_mods)
-    enemy_hit = battle_mech.test_accuracy(
-            other_hero,
-            other_mods,
-            other_skill,
-            hero,
-            hero_mods)
-    if enemy_hit and not other_hero.fainted:
-        apply_damage(
-                other_hero,
-                other_mods,
-                other_skill,
-                hero,
-                hero_mods)
 
 
 def get_current_skill(move: MoveRequest, hero: UserHero):
