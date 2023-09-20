@@ -133,6 +133,8 @@ def not_battle_found_exception():
 
 def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
     battle: Battle = battle_repo.get_battle(user_id, battle_id, db)
+    if not battle:
+        raise not_battle_found_exception()
     hero: UserHero = battle.hero
     hero_mods: HeroMods = battle.hero_mods
     enemy: UserHero = battle.enemy
