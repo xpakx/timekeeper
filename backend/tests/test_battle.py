@@ -8,6 +8,7 @@ from timekeeper.db.models import (
         HeroType,
         Item,
         SkillSet,
+        Skill,
         EquipmentEntry,
         ItemType,
         ItemRarity,
@@ -262,6 +263,37 @@ def add_to_team(team_id: int, hero_id: int, num: int):
         team.hero_6_id = hero_id
     db.commit()
     db.close()
+
+
+def teach_skill(hero_id: int, skill_id: int, num: int = 0):
+    db = TestingSessionLocal()
+    skillset: SkillSet = db\
+        .query(SkillSet)\
+        .where(SkillSet.hero_id == hero_id)\
+        .first()
+    if num == 1:
+        skillset.skill_1_id = skill_id
+    if num == 2:
+        skillset.skill_2_id = skill_id
+    if num == 3:
+        skillset.skill_3_id = skill_id
+    if num == 4:
+        skillset.skill_4_id = skill_id
+    db.commit()
+    db.close()
+
+
+def create_skill() -> int:
+    db = TestingSessionLocal()
+    skill = Skill(
+            accuracy=100,
+            power=100
+            )
+    db.add(skill)
+    db.commit()
+    db.refresh(skill)
+    db.close()
+    return skill.id
 
 
 def get_token() -> str:
@@ -703,3 +735,65 @@ def test_fleeing_without_user_skillset(test_db):
     error = response.json()
     assert "initialized" in error['detail'].lower()
     assert "skillset" in error['detail'].lower()
+
+
+def test_making_damage_while_using_skill(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    teach_skill(hero_id, create_skill())
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'skill',
+                               'id': 1
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    enemy = db.query(UserHero).where(UserHero.id == enemy_id).first()
+    db.close()
+    assert enemy.damage > 0
+
+
+def test_making_damage_while_fleeing(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    teach_skill(hero_id, create_skill())
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'flee'
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    enemy = db.query(UserHero).where(UserHero.id == enemy_id).first()
+    db.close()
+    assert enemy.damage == 0
+
+
+def test_making_damage_by_enemy(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    teach_skill(enemy_id, create_skill())
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'skill',
+                               'id': 1
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    hero = db.query(UserHero).where(UserHero.id == hero_id).first()
+    db.close()
+    assert hero.damage > 0
