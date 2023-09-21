@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Item, ItemRarity, EquipmentEntry
+from timekeeper.db.models import User, Item, ItemRarity, EquipmentEntry, ItemType
 from timekeeper.db.models import Hero, UserHero
 from timekeeper.db.equipment_repo import CRYSTAL
 from bcrypt import hashpw, gensalt
@@ -88,7 +88,23 @@ def create_crystal() -> int:
     return item.id
 
 
-def create_equipment_item(item_id: int, user_id: int, amount: int):
+def create_item(skill_type: bool = True) -> int:
+    db = TestingSessionLocal()
+    item = Item(
+            num=4,
+            name="Skill",
+            description="",
+            rarity=ItemRarity.uncommon,
+            item_type=ItemType.skill if skill_type else ItemType.crystal
+            )
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    db.close()
+    return item.id
+
+
+def create_equipment_item(item_id: int, user_id: int, amount: int) -> int:
     db = TestingSessionLocal()
     item = EquipmentEntry(
             item_id=item_id,
@@ -97,7 +113,9 @@ def create_equipment_item(item_id: int, user_id: int, amount: int):
             )
     db.add(item)
     db.commit()
+    db.refresh(item)
     db.close()
+    return item.id
 
 
 def create_hero(id: int, name: str) -> int:
@@ -115,7 +133,7 @@ def create_hero(id: int, name: str) -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int):
+def create_user_hero(hero_id: int, user_id: int) -> int:
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
@@ -124,7 +142,9 @@ def create_user_hero(hero_id: int, user_id: int):
             )
     db.add(item)
     db.commit()
+    db.refresh(item)
     db.close()
+    return item.id
 
 
 def create_hero_(id: int, db):
@@ -412,3 +432,55 @@ def test_teaching_skill_without_item_id(test_db):
                                },
                            )
     assert response.status_code == 400
+
+
+def test_teaching_skill_without_item(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               'num': 1,
+                               'item_id': 1
+                               },
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    print(error)
+    assert "no item" in error['detail'].lower()
+
+
+def test_teaching_skill_with_zero_item_count(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id)
+    item_id = create_equipment_item(create_item(), user_id, 0)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               'num': 1,
+                               'item_id': item_id
+                               },
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    print(error)
+    assert "no item" in error['detail'].lower()
+
+
+def test_teaching_skill_to_nonexistent_hero(test_db):
+    user_id = create_user_and_return_id()
+    item_id = create_equipment_item(create_item(), user_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               'num': 1,
+                               'item_id': item_id
+                               },
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    print(error)
+    assert "no hero" in error['detail'].lower()
