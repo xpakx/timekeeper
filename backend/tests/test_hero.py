@@ -332,3 +332,20 @@ def test_getting_hero_without_data_in_db(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.get("/heroes/reward", headers=headers)
     assert response.status_code == 500
+
+
+# skill teaching
+def test_teaching_hero_skill_without_authentication(test_db):
+    response = client.post("/heroes/1/skills")
+    assert response.status_code == 401
+
+
+def test_teaching_hero_skill_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/heroes/1/skills",
+                           json={
+                               'item_id': 1,
+                               'num': 1
+                               },
+                           headers=headers)
+    assert response.status_code == 401
