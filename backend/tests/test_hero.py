@@ -536,7 +536,6 @@ def test_teaching_skill_to_nonexistent_hero(test_db):
                            )
     assert response.status_code == 404
     error = response.json()
-    print(error)
     assert "not" in error['detail'].lower()
     assert "hero" in error['detail'].lower()
 
@@ -546,6 +545,85 @@ def test_teaching_skill(test_db):
     hero_id = create_user_hero(create_hero(1, 'Hero'), user_id, skillset=True)
     item_id = create_item()
     skill_id = create_skill(item_id)
+    make_teachable(skill_id, hero_id)
+    create_equipment_item(item_id, user_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               'num': 1,
+                               'item_id': ITEM_ID
+                               },
+                           )
+    assert response.status_code == 200
+
+
+def test_teaching_skill_withou_skillset_initialized(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id)
+    item_id = create_item()
+    skill_id = create_skill(item_id)
+    make_teachable(skill_id, hero_id)
+    create_equipment_item(item_id, user_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               'num': 1,
+                               'item_id': ITEM_ID
+                               },
+                           )
+    assert response.status_code == 500
+    error = response.json()
+    assert "skillset" in error['detail'].lower()
+    assert "initialized" in error['detail'].lower()
+
+
+def test_teaching_nonteachable_skill(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id, skillset=True)
+    item_id = create_item()
+    create_skill(item_id)
+    create_equipment_item(item_id, user_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               'num': 1,
+                               'item_id': ITEM_ID
+                               },
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "teachable" in error['detail'].lower()
+
+
+def test_teaching_non_initialized_skill(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id, skillset=True)
+    item_id = create_item()
+    create_equipment_item(item_id, user_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               'num': 1,
+                               'item_id': ITEM_ID
+                               },
+                           )
+    assert response.status_code == 500
+    error = response.json()
+    assert "skill" in error['detail'].lower()
+    assert "initialized" in error['detail'].lower()
+
+
+def test_teaching_skill_at_already_taken_postion(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id, skillset=True)
+    item_id = create_item()
+    skill_id = create_skill(item_id)
+    second_skill = create_skill(None)
+    teach_skill(hero_id, second_skill, 1)
     make_teachable(skill_id, hero_id)
     create_equipment_item(item_id, user_id, 1)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
