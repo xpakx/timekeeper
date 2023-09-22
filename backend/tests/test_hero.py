@@ -26,6 +26,7 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(autocommit=False,
                                    autoflush=False,
                                    bind=engine)
+ITEM_ID = 4
 
 
 def override_get_db():
@@ -91,7 +92,7 @@ def create_crystal() -> int:
 def create_item(skill_type: bool = True) -> int:
     db = TestingSessionLocal()
     item = Item(
-            num=4,
+            num=ITEM_ID,
             name="Skill",
             description="",
             rarity=ItemRarity.uncommon,
@@ -454,13 +455,13 @@ def test_teaching_skill_without_item(test_db):
 def test_teaching_skill_with_zero_item_count(test_db):
     user_id = create_user_and_return_id()
     hero_id = create_user_hero(create_hero(1, 'Hero'), user_id)
-    item_id = create_equipment_item(create_item(), user_id, 0)
+    create_equipment_item(create_item(), user_id, 0)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post(f"/heroes/{hero_id}/skills",
                            headers=headers,
                            json={
                                'num': 1,
-                               'item_id': item_id
+                               'item_id': ITEM_ID
                                },
                            )
     assert response.status_code == 400
@@ -471,16 +472,17 @@ def test_teaching_skill_with_zero_item_count(test_db):
 
 def test_teaching_skill_to_nonexistent_hero(test_db):
     user_id = create_user_and_return_id()
-    item_id = create_equipment_item(create_item(), user_id, 1)
+    create_equipment_item(create_item(), user_id, 1)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post("/heroes/1/skills",
                            headers=headers,
                            json={
                                'num': 1,
-                               'item_id': item_id
+                               'item_id': ITEM_ID
                                },
                            )
-    assert response.status_code == 400
+    assert response.status_code == 404
     error = response.json()
     print(error)
-    assert "no hero" in error['detail'].lower()
+    assert "not" in error['detail'].lower()
+    assert "hero" in error['detail'].lower()
