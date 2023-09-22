@@ -53,7 +53,7 @@ def no_such_hero_exception():
 def not_initialized_exception():
     return HTTPException(
         status_code=500,
-        detail="Heroes not initialized",
+        detail="Skills not initialized",
     )
 
 

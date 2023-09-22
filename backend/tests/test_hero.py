@@ -6,11 +6,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Item, ItemRarity, EquipmentEntry, ItemType
+from timekeeper.db.models import User, Item, ItemRarity, EquipmentEntry, ItemType, SkillSet, Skill, SkillHero
 from timekeeper.db.models import Hero, UserHero
 from timekeeper.db.equipment_repo import CRYSTAL
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
+from typing import Optional
 
 url = URL.create(
         "postgresql",
@@ -52,6 +53,49 @@ def create_user():
             password=password
             )
     db.add(new_user)
+    db.commit()
+    db.close()
+
+
+def teach_skill(hero_id: int, skill_id: int, num: int = 1):
+    db = TestingSessionLocal()
+    skillset: SkillSet = db\
+        .query(SkillSet)\
+        .where(SkillSet.hero_id == hero_id)\
+        .first()
+    if num == 1:
+        skillset.skill_1_id = skill_id
+    if num == 2:
+        skillset.skill_2_id = skill_id
+    if num == 3:
+        skillset.skill_3_id = skill_id
+    if num == 4:
+        skillset.skill_4_id = skill_id
+    db.commit()
+    db.close()
+
+
+def create_skill(item_id: Optional[int]) -> int:
+    db = TestingSessionLocal()
+    skill = Skill(
+            power=100,
+            priority=0,
+            item_id=item_id
+            )
+    db.add(skill)
+    db.commit()
+    db.refresh(skill)
+    db.close()
+    return skill.id
+
+
+def make_teachable(skill_id: int, hero_id: int) -> int:
+    db = TestingSessionLocal()
+    skill = SkillHero(
+            skill_id=skill_id,
+            hero_id=hero_id,
+            )
+    db.add(skill)
     db.commit()
     db.close()
 
@@ -134,7 +178,7 @@ def create_hero(id: int, name: str) -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int) -> int:
+def create_user_hero(hero_id: int, user_id: int, skillset: bool = False) -> int:
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
@@ -142,6 +186,15 @@ def create_user_hero(hero_id: int, user_id: int) -> int:
             incubated=False
             )
     db.add(item)
+    if skillset:
+        entry = SkillSet(
+                hero=item,
+                usages_1=0,
+                usages_2=0,
+                usages_3=0,
+                usages_4=0
+                )
+        db.add(entry)
     db.commit()
     db.refresh(item)
     db.close()
@@ -486,3 +539,21 @@ def test_teaching_skill_to_nonexistent_hero(test_db):
     print(error)
     assert "not" in error['detail'].lower()
     assert "hero" in error['detail'].lower()
+
+
+def test_teaching_skill(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id, skillset=True)
+    item_id = create_item()
+    skill_id = create_skill(item_id)
+    make_teachable(skill_id, hero_id)
+    create_equipment_item(item_id, user_id, 1)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               'num': 1,
+                               'item_id': ITEM_ID
+                               },
+                           )
+    assert response.status_code == 200
