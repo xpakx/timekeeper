@@ -49,3 +49,12 @@ async def teach_skill(
             request.num,
             db
             )
+
+
+@router.get("/{id}", response_model=hero_schemas.UserHeroDetails)
+async def get_hero(
+        id: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return hero_service.get_user_hero(user.id, id, db)

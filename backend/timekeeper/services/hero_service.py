@@ -35,5 +35,18 @@ def not_enough_crystal_exception():
     )
 
 
+def no_such_hero_exception():
+    return HTTPException(
+        status_code=404,
+        detail="Not such hero!",
+    )
+
+
 def get_heroes(page, size, user_id: int, db: Session):
     return user_hero_repo.get_heroes(page, size, user_id, db)
+
+
+def get_user_hero(user_id: int, hero_id: int, db: Session):
+    hero = user_hero_repo.get_hero(user_id, hero_id, db)
+    if not hero:
+        raise no_such_hero_exception()
