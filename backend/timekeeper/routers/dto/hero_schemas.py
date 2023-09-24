@@ -55,4 +55,3 @@ class SkillSetBase(BaseModel):
 
 class UserHeroDetails(HeroBase):
     skillset: SkillSetBase
-    pass

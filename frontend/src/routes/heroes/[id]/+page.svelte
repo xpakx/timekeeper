@@ -2,12 +2,12 @@
     import { goto } from "$app/navigation";
     import { getToken } from "../../../token-manager";
     import { page } from "$app/stores";
-    import type { Hero } from "../../../types/Hero";
+    import type { HeroDetails } from "../../../types/HeroDetails";
     let apiUri = "http://localhost:8000";
     let message: String;
     let id = Number($page.params.id);
     getHero(id);
-    let hero: Hero;
+    let hero: HeroDetails;
 
     async function getHero(heroId: number) {
         let token: String = await getToken();
