@@ -16,16 +16,13 @@
         }
 
         try {
-            let response = await fetch(
-                `${apiUri}/timers/${heroId}/history`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            let response = await fetch(`${apiUri}/timers/${heroId}/history`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             if (response.ok) {
                 let fromEndpoint = await response.json();
@@ -52,6 +49,34 @@
 {#if hero}
     <div class="hero-container">
         {hero.name}
+    </div>
+    <div class="skill">
+        {#if hero.skillset.skill_1}
+            {hero.skillset.skill_1.name}
+        {:else}
+            No skill
+        {/if}
+    </div>
+    <div class="skill">
+        {#if hero.skillset.skill_2}
+            {hero.skillset.skill_2.name}
+        {:else}
+            No skill
+        {/if}
+    </div>
+    <div class="skill">
+        {#if hero.skillset.skill_3}
+            {hero.skillset.skill_3.name}
+        {:else}
+            No skill
+        {/if}
+    </div>
+    <div class="skill">
+        {#if hero.skillset.skill_4}
+            {hero.skillset.skill_4.name}
+        {:else}
+            No skill
+        {/if}
     </div>
 {/if}
 
