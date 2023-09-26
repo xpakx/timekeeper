@@ -14,9 +14,11 @@
     let message: String;
     let page: number = 0;
     getHeroes();
+    getTeam();
     getIncubators();
 
     let heroes: UserHero[];
+    let team: UserHero[];
     let incubators: Incubator[];
     let toIncubate: UserHero | undefined = undefined;
 
@@ -114,6 +116,41 @@
             }
         }
     }
+    
+    async function getTeam() {
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        try {
+            let response = await fetch(
+                `${apiUri}/teams`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                team = fromEndpoint['heroes'];
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
+            }
+        }
+    }
 </script>
 
 <svelte:head>
@@ -134,6 +171,15 @@
             />
         {/each}
     </div>
+{/if}
+
+<h4>Team</h4>
+{#if team }
+    {#each team as hero}
+        <CompactHeroCard
+            {hero}
+        />
+    {/each}
 {/if}
 
 {#if heroes && heroes.length > 0}
