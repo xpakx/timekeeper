@@ -1,10 +1,9 @@
+import type { Hero } from "./Hero";
 import type { Skillset } from "./Skillset";
 
 export type HeroDetails  = {
     id: number;
-    name: String;
-    title: String;
-    num: number;
-    rarity: string;
+    hero: Hero;
+    incubated: boolean;
     skillset: Skillset;
 }
