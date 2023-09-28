@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from ...db.models import ItemRarity
+from ...db.models import ItemRarity, HeroType
 from typing import Optional
 
 
@@ -9,6 +9,8 @@ class HeroBase(BaseModel):
     title: Optional[str]
     num: int
     rarity: ItemRarity
+    hero_type: Optional[HeroType]
+    secondary_hero_type: Optional[HeroType]
 
     class Config:
         orm_mode = True
