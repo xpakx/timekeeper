@@ -1,7 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import type { UserHero } from "../types/UserHero";
-    import { identity } from "svelte/internal";
     import Fa from "svelte-fa";
     import { faSnowflake } from "@fortawesome/free-solid-svg-icons";
 
