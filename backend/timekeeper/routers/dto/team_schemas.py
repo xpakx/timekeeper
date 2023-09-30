@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, root_validator
 from typing import Optional
 import enum
-from .hero_schemas import UserHeroBase
+from .hero_schemas import UserHeroMin
 from ...db.models import Team
 
 
@@ -35,7 +35,7 @@ class TeamRequest(BaseModel):
 
 
 class TeamResponse(BaseModel):
-    heroes: list[UserHeroBase]
+    heroes: list[UserHeroMin]
 
     def transform_data(team: Team):
         transformed_data = {

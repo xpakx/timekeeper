@@ -18,11 +18,14 @@ class HeroBase(BaseModel):
 
 class UserHeroBase(BaseModel):
     id: int
-    hero: HeroBase
     incubated: bool
 
     class Config:
         orm_mode = True
+
+
+class UserHeroMin(UserHeroBase):
+    hero: HeroBase
 
 
 class Crystals(BaseModel):
@@ -55,5 +58,18 @@ class SkillSetBase(BaseModel):
         orm_mode = True
 
 
-class UserHeroDetails(HeroBase):
+class HeroDetails(HeroBase):
+    health: int
+    title: str
+    description: str
+    base_hp: int
+    base_attack: int
+    base_defense: int
+    base_speed: int
+    base_special_defense: int
+    base_special_attack: int
+
+
+class UserHeroDetails(UserHeroBase):
     skillset: SkillSetBase
+    hero: HeroDetails

@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 router = APIRouter(prefix="/heroes")
 
 
-@router.get("/", response_model=list[hero_schemas.UserHeroBase])
+@router.get("/", response_model=list[hero_schemas.UserHeroMin])
 async def get_heroes(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         page: Annotated[int, Query(ge=0)] = 0,
@@ -35,7 +35,7 @@ async def get_crystals(
     return {'crystals': hero_service.get_crystals(user.id, db)}
 
 
-@router.post("/{id}/skills", response_model=hero_schemas.UserHeroBase)
+@router.post("/{id}/skills", response_model=hero_schemas.UserHeroMin)
 async def teach_skill(
         request: hero_schemas.SkillRequest,
         id: int,

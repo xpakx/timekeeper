@@ -44,7 +44,7 @@ async def insert_hero(
 
 @router.post(
         "/{incubator_id}/hero",
-        response_model=hero_schemas.UserHeroBase)
+        response_model=hero_schemas.UserHeroMin)
 async def get_hero(
         incubator_id: int,
         user: Annotated[CurrentUser, Depends(get_current_user)],
