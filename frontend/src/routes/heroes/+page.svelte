@@ -152,64 +152,6 @@
             }
         }
     }
-
-    async function addToTeam(hero_id: number, num: number) {
-        changeTeam('add', num, undefined, hero_id);
-    }
-
-    async function switchHeroes(num: number, switch_num: number) {
-        changeTeam('switch', num, switch_num, undefined);
-    }
-
-    async function deleteFromTeam(num: number) {
-        changeTeam('delete', num, undefined, undefined);
-    }
-    
-    async function changeTeam(
-        action: String,
-        num: number,
-        switch_num: number | undefined = undefined,
-        hero_id: number | undefined = undefined,
-        ) {
-        let token: String = await getToken();
-        if (!token || token == "") {
-            return;
-        }
-        let body = {
-            action: action,
-            num: num,
-            switch_num: switch_num,
-            hero_id: hero_id
-        }
-
-        try {
-            let response = await fetch(
-                `${apiUri}/teams`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(body)
-                }
-            );
-
-            if (response.ok) {
-                let fromEndpoint = await response.json();
-            } else {
-                if (response.status == 401) {
-                    goto("/logout");
-                }
-                const errorBody = await response.json();
-                message = errorBody.detail;
-            }
-        } catch (err) {
-            if (err instanceof Error) {
-                message = err.message;
-            }
-        }
-    }
 </script>
 
 <svelte:head>
