@@ -26,6 +26,7 @@
 
     function startSwitching(num: number) {
         active_num = num;
+        dispatch("addedToTeam", { id: undefined });
     }
 
     function insertAt(num: number) {
@@ -96,7 +97,7 @@
                 {#if active}
                     <button on:click={() => insertAt(index + 1)}>Add</button>
                 {/if}
-                {#if active_num}
+                {#if active_num && !active}
                     <button on:click={() => switchTo(index + 1)}>Switch</button>
                 {:else}
                     <button on:click={() => startSwitching(index + 1)}
