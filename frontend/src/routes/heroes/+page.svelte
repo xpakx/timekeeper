@@ -22,6 +22,7 @@
     let team: UserHero[];
     let incubators: Incubator[];
     let toIncubate: UserHero | undefined = undefined;
+    let forTeam: UserHero | undefined = undefined;
 
     function startIncubatorChoice(hero: UserHero) {
         toIncubate = hero;
@@ -29,6 +30,30 @@
 
     function stopIncubatorChoice() {
         toIncubate = undefined;
+    }
+
+    function startTeamChoice(hero: UserHero) {
+        forTeam = hero;
+    }
+
+    function stopTeamChoice() {
+        forTeam = undefined;
+    }
+
+    function startChoice(type: String, hero: UserHero) {
+        if (type == "incubation") {
+            startIncubatorChoice(hero);
+        } else if (type == "team") {
+            startTeamChoice(hero);
+        }
+    }
+
+    function stopChoice(type: String) {
+        if (type == "incubation") {
+            stopIncubatorChoice();
+        } else if (type == "team") {
+            stopTeamChoice();
+        }
     }
 
     function changeIncubationState(id: number, state: boolean) {
@@ -117,7 +142,7 @@
             }
         }
     }
-    
+
     async function getTeam() {
         let token: String = await getToken();
         if (!token || token == "") {
@@ -125,20 +150,17 @@
         }
 
         try {
-            let response = await fetch(
-                `${apiUri}/teams`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            let response = await fetch(`${apiUri}/teams`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             if (response.ok) {
                 let fromEndpoint = await response.json();
-                team = fromEndpoint['heroes'];
+                team = fromEndpoint["heroes"];
             } else {
                 if (response.status == 401) {
                     goto("/logout");
@@ -168,22 +190,24 @@
                 {incubator}
                 hero={toIncubate}
                 on:endChoice={stopIncubatorChoice}
-                on:incubatedHero ={(event) => changeIncubationState(event.detail.id, event.detail.state)}
+                on:incubatedHero={(event) =>
+                    changeIncubationState(event.detail.id, event.detail.state)}
             />
         {/each}
     </div>
 {/if}
 
 <h4>Team</h4>
-<Team {team} />
+<Team {team} active={forTeam} on:addedToTeam={stopTeamChoice} />
 
 {#if heroes && heroes.length > 0}
     {#each heroes as hero}
         <CompactHeroCard
             {hero}
             active={toIncubate}
-            on:startChoice={() => startIncubatorChoice(hero)}
-            on:stopChoice={stopIncubatorChoice}
+            activeTeam={forTeam}
+            on:startChoice={(event) => startChoice(event.type, hero)}
+            on:stopChoice={(event) => stopChoice(event.type)}
         />
     {/each}
 {/if}

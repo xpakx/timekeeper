@@ -1,14 +1,16 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { createEventDispatcher } from "svelte";
     import { getToken } from "../token-manager";
     import type { UserHero } from "../types/UserHero";
     import CompactHeroCard from "./CompactHeroCard.svelte";
     let apiUri = "http://localhost:8000";
     let message: String;
 
-    let active: UserHero | undefined = undefined;
+    export let active: UserHero | undefined = undefined;
     let active_num: number | undefined = undefined;
     export let team: UserHero[] = [];
+    const dispatch = createEventDispatcher();
 
     async function addToTeam(hero_id: number, num: number) {
         changeTeam("add", num, undefined, hero_id);
@@ -27,7 +29,7 @@
             return;
         }
         addToTeam(active.id, num);
-        active = undefined;
+        dispatch("addedToTeam", { id: active.id });
     }
 
     async function switchHeroes(num: number, switch_num: number) {
@@ -87,7 +89,9 @@
         {#each team as hero, index}
             <CompactHeroCard {hero} />
             <div class="buttons-container">
-                <button on:click={() => insertAt(index + 1)}>Add</button>
+                {#if active}
+                    <button on:click={() => insertAt(index + 1)}>Add</button>
+                {/if}
                 <button on:click={() => switchTo(index + 1)}>Switch</button>
                 <button on:click={() => deleteFromTeam(index + 1)}
                     >Delete</button
@@ -99,7 +103,11 @@
         {#if team.length < containers}
             <div class="team-elem">
                 <div class="buttons-container">
-                    <button on:click={() => insertAt(containers)}>Add</button>
+                    {#if active}
+                        <button on:click={() => insertAt(containers)}
+                            >Add</button
+                        >
+                    {/if}
                 </div>
             </div>
         {/if}

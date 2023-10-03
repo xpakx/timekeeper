@@ -6,14 +6,23 @@
 
     export let hero: UserHero;
     export let active: UserHero | undefined = undefined;
+    export let activeTeam: UserHero | undefined = undefined;
     const dispatch = createEventDispatcher();
 
     function incubate() {
-        dispatch("startChoice");
+        dispatch("startChoice", { type: "incubation" });
     }
 
     function stopIncubation() {
-        dispatch("stopChoice");
+        dispatch("stopChoice", { type: "incubation" });
+    }
+
+    function toTeam() {
+        dispatch("startChoice", { type: "team" });
+    }
+
+    function stopTeamChoice() {
+        dispatch("stopChoice", { type: "team" });
     }
 </script>
 
@@ -47,6 +56,15 @@
                 <button on:click={incubate}>Incubate</button>
             </div>
         {/if}
+    {/if}
+    {#if activeTeam && activeTeam.id == hero.id}
+        <div class="buttons-container">
+            <button on:click={stopTeamChoice}>Cancel</button>
+        </div>
+    {:else}
+        <div class="buttons-container">
+            <button on:click={toTeam}>Add to Team</button>
+        </div>
     {/if}
 </div>
 
