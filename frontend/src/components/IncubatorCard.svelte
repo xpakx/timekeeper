@@ -36,11 +36,11 @@
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                // TODO: send error msg to parent
+                emitMessage(errorBody.detail)
             }
         } catch (err) {
             if (err instanceof Error) {
-                // TODO: send error msg to parent
+                emitMessage(err.message)
             }
         }
     }
@@ -84,11 +84,11 @@
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                // TODO: send error msg to parent
+                emitMessage(errorBody.detail)
             }
         } catch (err) {
             if (err instanceof Error) {
-                // TODO: send error msg to parent
+                emitMessage(err.message)
             }
         }
     }
@@ -127,17 +127,21 @@
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                // TODO: send error msg to parent
+                emitMessage(errorBody.detail)
             }
         } catch (err) {
             if (err instanceof Error) {
-                // TODO: send error msg to parent
+                emitMessage(err.message)
             }
         }
     }
 
     function incubatedHero(id: number, state: boolean) {
         dispatch("incubatedHero", { id: id, state: state });
+    }
+
+    function emitMessage(message: String) {
+        dispatch("message", { type: "error", body: message });
     }
 </script>
 

@@ -174,6 +174,10 @@
             }
         }
     }
+
+    function changeMessage(text: String) {
+        message = text;
+    }
 </script>
 
 <svelte:head>
@@ -192,13 +196,19 @@
                 on:endChoice={stopIncubatorChoice}
                 on:incubatedHero={(event) =>
                     changeIncubationState(event.detail.id, event.detail.state)}
+                on:message={(event) => changeMessage(event.detail.body)}
             />
         {/each}
     </div>
 {/if}
 
 <h4>Team</h4>
-<Team {team} active={forTeam} on:addedToTeam={stopTeamChoice} />
+<Team
+    {team}
+    active={forTeam}
+    on:addedToTeam={stopTeamChoice}
+    on:message={(event) => changeMessage(event.detail.body)}
+/>
 
 {#if heroes && heroes.length > 0}
     {#each heroes as hero}
@@ -206,8 +216,8 @@
             {hero}
             active={toIncubate}
             activeTeam={forTeam}
-            on:startChoice={(event) => startChoice(event.type, hero)}
-            on:stopChoice={(event) => stopChoice(event.type)}
+            on:startChoice={(event) => startChoice(event.detail.type, hero)}
+            on:stopChoice={(event) => stopChoice(event.detail.type)}
         />
     {/each}
 {/if}

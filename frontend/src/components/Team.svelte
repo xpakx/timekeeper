@@ -5,7 +5,6 @@
     import type { UserHero } from "../types/UserHero";
     import CompactHeroCard from "./CompactHeroCard.svelte";
     let apiUri = "http://localhost:8000";
-    let message: String;
 
     export let active: UserHero | undefined = undefined;
     let active_num: number | undefined = undefined;
@@ -27,6 +26,10 @@
     function startSwitching(num: number) {
         active_num = num;
         dispatch("addedToTeam", { id: undefined });
+    }
+
+    function emitMessage(message: String) {
+        dispatch("message", { type: "error", body: message });
     }
 
     function insertAt(num: number) {
@@ -79,11 +82,11 @@
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                message = errorBody.detail;
+                emitMessage(errorBody.detail)
             }
         } catch (err) {
             if (err instanceof Error) {
-                message = err.message;
+                emitMessage(err.message)
             }
         }
     }
