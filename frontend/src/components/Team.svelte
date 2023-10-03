@@ -24,6 +24,10 @@
         active_num = undefined;
     }
 
+    function startSwitching(num: number) {
+        active_num = num;
+    }
+
     function insertAt(num: number) {
         if (!active) {
             return;
@@ -92,7 +96,13 @@
                 {#if active}
                     <button on:click={() => insertAt(index + 1)}>Add</button>
                 {/if}
-                <button on:click={() => switchTo(index + 1)}>Switch</button>
+                {#if active_num}
+                    <button on:click={() => switchTo(index + 1)}>Switch</button>
+                {:else}
+                    <button on:click={() => startSwitching(index + 1)}
+                        >Switch</button
+                    >
+                {/if}
                 <button on:click={() => deleteFromTeam(index + 1)}
                     >Delete</button
                 >
