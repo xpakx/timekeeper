@@ -47,6 +47,43 @@
             }
         }
     }
+
+    async function teachSkill(hero_id: number, num: number) {
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        let body = {
+            item_id: item.id,
+            num: num
+        };
+        try {
+            let response = await fetch(`${apiUri}/heroes/${hero_id}/skills`, {
+                method: "POST",
+                body: JSON.stringify(body),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                item.amount = item.amount - 1;
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                // TODO: send error msg to parent
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                // TODO: send error msg to parent
+            }
+        }
+    }
 </script>
 
 <div class="item-container {item.item.rarity}">
@@ -122,7 +159,6 @@
     .item-container.rare .item-name {
         color: #f2cdcd;
     }
-
 
     button {
         font-size: 14px;
