@@ -4,12 +4,10 @@
     import type { EquipmentEntry } from "../types/EquipmentEntry";
 
     export let item: EquipmentEntry;
-    const INCUBATOR = 7;
-    const SUPER_INCUBATOR = 16;
     let apiUri = "http://localhost:8000";
 
-    async function installIncubator(id: number) {
-        if (id != INCUBATOR && id != SUPER_INCUBATOR) {
+    async function installIncubator() {
+        if (item.item.item_type == "incubator") {
             return;
         }
 
@@ -19,7 +17,7 @@
         }
 
         let body = {
-            item_id: id,
+            item_id: item.id,
         };
         try {
             let response = await fetch(`${apiUri}/incubators`, {
@@ -49,6 +47,10 @@
     }
 
     async function teachSkill(hero_id: number, num: number) {
+        if (item.item.item_type == "skill") {
+            return;
+        }
+
         let token: String = await getToken();
         if (!token || token == "") {
             return;
@@ -56,7 +58,7 @@
 
         let body = {
             item_id: item.id,
-            num: num
+            num: num,
         };
         try {
             let response = await fetch(`${apiUri}/heroes/${hero_id}/skills`, {
@@ -84,6 +86,10 @@
             }
         }
     }
+
+    function startSkillTeaching() {
+
+    }
 </script>
 
 <div class="item-container {item.item.rarity}">
@@ -101,13 +107,14 @@
         </div>
     </div>
 
-    {#if item.item.num == INCUBATOR || item.item.num == SUPER_INCUBATOR}
-        <div class="actions">
-            <button on:click={() => installIncubator(item.item.num)}
-                >Install</button
-            >
-        </div>
-    {/if}
+    <div class="actions">
+        {#if item.item.item_type == "incubator"}
+            <button on:click={installIncubator}>Install</button>
+        {/if}
+        {#if item.item.item_type == "skill"}
+            <button on:click={startSkillTeaching}>Teach</button>
+        {/if}
+    </div>
 </div>
 
 <style>
