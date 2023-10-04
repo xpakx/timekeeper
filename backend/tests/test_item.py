@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Item, ItemRarity, EquipmentEntry
+from timekeeper.db.models import User, Item, ItemRarity, EquipmentEntry, ItemType
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 
@@ -77,7 +77,8 @@ def create_item(id: int) -> int:
             num=id,
             name=f"Item {id}",
             description="",
-            rarity=ItemRarity.common
+            rarity=ItemRarity.common,
+            item_type=ItemType.crystal
             )
     db.add(item)
     db.commit()

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from ...db.models import ItemRarity
+from ...db.models import ItemRarity, ItemType
 
 
 class ItemBase(BaseModel):
@@ -7,6 +7,7 @@ class ItemBase(BaseModel):
     name: str
     num: int
     rarity: ItemRarity
+    item_type: ItemType
 
     class Config:
         orm_mode = True
