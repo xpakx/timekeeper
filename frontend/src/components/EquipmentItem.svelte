@@ -3,11 +3,13 @@
     import { getToken } from "../token-manager";
     import type { EquipmentEntry } from "../types/EquipmentEntry";
     import HeroChoice from "./HeroChoice.svelte";
+    import SkillChoice from "./SkillChoice.svelte";
 
     export let item: EquipmentEntry;
     let apiUri = "http://localhost:8000";
     let hero_choice: boolean = false;
-    let hero_id:  undefined | number = undefined;
+    let skill_choice: boolean = false;
+    let hero_id: undefined | number = undefined;
 
     async function installIncubator() {
         if (item.item.item_type == "incubator") {
@@ -64,6 +66,7 @@
 
         let id = hero_id;
         hero_id = undefined;
+        skill_choice = false;
 
         let body = {
             item_id: item.id,
@@ -130,7 +133,19 @@
         {/if}
     </div>
     {#if hero_choice}
-        <HeroChoice on:choice={(event) => {selectHero(event.detail.id)}} />
+        <HeroChoice
+            on:choice={(event) => {
+                selectHero(event.detail.id);
+            }}
+        />
+    {/if}
+    {#if skill_choice && hero_id}
+        <SkillChoice
+            id={hero_id}
+            on:choice={(event) => {
+                teachSkill(event.detail.id);
+            }}
+        />
     {/if}
 </div>
 
