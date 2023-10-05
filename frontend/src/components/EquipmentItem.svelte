@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { createEventDispatcher } from "svelte";
     import { getToken } from "../token-manager";
     import type { EquipmentEntry } from "../types/EquipmentEntry";
     import HeroChoice from "./HeroChoice.svelte";
@@ -10,6 +11,7 @@
     let hero_choice: boolean = false;
     let skill_choice: boolean = false;
     let hero_id: undefined | number = undefined;
+    const dispatch = createEventDispatcher();
 
     async function installIncubator() {
         if (item.item.item_type == "incubator") {
@@ -42,11 +44,11 @@
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                // TODO: send error msg to parent
+                emitMessage(errorBody.detail);
             }
         } catch (err) {
             if (err instanceof Error) {
-                // TODO: send error msg to parent
+                emitMessage(err.message);
             }
         }
     }
@@ -90,11 +92,11 @@
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                // TODO: send error msg to parent
+                emitMessage(errorBody.detail);
             }
         } catch (err) {
             if (err instanceof Error) {
-                // TODO: send error msg to parent
+                emitMessage(err.message);
             }
         }
     }
@@ -106,6 +108,10 @@
     function selectHero(id: number) {
         hero_choice = false;
         hero_id = id;
+    }
+
+    function emitMessage(message: String) {
+        dispatch("message", { type: "error", body: message });
     }
 </script>
 
@@ -137,6 +143,7 @@
             on:choice={(event) => {
                 selectHero(event.detail.id);
             }}
+            on:message={(event) => emitMessage(event.detail.body)}
         />
     {/if}
     {#if skill_choice && hero_id}
@@ -145,6 +152,7 @@
             on:choice={(event) => {
                 teachSkill(event.detail.id);
             }}
+            on:message={(event) => emitMessage(event.detail.body)}
         />
     {/if}
 </div>

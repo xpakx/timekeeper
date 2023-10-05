@@ -11,7 +11,6 @@
     const dispatch = createEventDispatcher();
 
     let apiUri = "http://localhost:8000";
-    let message: String;
     let page: number = 0;
     getHeroes();
 
@@ -48,17 +47,21 @@
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                message = errorBody.detail;
+                emitMessage(errorBody.detail)
             }
         } catch (err) {
             if (err instanceof Error) {
-                message = err.message;
+                emitMessage(err.message)
             }
         }
     }
 
     function chooseHero(id: number) {
         dispatch("choice", { id: id });
+    }
+
+    function emitMessage(message: String) {
+        dispatch("message", { type: "error", body: message });
     }
 </script>
 

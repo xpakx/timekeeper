@@ -1,11 +1,9 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { page } from "$app/stores";
     import type { Skill } from "../types/Skill";
     import { getToken } from "../token-manager";
     import { createEventDispatcher } from "svelte";
     let apiUri = "http://localhost:8000";
-    let message: String;
     export let id: number;
 
     const dispatch = createEventDispatcher();
@@ -51,17 +49,21 @@
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                message = errorBody.detail;
+                emitMessage(errorBody.detail)
             }
         } catch (err) {
             if (err instanceof Error) {
-                message = err.message;
+                emitMessage(err.message)
             }
         }
     }
 
     function chooseSkill(id: number) {
         dispatch("choice", { id: id });
+    }
+
+    function emitMessage(message: String) {
+        dispatch("message", { type: "error", body: message });
     }
 </script>
 

@@ -55,6 +55,10 @@
             }
         }
     }
+
+    function changeMessage(text: String) {
+        message = text;
+    }
 </script>
 
 <svelte:head>
@@ -65,7 +69,10 @@
 
 {#if items && items.length > 0}
     {#each items as item}
-        <EquipmentItem {item} />
+        <EquipmentItem
+            {item}
+            on:message={(event) => changeMessage(event.detail.body)}
+        />
     {/each}
 {/if}
 
