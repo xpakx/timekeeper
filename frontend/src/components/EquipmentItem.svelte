@@ -2,9 +2,12 @@
     import { goto } from "$app/navigation";
     import { getToken } from "../token-manager";
     import type { EquipmentEntry } from "../types/EquipmentEntry";
+    import HeroChoice from "./HeroChoice.svelte";
 
     export let item: EquipmentEntry;
     let apiUri = "http://localhost:8000";
+    let hero_choice: boolean = false;
+    let hero_id:  undefined | number = undefined;
 
     async function installIncubator() {
         if (item.item.item_type == "incubator") {
@@ -46,8 +49,11 @@
         }
     }
 
-    async function teachSkill(hero_id: number, num: number) {
+    async function teachSkill(num: number) {
         if (item.item.item_type == "skill") {
+            return;
+        }
+        if (hero_id == undefined) {
             return;
         }
 
@@ -56,12 +62,15 @@
             return;
         }
 
+        let id = hero_id;
+        hero_id = undefined;
+
         let body = {
             item_id: item.id,
             num: num,
         };
         try {
-            let response = await fetch(`${apiUri}/heroes/${hero_id}/skills`, {
+            let response = await fetch(`${apiUri}/heroes/${id}/skills`, {
                 method: "POST",
                 body: JSON.stringify(body),
                 headers: {
@@ -88,7 +97,12 @@
     }
 
     function startSkillTeaching() {
+        hero_choice = true;
+    }
 
+    function selectHero(id: number) {
+        hero_choice = false;
+        hero_id = id;
     }
 </script>
 
@@ -115,6 +129,9 @@
             <button on:click={startSkillTeaching}>Teach</button>
         {/if}
     </div>
+    {#if hero_choice}
+        <HeroChoice on:choice={(event) => {selectHero(event.detail.id)}} />
+    {/if}
 </div>
 
 <style>
