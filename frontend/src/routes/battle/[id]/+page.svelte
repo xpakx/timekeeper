@@ -43,7 +43,7 @@
 </script>
 
 <svelte:head>
-    <title>Hero</title>
+    <title>Battle</title>
 </svelte:head>
 
 {#if battle}

@@ -40,10 +40,47 @@
             }
         }
     }
+
+    async function makeMove(num: number) {
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        let body = {
+            id: num,
+            move: "skill",
+        };
+        try {
+            let response = await fetch(`${apiUri}/battles/${battle.id}`, {
+                method: "POST",
+                body: JSON.stringify(body),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                message = errorBody.detail;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                message = err.message;
+            }
+        }
+    }
+
 </script>
 
 <svelte:head>
-    <title>Hero</title>
+    <title>Battle</title>
 </svelte:head>
 
 {#if battle}
