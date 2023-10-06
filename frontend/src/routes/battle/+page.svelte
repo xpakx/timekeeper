@@ -1,13 +1,40 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { getToken } from "../../token-manager";
-    import { page } from "$app/stores";
     import type { Battle } from "../../types/Battle";
+    import BattleCard from "../../components/BattleCard.svelte";
     let apiUri = "http://localhost:8000";
     let message: String;
-    let id = Number($page.params.id);
     getCurrentBattle();
-    let battle: Battle;
+    let battle: Battle = {
+        id: 1,
+        finished: false,
+        hero: {
+            id: 1,
+            incubated: false,
+            hero: {
+                id: 1,
+                name: "Bulbasaur",
+                title: "",
+                num: 1,
+                rarity: "rare",
+                hero_type: "grass",
+                secondary_hero_type: "poison",
+            },
+        },
+        enemy: {
+            id: 2,
+            incubated: false,
+            hero: {
+                id: 2,
+                name: "Charmander",
+                title: "",
+                num: 4,
+                rarity: "rare",
+                hero_type: "fire",
+            },
+        }
+    };
 
     async function getCurrentBattle() {
         let token: String = await getToken();
@@ -76,7 +103,6 @@
             }
         }
     }
-
 </script>
 
 <svelte:head>
@@ -84,13 +110,10 @@
 </svelte:head>
 
 {#if battle}
-    <div class="battle-container" />
+    <BattleCard {battle} />
 {:else}
     <div>No active battle</div>
 {/if}
 
 <style>
-    .battle-container {
-        margin-bottom: 10px;
-    }
 </style>
