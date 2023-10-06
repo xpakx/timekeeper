@@ -3,6 +3,7 @@
     import { getToken } from "../../../token-manager";
     import { page } from "$app/stores";
     import type { Battle } from "../../../types/Battle";
+    import BattleCard from "../../../components/BattleCard.svelte";
     let apiUri = "http://localhost:8000";
     let message: String;
     let id = Number($page.params.id);
@@ -47,11 +48,8 @@
 </svelte:head>
 
 {#if battle}
-    <div class="battle-container" />
+    <BattleCard {battle} />
 {/if}
 
 <style>
-    .battle-container {
-        margin-bottom: 10px;
-    }
 </style>
