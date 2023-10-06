@@ -20,7 +20,7 @@
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
@@ -47,8 +47,7 @@
 </svelte:head>
 
 {#if battle}
-    <div class="battle-container">
-    </div>
+    <div class="battle-container" />
 {/if}
 
 <style>
