@@ -71,5 +71,6 @@ class HeroDetails(HeroBase):
 
 
 class UserHeroDetails(UserHeroBase):
+    damage: int
     skillset: SkillSetBase
     hero: HeroDetails

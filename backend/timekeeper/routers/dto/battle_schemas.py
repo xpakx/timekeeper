@@ -1,14 +1,30 @@
 from pydantic import BaseModel, root_validator
 from typing import Optional
-from .hero_schemas import UserHeroBase
+from .hero_schemas import UserHeroBase, HeroBase, SkillSetBase
 import enum
+
+
+class HeroBattle(HeroBase):
+    base_hp: int
+
+
+class UserHeroBattle(UserHeroBase):
+    hp: int
+    damage: int
+    hero: HeroBattle
+    skillset: SkillSetBase
+
+
+class EnemyHeroBattle(UserHeroBase):
+    damage: int
+    hero: HeroBase
 
 
 class BattleBase(BaseModel):
     id: int
     finished: bool
-    hero: Optional[UserHeroBase]
-    enemy: Optional[UserHeroBase]
+    hero: Optional[UserHeroBattle]
+    enemy: Optional[EnemyHeroBattle]
 
     class Config:
         orm_mode = True

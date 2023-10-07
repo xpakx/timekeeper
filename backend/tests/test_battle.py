@@ -289,7 +289,8 @@ def create_skill() -> int:
             accuracy=100,
             power=100,
             priority=0,
-            move_type=HeroType.normal
+            move_type=HeroType.normal,
+            max_usages=5
             )
     db.add(skill)
     db.commit()
