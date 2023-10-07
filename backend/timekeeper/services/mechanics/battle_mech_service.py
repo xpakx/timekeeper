@@ -93,6 +93,11 @@ def calculate_hp(hero: UserHero) -> int:
             * hero.level/100 + hero.level + 10)
 
 
+def calculate_hp_(base_hp: int, hp: int, level: int):
+    return math.floor(
+            (2 * base_hp + hp + 0) * level/100 + level + 10)
+
+
 def calculate_speed(hero: UserHero):
     return calculate_stat(
             hero.hero.base_speed,

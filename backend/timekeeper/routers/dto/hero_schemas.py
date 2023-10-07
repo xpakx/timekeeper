@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from ...db.models import ItemRarity, HeroType
 from typing import Optional
 
@@ -74,3 +74,10 @@ class UserHeroDetails(UserHeroBase):
     damage: int
     skillset: SkillSetBase
     hero: HeroDetails
+
+    @validator('skillset')
+    def convert_skills(cls, skillset: SkillSetBase):
+        return [skillset.skill_1,
+                skillset.skill_2,
+                skillset.skill_3,
+                skillset.skill_4]
