@@ -3,8 +3,6 @@
     import type { UserHeroBattle } from "../types/UserHeroBattle";
 
     export let hero: EnemyHeroBattle | UserHeroBattle;
-    export let showHealth: boolean = false;
-    let hp = 9;
 </script>
 
 <div class="hud">

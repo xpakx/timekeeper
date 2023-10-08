@@ -1,9 +1,9 @@
 import type { HeroDetails } from "./HeroDetails";
-import type { Skillset } from "./Skillset";
+import type { Skill } from "./Skill";
 
 export type UserHeroDetails = {
     id: number;
     hero: HeroDetails;
     incubated: boolean;
-    skillset: Skillset;
+    skillset: (Skill|null)[];
 }

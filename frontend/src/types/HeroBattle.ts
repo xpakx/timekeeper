@@ -1,4 +1,4 @@
-export type Hero  = {
+export type HeroBattle  = {
     id: number;
     name: String;
     title: String;

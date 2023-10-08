@@ -24,9 +24,20 @@
                 rarity: "rare",
                 hero_type: "grass",
                 secondary_hero_type: "poison",
-                base_hp: 10,
             },
-            skillset: [],
+            skillset: [
+                {
+                    id: 1,
+                    name: "Tackle",
+                    priority: 0,
+                    accuracy: 100,
+                    power: 50,
+                    max_usages: 15,
+                },
+                null,
+                null,
+                null,
+            ],
         },
         enemy: {
             id: 2,
@@ -41,7 +52,7 @@
                 rarity: "rare",
                 hero_type: "fire",
             },
-        }
+        },
     };
 
     async function getCurrentBattle() {

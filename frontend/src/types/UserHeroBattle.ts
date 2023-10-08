@@ -9,5 +9,5 @@ export type UserHeroBattle = {
     level: number;
     hp: number;
     damage: number;
-    skillset: Skill[];
+    skillset: (Skill|null)[];
 }
