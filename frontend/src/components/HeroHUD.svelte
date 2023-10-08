@@ -1,7 +1,8 @@
 <script lang="ts">
-    import type { UserHero } from "../types/UserHero";
+    import type { EnemyHeroBattle } from "../types/EnemyHeroBattle";
+    import type { UserHeroBattle } from "../types/UserHeroBattle";
 
-    export let hero: UserHero;
+    export let hero: EnemyHeroBattle | UserHeroBattle;
     export let showHealth: boolean = false;
     let hp = 9;
 </script>
@@ -10,21 +11,21 @@
     <div class="hexagon">
         <div class="top-container">
             <div class="hero-name">{hero.hero.name}</div>
-            <div class="level">Lv 1</div>
+            <div class="level">Lv {hero.level}</div>
         </div>
         <div class="progress-container">
             <div
-                class="progress-bar {hp < 50
-                    ? hp < 10
+                class="progress-bar {hero.current_hp < 50
+                    ? hero.current_hp < 10
                         ? 'low'
                         : 'medium'
                     : ''}"
-                style="width: {hp}%;"
+                style="width: {hero.current_hp}%;"
             />
         </div>
-        {#if showHealth}
+        {#if 'hp' in hero}
         <div class="health">
-            {hp}/100
+            {hero.hp-hero.damage}/{hero.hp}
         </div>
         {/if}
     </div>

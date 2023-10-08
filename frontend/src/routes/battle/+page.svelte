@@ -12,6 +12,10 @@
         hero: {
             id: 1,
             incubated: false,
+            hp: 10,
+            current_hp: 50,
+            damage: 5,
+            level: 1,
             hero: {
                 id: 1,
                 name: "Bulbasaur",
@@ -20,11 +24,15 @@
                 rarity: "rare",
                 hero_type: "grass",
                 secondary_hero_type: "poison",
+                base_hp: 10,
             },
+            skillset: [],
         },
         enemy: {
             id: 2,
             incubated: false,
+            current_hp: 9,
+            level: 1,
             hero: {
                 id: 2,
                 name: "Charmander",

@@ -16,7 +16,7 @@
         <div class="hero-image">
             <img src="heroes/00{battle.hero.hero.num}.png" alt="" />
         </div>
-        <HeroHud hero={battle.hero} showHealth={true} />
+        <HeroHud hero={battle.hero} />
     </div>
 </div>
 
