@@ -20,6 +20,18 @@
     </div>
 </div>
 
+<div class="skills-container">
+    {#each battle.hero.skillset as skill}
+        <div class="skill">
+            {#if skill != undefined}
+                {skill.name}
+            {:else}
+                No skill
+            {/if}
+        </div>
+    {/each}
+</div>
+
 <style>
     .battle-container {
         position: relative;
@@ -66,5 +78,12 @@
 
     .enemy .hero-image {
         margin-top: 20px;
+    }
+
+    .skills-container {
+        width: 600px;
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
     }
 </style>
