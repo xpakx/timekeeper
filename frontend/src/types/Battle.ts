@@ -1,8 +1,9 @@
-import type { UserHero } from "./UserHero";
+import type { EnemyHeroBattle } from "./EnemyHeroBattle";
+import type { UserHeroBattle } from "./UserHeroBattle";
 
 export type Battle = {
     id: number;
     finished: boolean;
-    hero: UserHero;
-    enemy: UserHero;
+    hero: UserHeroBattle;
+    enemy: EnemyHeroBattle;
 }
