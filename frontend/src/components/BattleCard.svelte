@@ -3,8 +3,14 @@
     import type { Battle } from "../types/Battle";
     import HeroHud from "./HeroHUD.svelte";
     import { faBolt, faCrosshairs } from "@fortawesome/free-solid-svg-icons";
+    import { createEventDispatcher } from "svelte";
 
     export let battle: Battle;
+    const dispatch = createEventDispatcher();
+
+    function emitSkill(num: number) {
+        dispatch("skill", { num: num });
+    }
 </script>
 
 <div class="battle-container {battle.finished ? 'finished' : ''}">
@@ -47,7 +53,9 @@
                         {skill.move_type}
                     </div>
                 </div>
-                <button class="skill-btn">Use</button>
+                <button class="skill-btn" on:click={() => emitSkill(index + 1)}
+                    >Use</button
+                >
             {:else}
                 No skill
             {/if}

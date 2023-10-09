@@ -158,7 +158,7 @@
 </svelte:head>
 
 {#if battle}
-    <BattleCard {battle} />
+    <BattleCard {battle}  on:skill={(event) => makeMove(event.detail.num)} />
 {:else}
     <div>No active battle</div>
 {/if}
