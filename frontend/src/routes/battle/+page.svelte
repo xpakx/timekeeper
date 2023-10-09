@@ -31,12 +31,41 @@
                     name: "Tackle",
                     priority: 0,
                     accuracy: 100,
-                    power: 50,
-                    max_usages: 15,
+                    power: 35,
+                    max_usages: 35,
+                    move_type: "normal",
+                    move_category: "physical"
                 },
-                null,
-                null,
-                null,
+                {
+                    id: 2,
+                    name: "Growl",
+                    priority: 0,
+                    accuracy: 100,
+                    power: 0,
+                    max_usages: 40,
+                    move_type: "normal",
+                    move_category: "physical"
+                },
+                {
+                    id: 1,
+                    name: "Leech Seed",
+                    priority: 0,
+                    accuracy: 90,
+                    power: 0,
+                    max_usages: 10,
+                    move_type: "grass",
+                    move_category: "physical"
+                },
+                {
+                    id: 1,
+                    name: "Vine Whip",
+                    priority: 0,
+                    accuracy: 100,
+                    power: 35,
+                    max_usages: 10,
+                    move_type: "grass",
+                    move_category: "physical"
+                },
             ],
         },
         enemy: {

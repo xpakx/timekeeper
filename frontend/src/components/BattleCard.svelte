@@ -1,6 +1,8 @@
 <script lang="ts">
+    import Fa from "svelte-fa";
     import type { Battle } from "../types/Battle";
     import HeroHud from "./HeroHUD.svelte";
+    import { faBolt, faCrosshairs } from "@fortawesome/free-solid-svg-icons";
 
     export let battle: Battle;
 </script>
@@ -21,10 +23,31 @@
 </div>
 
 <div class="skills-container">
-    {#each battle.hero.skillset as skill}
+    {#each battle.hero.skillset as skill, index}
         <div class="skill">
             {#if skill != undefined}
-                {skill.name}
+                <div class="skill-header">
+                    <div class="skill-name">
+                        {skill.name}
+                    </div>
+                    <div class="skill-pp">
+                        {skill.max_usages}/{skill.max_usages}
+                    </div>
+                </div>
+                <div class="skill-stats">
+                    <div class="skill-power">
+                        <Fa icon={faBolt} />
+                        {skill.power}
+                    </div>
+                    <div class="skill-accuracy">
+                        <Fa icon={faCrosshairs} />
+                        {skill.accuracy}
+                    </div>
+                    <div class="skill-type {'type-' + skill.move_type}">
+                        {skill.move_type}
+                    </div>
+                </div>
+                <button class="skill-btn">Use</button>
             {:else}
                 No skill
             {/if}
@@ -85,5 +108,59 @@
         margin-top: 10px;
         display: flex;
         justify-content: space-between;
+        font-size: 15px;
+    }
+
+    .skill-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+    }
+
+    .skill-stats {
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+        margin-top: 5px;
+    }
+
+    .skill-type {
+        font-size: 10px;
+        background-color: #313244;
+        color: #a6adc8;
+        border-radius: 4px;
+        padding: 2px 5px;
+    }
+
+    .type-grass {
+        color: #181825;
+        background-color: #a6e3a1;
+    }
+
+    .type-fire {
+        color: #181825;
+        background-color: #fab387;
+    }
+
+    .type-water {
+        color: #181825;
+        background-color: #89b4fa;
+    }
+
+    .skill-btn {
+        margin-top: 5px;
+        background-color: #313244;
+        color: #a6adc8;
+        width: 100%;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border: none;
+        border-radius: 0 0 10px 10px;
+        cursor: pointer;
+    }
+
+    .skill-btn:hover {
+        background-color: #6c7086;
+        color: #f2cdcd;
     }
 </style>

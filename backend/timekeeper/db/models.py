@@ -166,7 +166,7 @@ class Skill(Base):
     power = Column(Integer)
     max_usages = Column(Integer)
     move_type = Column(Enum(HeroType))
-    move_category = Column(Enum(HeroType))
+    move_category = Column(Enum(MoveCategory))
     item_id = Column(Integer, ForeignKey("items.id"))
     item = relationship("Item")
 

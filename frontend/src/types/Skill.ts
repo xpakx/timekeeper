@@ -5,4 +5,6 @@ export type Skill  = {
     accuracy: number;
     power: number;
     max_usages: number;
+    move_type: String;
+    move_category: String;
 }

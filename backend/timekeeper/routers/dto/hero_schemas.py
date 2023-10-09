@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, validator
-from ...db.models import ItemRarity, HeroType
+from ...db.models import ItemRarity, HeroType, MoveCategory
 from typing import Optional
 
 
@@ -43,6 +43,8 @@ class SkillBase(BaseModel):
     accuracy: int
     power: int
     max_usages: int
+    move_type: Optional[HeroType]
+    move_category: Optional[MoveCategory]
 
     class Config:
         orm_mode = True
