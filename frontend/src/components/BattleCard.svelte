@@ -155,6 +155,76 @@
         background-color: #89b4fa;
     }
 
+    .type-electric {
+        color: #181825;
+        background-color: #f9e2af;
+    }
+
+    .type-ice {
+        color: #181825;
+        background-color: #89dceb;
+    }
+
+    .type-fighting {
+        color: #181825;
+        background-color: #f38ba8;
+    }
+
+    .type-poison {
+        color: #181825;
+        background-color: #cba6f7;
+    }
+
+    .type-ground {
+        color: #181825;
+        background-color: #eba0ac;
+    }
+
+    .type-flying {
+        color: #181825;
+        background-color: #b4befe;
+    }
+
+    .type-psychic {
+        color: #181825;
+        background-color: #f2cdcd;
+    }
+
+    .type-bug {
+        color: #181825;
+        background-color: #94e2d5;
+    }
+
+    .type-rock {
+        color: #181825;
+        background-color: #94e2d5;
+    }
+
+    .type-ghost {
+        color: #181825;
+        background-color: #eba0ac;
+    }
+
+    .type-dragon {
+        color: #181825;
+        background-color: #89b4fa;
+    }
+
+    .type-dark {
+        color: #181825;
+        background-color: #11111b;
+    }
+
+    .type-steel {
+        color: #181825;
+        background-color: #9399b2;
+    }
+
+    .type-fairy {
+        color: #181825;
+        background-color: #f5c2e7;
+    }
+
     .skill-btn {
         margin-top: 5px;
         background-color: #313244;
