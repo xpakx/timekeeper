@@ -113,6 +113,47 @@
     function emitMessage(message: String) {
         dispatch("message", { type: "error", body: message });
     }
+
+    async function startBattle() {
+        if (item.item.item_type == "battle ticket") {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        let body = {
+            id: item.id,
+        };
+        try {
+            let response = await fetch(`${apiUri}/battles`, {
+                method: "POST",
+                body: JSON.stringify(body),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                item.amount = item.amount - 1;
+                goto("/battle")
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                emitMessage(errorBody.detail);
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                emitMessage(err.message);
+            }
+        }
+    }
 </script>
 
 <div class="item-container {item.item.rarity}">
@@ -136,6 +177,9 @@
         {/if}
         {#if item.item.item_type == "skill"}
             <button on:click={startSkillTeaching}>Teach</button>
+        {/if}
+        {#if item.item.item_type == "battle ticket"}
+            <button on:click={startBattle}>Start battle</button>
         {/if}
     </div>
     {#if hero_choice}
