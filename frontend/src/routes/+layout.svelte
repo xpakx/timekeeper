@@ -3,8 +3,9 @@
     import { usernameStorage } from "../storage";
     import Fa from "svelte-fa";
     import {
-    faBox,
-    faGift,
+        faBox,
+        faDungeon,
+        faGift,
         faHistory,
         faHourglass,
         faShield,
@@ -24,6 +25,7 @@
         <a href="/reward"><Fa icon={faGift} /></a>
         <a href="/equipment"><Fa icon={faBox} /></a>
         <a href="/heroes"><Fa icon={faShield} /></a>
+        <a href="/battle"><Fa icon={faDungeon} /></a>
     </div>
     <div class="nav-component">
         <div class="user">
