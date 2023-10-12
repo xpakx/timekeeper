@@ -36,63 +36,67 @@
     }
 </script>
 
-<div class="top-container">
-    <button class="action-btn" on:click={emitFleeAction}>
-        <Fa icon={faRunning} />
-    </button>
-    <button class="action-btn" on:click={switchItemChoice}>
-        <Fa icon={faBox} />
-    </button>
-</div>
+<div class="main-container">
+    <div class="view-container">
+        <div class="battle-container {battle.finished ? 'finished' : ''}">
+            <div class="enemy">
+                <HeroHud hero={battle.enemy} />
+                <div class="hero-image">
+                    <img src="heroes/00{battle.enemy.hero.num}.png" alt="" />
+                </div>
+            </div>
+            <div class="hero">
+                <div class="hero-image">
+                    <img src="heroes/00{battle.hero.hero.num}.png" alt="" />
+                </div>
+                <HeroHud hero={battle.hero} />
+            </div>
+        </div>
 
-<div class="battle-container {battle.finished ? 'finished' : ''}">
-    <div class="enemy">
-        <HeroHud hero={battle.enemy} />
-        <div class="hero-image">
-            <img src="heroes/00{battle.enemy.hero.num}.png" alt="" />
+        <div class="skills-container">
+            {#each battle.hero.skillset as skill, index}
+                <div class="skill">
+                    {#if skill != undefined}
+                        <div class="skill-header">
+                            <div class="skill-name">
+                                {skill.name}
+                            </div>
+                            <div class="skill-pp">
+                                {skill.max_usages}/{skill.max_usages}
+                            </div>
+                        </div>
+                        <div class="skill-stats">
+                            <div class="skill-power">
+                                <Fa icon={faBolt} />
+                                {skill.power}
+                            </div>
+                            <div class="skill-accuracy">
+                                <Fa icon={faCrosshairs} />
+                                {skill.accuracy}
+                            </div>
+                            <div class="skill-type {'type-' + skill.move_type}">
+                                {skill.move_type}
+                            </div>
+                        </div>
+                        <button
+                            class="skill-btn"
+                            on:click={() => emitSkill(index + 1)}>Use</button
+                        >
+                    {:else}
+                        No skill
+                    {/if}
+                </div>
+            {/each}
         </div>
     </div>
-    <div class="hero">
-        <div class="hero-image">
-            <img src="heroes/00{battle.hero.hero.num}.png" alt="" />
-        </div>
-        <HeroHud hero={battle.hero} />
+    <div class="action-container">
+        <button class="action-btn" on:click={emitFleeAction}>
+            <Fa icon={faRunning} />
+        </button>
+        <button class="action-btn" on:click={switchItemChoice}>
+            <Fa icon={faBox} />
+        </button>
     </div>
-</div>
-
-<div class="skills-container">
-    {#each battle.hero.skillset as skill, index}
-        <div class="skill">
-            {#if skill != undefined}
-                <div class="skill-header">
-                    <div class="skill-name">
-                        {skill.name}
-                    </div>
-                    <div class="skill-pp">
-                        {skill.max_usages}/{skill.max_usages}
-                    </div>
-                </div>
-                <div class="skill-stats">
-                    <div class="skill-power">
-                        <Fa icon={faBolt} />
-                        {skill.power}
-                    </div>
-                    <div class="skill-accuracy">
-                        <Fa icon={faCrosshairs} />
-                        {skill.accuracy}
-                    </div>
-                    <div class="skill-type {'type-' + skill.move_type}">
-                        {skill.move_type}
-                    </div>
-                </div>
-                <button class="skill-btn" on:click={() => emitSkill(index + 1)}
-                    >Use</button
-                >
-            {:else}
-                No skill
-            {/if}
-        </div>
-    {/each}
 </div>
 
 {#if itemChoice}
@@ -278,5 +282,30 @@
     .skill-btn:hover {
         background-color: #6c7086;
         color: #f2cdcd;
+    }
+
+    .main-container {
+        display: flex;
+    }
+
+    .action-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: right;
+        gap: 5px;
+        margin-left: 10px;
+    }
+
+    .action-btn {
+        font-size: 14px;
+        cursor: pointer;
+        color: #7f849c;
+        margin-right: 10px;
+        background-color: transparent;
+        border: none;
+    }
+
+    .action-btn:hover {
+        color: #6c7086;
     }
 </style>
