@@ -11,6 +11,14 @@
     function emitSkill(num: number) {
         dispatch("skill", { num: num });
     }
+
+    function emitItem(id: number) {
+        dispatch("item", { num: id });
+    }
+
+    function emitFleeAction() {
+        dispatch("flee");
+    }
 </script>
 
 <div class="battle-container {battle.finished ? 'finished' : ''}">

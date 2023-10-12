@@ -186,6 +186,7 @@
             }
         }
     }
+
     async function useItem(id: number) {
         let token: String = await getToken();
         if (!token || token == "") {
@@ -229,7 +230,11 @@
 </svelte:head>
 
 {#if battle}
-    <BattleCard {battle}  on:skill={(event) => makeMove(event.detail.num)} />
+    <BattleCard {battle}  
+    on:skill={(event) => makeMove(event.detail.num)} 
+    on:item={(event) => useItem(event.detail.id)} 
+    on:flee={flee} 
+    />
 {:else}
     <div>No active battle</div>
 {/if}
