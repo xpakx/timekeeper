@@ -2,7 +2,12 @@
     import Fa from "svelte-fa";
     import type { Battle } from "../types/Battle";
     import HeroHud from "./HeroHUD.svelte";
-    import { faBolt, faBox, faCrosshairs, faL, faRunning } from "@fortawesome/free-solid-svg-icons";
+    import {
+        faBolt,
+        faBox,
+        faCrosshairs,
+        faRunning,
+    } from "@fortawesome/free-solid-svg-icons";
     import { createEventDispatcher } from "svelte";
 
     export let battle: Battle;
@@ -22,8 +27,8 @@
         dispatch("flee");
     }
 
-    function openItemChoice() {
-        itemChoice = true;
+    function switchItemChoice() {
+        itemChoice = !itemChoice;
     }
 
     function closeItemChoice() {
@@ -35,7 +40,7 @@
     <button class="action-btn" on:click={emitFleeAction}>
         <Fa icon={faRunning} />
     </button>
-    <button class="action-btn" on:click={openItemChoice}>
+    <button class="action-btn" on:click={switchItemChoice}>
         <Fa icon={faBox} />
     </button>
 </div>
@@ -90,11 +95,11 @@
     {/each}
 </div>
 
-<div class="item-container">
-    <button class="skill-btn" on:click={() => emitItem(1)}>
-        Use
-    </button>
-</div>
+{#if itemChoice}
+    <div class="item-container">
+        <button class="skill-btn" on:click={() => emitItem(1)}> Use </button>
+    </div>
+{/if}
 
 <style>
     .battle-container {
