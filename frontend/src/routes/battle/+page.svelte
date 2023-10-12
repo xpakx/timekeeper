@@ -34,7 +34,7 @@
                     power: 35,
                     max_usages: 35,
                     move_type: "normal",
-                    move_category: "physical"
+                    move_category: "physical",
                 },
                 {
                     id: 2,
@@ -44,7 +44,7 @@
                     power: 0,
                     max_usages: 40,
                     move_type: "normal",
-                    move_category: "physical"
+                    move_category: "physical",
                 },
                 {
                     id: 1,
@@ -54,7 +54,7 @@
                     power: 0,
                     max_usages: 10,
                     move_type: "grass",
-                    move_category: "physical"
+                    move_category: "physical",
                 },
                 {
                     id: 1,
@@ -64,7 +64,7 @@
                     power: 35,
                     max_usages: 10,
                     move_type: "grass",
-                    move_category: "physical"
+                    move_category: "physical",
                 },
             ],
         },
@@ -222,7 +222,6 @@
             }
         }
     }
-
 </script>
 
 <svelte:head>
@@ -230,10 +229,11 @@
 </svelte:head>
 
 {#if battle}
-    <BattleCard {battle}  
-    on:skill={(event) => makeMove(event.detail.num)} 
-    on:item={(event) => useItem(event.detail.id)} 
-    on:flee={flee} 
+    <BattleCard
+        {battle}
+        on:skill={(event) => makeMove(event.detail.num)}
+        on:item={(event) => useItem(event.detail.id)}
+        on:flee={flee}
     />
 {:else}
     <div>No active battle</div>

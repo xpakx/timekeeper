@@ -2,24 +2,43 @@
     import Fa from "svelte-fa";
     import type { Battle } from "../types/Battle";
     import HeroHud from "./HeroHUD.svelte";
-    import { faBolt, faCrosshairs } from "@fortawesome/free-solid-svg-icons";
+    import { faBolt, faBox, faCrosshairs, faL, faRunning } from "@fortawesome/free-solid-svg-icons";
     import { createEventDispatcher } from "svelte";
 
     export let battle: Battle;
     const dispatch = createEventDispatcher();
+    let itemChoice: boolean = false;
 
     function emitSkill(num: number) {
         dispatch("skill", { num: num });
     }
 
     function emitItem(id: number) {
+        closeItemChoice();
         dispatch("item", { num: id });
     }
 
     function emitFleeAction() {
         dispatch("flee");
     }
+
+    function openItemChoice() {
+        itemChoice = true;
+    }
+
+    function closeItemChoice() {
+        itemChoice = false;
+    }
 </script>
+
+<div class="top-container">
+    <button class="action-btn" on:click={emitFleeAction}>
+        <Fa icon={faRunning} />
+    </button>
+    <button class="action-btn" on:click={openItemChoice}>
+        <Fa icon={faBox} />
+    </button>
+</div>
 
 <div class="battle-container {battle.finished ? 'finished' : ''}">
     <div class="enemy">
@@ -69,6 +88,12 @@
             {/if}
         </div>
     {/each}
+</div>
+
+<div class="item-container">
+    <button class="skill-btn" on:click={() => emitItem(1)}>
+        Use
+    </button>
 </div>
 
 <style>
