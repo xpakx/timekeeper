@@ -9,6 +9,7 @@
         faRunning,
     } from "@fortawesome/free-solid-svg-icons";
     import { createEventDispatcher } from "svelte";
+    import ItemChoice from "./ItemChoice.svelte";
 
     export let battle: Battle;
     const dispatch = createEventDispatcher();
@@ -101,7 +102,7 @@
 
 {#if itemChoice}
     <div class="item-container">
-        <button class="skill-btn" on:click={() => emitItem(1)}> Use </button>
+        <ItemChoice on:choice={(event) => emitItem(event.detail.id)}/>
     </div>
 {/if}
 
