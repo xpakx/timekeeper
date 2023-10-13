@@ -32,28 +32,17 @@
 
             if (response.ok) {
                 let hero = await response.json();
-                if (hero.skillset.skill_1) {
-                    skills[0] = hero.skillset.skill_1;
-                }
-                if (hero.skillset.skill_2) {
-                    skills[1] = hero.skillset.skill_2;
-                }
-                if (hero.skillset.skill_3) {
-                    skills[2] = hero.skillset.skill_3;
-                }
-                if (hero.skillset.skill_4) {
-                    skills[3] = hero.skillset.skill_4;
-                }
+                skills = hero.skillset;
             } else {
                 if (response.status == 401) {
                     goto("/logout");
                 }
                 const errorBody = await response.json();
-                emitMessage(errorBody.detail)
+                emitMessage(errorBody.detail);
             }
         } catch (err) {
             if (err instanceof Error) {
-                emitMessage(err.message)
+                emitMessage(err.message);
             }
         }
     }
@@ -68,13 +57,13 @@
 </script>
 
 <div class="skill">
-    {#each [1, 2, 3, 4] as num}
-        {#if skills[num] != undefined}
-            {skills[num]?.name}
+    {#each skills as skill, index}
+        {#if skill != undefined}
+            {skill.name}
         {:else}
             No skill
         {/if}
-        <button on:click={() => chooseSkill(num)}>Select</button>
+        <button on:click={() => chooseSkill(index+1)}>Select</button>
     {/each}
 </div>
 
