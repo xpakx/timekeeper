@@ -56,16 +56,53 @@
     }
 </script>
 
-<div class="skill">
+<div class="skills">
     {#each skills as skill, index}
-        {#if skill != undefined}
-            {skill.name}
-        {:else}
-            No skill
-        {/if}
-        <button on:click={() => chooseSkill(index+1)}>Select</button>
+        <div class="skill">
+            <div class="skill-header">
+                <div class="skill-name">
+                    {#if skill != undefined}
+                        {skill.name}
+                    {:else}
+                        No skill
+                    {/if}
+                </div>
+            </div>
+            <button class="skill-btn" on:click={() => chooseSkill(index + 1)}
+                >Select</button
+            >
+        </div>
     {/each}
 </div>
 
 <style>
+    .skills {
+        margin-top: 10px;
+        display: flex;
+        font-size: 15px;
+        gap: 10px;
+    }
+
+    .skill-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+    }
+
+    .skill-btn {
+        margin-top: 5px;
+        background-color: #313244;
+        color: #a6adc8;
+        width: 100%;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border: none;
+        border-radius: 0 0 10px 10px;
+        cursor: pointer;
+    }
+
+    .skill-btn:hover {
+        background-color: #6c7086;
+        color: #f2cdcd;
+    }
 </style>
