@@ -42,3 +42,10 @@ insert into heroes (num, name, title, description, rarity, hero_type, secondary_
     (18, 'Pidgeot', '', '', 'common', 'normal', 'flying', 100, 50, 50, 50, 50, 50, ''),
     (19, 'Rattata', '', '', 'common', 'normal', NULL, 100, 50, 50, 50, 50, 50, ''),
     (20, 'Raticate', '', '', 'common', 'normal', NULL, 100, 50, 50, 50, 50, 50, '');
+
+insert into skills (name, priority, accuracy, power, max_usages, move_type, move_category) values 
+    ('Tackle', 0, 95, 35, 35, 'normal', 'physical'),
+    ('Growl', 0, 100, 0, 40, 'normal', 'status'),
+    ('Leech Seed', 0, 90, 0, 10, 'grass', 'status'),
+    ('Vine Whip', 0, 100, 45, 25, 'grass', 'physical'),
+    ('Poison Powder', 0, 75, 0, 35, 'poison', 'status');
