@@ -39,6 +39,7 @@ class SkillRequest(BaseModel):
 
 class SkillBase(BaseModel):
     id: int
+    name: str
     priority: int
     accuracy: int
     power: int

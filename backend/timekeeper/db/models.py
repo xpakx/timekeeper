@@ -161,6 +161,7 @@ class MoveCategory(enum.Enum):
 class Skill(Base):
     __tablename__ = "skills"
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
     priority = Column(Integer)
     accuracy = Column(Integer)
     power = Column(Integer)
