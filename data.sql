@@ -1,14 +1,14 @@
 insert into items (num, name, description, rarity, item_type) values
-(1, 'Test 1', 'first test item', 'common', NULL),
-(2, 'Test 2', 'second test item', 'common', NULL),
+(1, 'Tackle', '', 'common', 'skill'),
+(2, 'Growl', '', 'common', 'skill'),
 (3, 'Test 3', 'third test item', 'common', NULL),
 (4, 'Test 4', 'fourth test item', 'common', NULL),
 (5, 'Test 5', 'fifth test item', 'common', NULL),
 (6, 'Crystal', 'crystal for summoning heroes', 'uncommon', 'crystal'),
 (7, 'Incubator', 'machine that helps heroes gain experience', 'uncommon', 'incubator'),
-(8, 'Test 8', 'eighth test item', 'uncommon', NULL),
-(9, 'Test 9', 'ninth test item', 'uncommon', NULL),
-(10, 'Test 10', 'tenth test item', 'uncommon', NULL),
+(8, 'Leech Seed', 'eighth test item', 'uncommon', 'skill'),
+(9, 'Wine Whip', 'ninth test item', 'uncommon', 'skill'),
+(10, 'Poison Powder', 'tenth test item', 'uncommon', 'skill'),
 (11, 'Test 11', 'eleventh test item', 'uncommon', NULL),
 (12, 'Test 12', 'twelfth test item', 'uncommon', NULL),
 (13, 'Test 13', 'thirteenth test item', 'uncommon', NULL),
@@ -18,7 +18,14 @@ insert into items (num, name, description, rarity, item_type) values
 (17, 'Test 17', 'seventeenth test item', 'rare', NULL),
 (18, 'Test 18', 'eighteenth test item', 'rare', NULL),
 (19, 'Test 19', 'ninteenth test item', 'rare', NULL),
-(20, 'Test 20', 'twentieth test item', 'rare', NULL);
+(20, 'Test 20', 'twentieth test item', 'rare', NULL),
+(21, 'Wine Whip', '', 'uncommon', 'skill'),
+(22, 'Sleep Powder', '', 'uncommon', 'skill'),
+(23, 'Razor Leaf', '', 'uncommon', 'skill'),
+(24, 'Sweet Scent', '', 'uncommon', 'skill'),
+(25, 'Growth', '', 'uncommon', 'skill'),
+(26, 'Synthesis', '', 'uncommon', 'skill'),
+(27, 'Solar Beam', '', 'uncommon', 'skill');
 
 insert into heroes (num, name, title, description, rarity, hero_type, secondary_hero_type, 
     base_hp, base_attack, base_defense, base_speed, base_special_attack, base_special_defense, exp_group) values 
@@ -34,18 +41,31 @@ insert into heroes (num, name, title, description, rarity, hero_type, secondary_
     (10, 'Caterpie', '', '', 'common', 'bug', NULL, 45, 30, 35, 45, 20, 20, 'medium_fast'),
     (11, 'Metapod', '', '', 'common', 'bug', NULL, 50, 20, 55, 30, 25, 25, 'medium_fast'),
     (12, 'Butterfree', '', '', 'common', 'bug', 'flying', 60, 45, 50, 70, 90, 80, 'medium_fast'),
-    (13, 'Weedle', '', '', 'common', 'bug', 'poison', 100, 50, 50, 50, 50, 50, ''),
-    (14, 'Kakuna', '', '', 'common', 'bug', 'poison', 100, 50, 50, 50, 50, 50, ''),
-    (15, 'Beedrill', '', '', 'common', 'bug', 'poison', 100, 50, 50, 50, 50, 50, ''),
-    (16, 'Pidgey', '', '', 'common', 'normal', 'flying', 100, 50, 50, 50, 50, 50, ''),
-    (17, 'Pidgeotto', '', '', 'common', 'normal', 'flying', 100, 50, 50, 50, 50, 50, ''),
-    (18, 'Pidgeot', '', '', 'common', 'normal', 'flying', 100, 50, 50, 50, 50, 50, ''),
-    (19, 'Rattata', '', '', 'common', 'normal', NULL, 100, 50, 50, 50, 50, 50, ''),
-    (20, 'Raticate', '', '', 'common', 'normal', NULL, 100, 50, 50, 50, 50, 50, '');
+    (13, 'Weedle', '', '', 'common', 'bug', 'poison', 100, 50, 50, 50, 50, 50, 'medium_fast'),
+    (14, 'Kakuna', '', '', 'common', 'bug', 'poison', 100, 50, 50, 50, 50, 50, 'medium_fast'),
+    (15, 'Beedrill', '', '', 'common', 'bug', 'poison', 100, 50, 50, 50, 50, 50, 'medium_fast'),
+    (16, 'Pidgey', '', '', 'common', 'normal', 'flying', 100, 50, 50, 50, 50, 50, 'medium_fast'),
+    (17, 'Pidgeotto', '', '', 'common', 'normal', 'flying', 100, 50, 50, 50, 50, 50, 'medium_fast'),
+    (18, 'Pidgeot', '', '', 'common', 'normal', 'flying', 100, 50, 50, 50, 50, 50, 'medium_fast'),
+    (19, 'Rattata', '', '', 'common', 'normal', NULL, 100, 50, 50, 50, 50, 50, 'medium_fast'),
+    (20, 'Raticate', '', '', 'common', 'normal', NULL, 100, 50, 50, 50, 50, 50, 'medium_fast');
 
-insert into skills (name, priority, accuracy, power, max_usages, move_type, move_category) values 
-    ('Tackle', 0, 95, 35, 35, 'normal', 'physical'),
-    ('Growl', 0, 100, 0, 40, 'normal', 'status'),
-    ('Leech Seed', 0, 90, 0, 10, 'grass', 'status'),
-    ('Vine Whip', 0, 100, 45, 25, 'grass', 'physical'),
-    ('Poison Powder', 0, 75, 0, 35, 'poison', 'status');
+insert into skills (name, priority, accuracy, power, max_usages, move_type, move_category, item_id) values 
+    ('Tackle', 0, 95, 35, 35, 'normal', 'physical', (select id from items where name = 'Tackle')),
+    ('Growl', 0, 100, 0, 40, 'normal', 'status', (select id from items where name = 'Growl')),
+    ('Leech Seed', 0, 90, 0, 10, 'grass', 'status', (select id from items where name = 'Leech Seed')),
+    ('Vine Whip', 0, 100, 45, 25, 'grass', 'physical', (select id from items where name = 'Vine Whip')),
+    ('Poison Powder', 0, 75, 0, 35, 'poison', 'status', (select id from items where name = 'Poison Powder')),
+    ('Sleep Powder', 0, 0, 75, 0, 'grass', 'status', (select id from items where name = 'Sleep Powder')),
+    ('Razor Leaf', 0, 55, 95, 0, 'grass', 'special', (select id from items where name = 'Razor Leaf')),
+    ('Sweet Scent', 0, 0, 100, 0, 'normal', 'status', (select id from items where name = 'Sweet Scent')),
+    ('Growth', 0, 0, 100, 0, 'normal', 'status', (select id from items where name = 'Growth')),
+    ('Synthesis', 0, 100, 0, 0, 'grass', 'status', (select id from items where name = 'Synthesis')),
+    ('Solar Beam', 0, 120, 100, 0, 'grass', 'special', (select id from items where name = 'Solar Beam'));
+
+insert into skill_hero_pairs (hero_id, skill_id) values
+    ((select id from heroes where id = 1), (select id from skills where name = 'Tackle')),
+    ((select id from heroes where id = 1), (select id from skills where name = 'Growl')),
+    ((select id from heroes where id = 1), (select id from skills where name = 'Leech Seed')),
+    ((select id from heroes where id = 1), (select id from skills where name = 'Vine Whip')),
+    ((select id from heroes where id = 1), (select id from skills where name = 'Poison Powder'));
