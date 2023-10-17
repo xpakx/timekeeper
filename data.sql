@@ -63,9 +63,9 @@ insert into skills (name, priority, accuracy, power, max_usages, move_type, move
     ('Synthesis', 0, 100, 0, 0, 'grass', 'status', (select id from items where name = 'Synthesis')),
     ('Solar Beam', 0, 120, 100, 0, 'grass', 'special', (select id from items where name = 'Solar Beam'));
 
-insert into skill_hero_pairs (hero_id, skill_id) values
-    ((select id from heroes where id = 1), (select id from skills where name = 'Tackle')),
-    ((select id from heroes where id = 1), (select id from skills where name = 'Growl')),
-    ((select id from heroes where id = 1), (select id from skills where name = 'Leech Seed')),
-    ((select id from heroes where id = 1), (select id from skills where name = 'Vine Whip')),
-    ((select id from heroes where id = 1), (select id from skills where name = 'Poison Powder'));
+insert into skill_hero_pairs (hero_id, skill_id, autolearn, level) values
+    ((select id from heroes where id = 1), (select id from skills where name = 'Tackle'), TRUE, 1),
+    ((select id from heroes where id = 1), (select id from skills where name = 'Growl'), TRUE, 4),
+    ((select id from heroes where id = 1), (select id from skills where name = 'Leech Seed'), TRUE, 7),
+    ((select id from heroes where id = 1), (select id from skills where name = 'Vine Whip'), TRUE, 10),
+    ((select id from heroes where id = 1), (select id from skills where name = 'Poison Powder'), TRUE, 15);
