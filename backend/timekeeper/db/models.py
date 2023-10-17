@@ -314,3 +314,5 @@ class SkillHero(Base):
     hero = relationship("Hero")
     skill_id = Column(Integer, ForeignKey("skills.id"))
     skill = relationship("Skill")
+    autolearn = Column(Boolean)
+    level = Column(Integer)
