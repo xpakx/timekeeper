@@ -156,6 +156,7 @@ def create_skill(item_id: int) -> int:
     db = TestingSessionLocal()
     skill = Skill(
             item_id=item_id,
+            name="Skill"
             )
     db.add(skill)
     db.commit()

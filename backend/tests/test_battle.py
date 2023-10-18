@@ -290,7 +290,8 @@ def create_skill() -> int:
             power=100,
             priority=0,
             move_type=HeroType.normal,
-            max_usages=5
+            max_usages=5,
+            name="Skill"
             )
     db.add(skill)
     db.commit()
