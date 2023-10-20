@@ -195,24 +195,28 @@ def hero_turn(
         skill: Skill,
         other_hero: UserHero,
         other_mods):
-    if not skill.self_targetted:
-        hit = battle_mech.test_accuracy(
+    if not skill:
+        return
+    if skill.self_targetted:
+        apply_status_skill(hero, skill)
+        return
+    hit = battle_mech.test_accuracy(
+            hero,
+            hero_mods,
+            skill,
+            other_hero,
+            other_mods)
+    if not hit:
+        return
+    if skill.move_category != MoveCategory.status:
+        apply_damage(
                 hero,
                 hero_mods,
                 skill,
                 other_hero,
                 other_mods)
-        if hit and skill.move_category != MoveCategory.status:
-            apply_damage(
-                    hero,
-                    hero_mods,
-                    skill,
-                    other_hero,
-                    other_mods)
-        elif hit:
-            apply_status_skill(other_hero, skill)
     else:
-        apply_status_skill(hero, skill)
+        apply_status_skill(other_hero, skill)
 
 
 def get_current_skill(move: MoveRequest, hero: UserHero):
