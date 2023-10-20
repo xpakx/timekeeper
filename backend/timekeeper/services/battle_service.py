@@ -7,7 +7,14 @@ from ..db import (
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
-from ..db.models import Battle, ItemType, UserHero, HeroMods, Team, Skill, MoveCategory
+from ..db.models import (
+        Battle,
+        ItemType,
+        UserHero,
+        HeroMods,
+        Team,
+        Skill,
+        MoveCategory)
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 
@@ -220,15 +227,16 @@ def hero_turn(
 
 
 def get_current_skill(move: MoveRequest, hero: UserHero):
-    if move.move == MoveType.skill:
-        if move.id == 1:
-            return hero.skillset.skill_1
-        elif move.id == 2:
-            return hero.skillset.skill_2
-        elif move.id == 3:
-            return hero.skillset.skill_3
-        elif move.id == 4:
-            return hero.skillset.skill_4
+    if move.move != MoveType.skill:
+        return None
+    if move.id == 1:
+        return hero.skillset.skill_1
+    elif move.id == 2:
+        return hero.skillset.skill_2
+    elif move.id == 3:
+        return hero.skillset.skill_3
+    elif move.id == 4:
+        return hero.skillset.skill_4
 
 
 # TODO
