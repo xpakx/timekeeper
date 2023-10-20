@@ -88,4 +88,19 @@ insert into skill_hero_pairs (hero_id, skill_id, autolearn, level) values
     ((select id from heroes where id = 2), (select id from skills where name = 'Sweet Scent'), TRUE, 29),
     ((select id from heroes where id = 2), (select id from skills where name = 'Growth'), TRUE, 38),
     ((select id from heroes where id = 2), (select id from skills where name = 'Synthesis'), TRUE, 47),
-    ((select id from heroes where id = 2), (select id from skills where name = 'Solar Beam'), TRUE, 56);
+    ((select id from heroes where id = 2), (select id from skills where name = 'Solar Beam'), TRUE, 56),
+
+    ((select id from heroes where id = 3), (select id from skills where name = 'Tackle'), TRUE, 1),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Growl'), TRUE, 1),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Growl'), TRUE, 4),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Leech Seed'), TRUE, 1),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Leech Seed'), TRUE, 7),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Vine Whip'), TRUE, 1),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Vine Whip'), TRUE, 10),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Poison Powder'), TRUE, 15),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Sleep Powder'), TRUE, 15),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Razor Leaf'), TRUE, 22),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Sweet Scent'), TRUE, 29),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Growth'), TRUE, 41),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Synthesis'), TRUE, 53),
+    ((select id from heroes where id = 3), (select id from skills where name = 'Solar Beam'), TRUE, 65);
