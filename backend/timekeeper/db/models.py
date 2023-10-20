@@ -168,6 +168,7 @@ class Skill(Base):
     max_usages = Column(Integer)
     move_type = Column(Enum(HeroType))
     move_category = Column(Enum(MoveCategory))
+    self_targetted = Column(Boolean)
     item_id = Column(Integer, ForeignKey("items.id"))
     item = relationship("Item")
 

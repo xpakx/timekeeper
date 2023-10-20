@@ -7,7 +7,7 @@ from ..db import (
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import Optional
-from ..db.models import Battle, ItemType, UserHero, HeroMods, Team
+from ..db.models import Battle, ItemType, UserHero, HeroMods, Team, Skill, MoveCategory
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 
@@ -189,20 +189,30 @@ def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
         hero_turn(other_hero, other_mods, other_skill, hero, hero_mods)
 
 
-def hero_turn(hero, hero_mods, skill, other_hero, other_mods):
-    hit = battle_mech.test_accuracy(
-            hero,
-            hero_mods,
-            skill,
-            other_hero,
-            other_mods)
-    if hit:
-        apply_damage(
+def hero_turn(
+        hero: UserHero,
+        hero_mods,
+        skill: Skill,
+        other_hero: UserHero,
+        other_mods):
+    if not skill.self_targetted:
+        hit = battle_mech.test_accuracy(
                 hero,
                 hero_mods,
                 skill,
                 other_hero,
                 other_mods)
+        if hit and skill.move_category != MoveCategory.status:
+            apply_damage(
+                    hero,
+                    hero_mods,
+                    skill,
+                    other_hero,
+                    other_mods)
+        elif hit:
+            apply_status_skill(other_hero, skill)
+    else:
+        apply_status_skill(hero, skill)
 
 
 def get_current_skill(move: MoveRequest, hero: UserHero):
@@ -220,3 +230,8 @@ def get_current_skill(move: MoveRequest, hero: UserHero):
 # TODO
 def get_enemy_skill(hero: UserHero):
     return hero.skillset.skill_1
+
+
+# TODO
+def apply_status_skill(hero: UserHero, skill: Skill):
+    pass
