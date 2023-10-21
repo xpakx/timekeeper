@@ -25,7 +25,17 @@ insert into items (num, name, description, rarity, item_type) values
 (24, 'Sweet Scent', '', 'uncommon', 'skill'),
 (25, 'Growth', '', 'uncommon', 'skill'),
 (26, 'Synthesis', '', 'uncommon', 'skill'),
-(27, 'Solar Beam', '', 'uncommon', 'skill');
+(27, 'Solar Beam', '', 'uncommon', 'skill'),
+(28, 'Scratch', '', 'uncommon', 'skill'),
+(29, 'Ember', '', 'uncommon', 'skill'),
+(30, 'Smoke Screen', '', 'uncommon', 'skill'),
+(31, 'Rage', '', 'uncommon', 'skill'),
+(32, 'Scary Face', '', 'uncommon', 'skill'),
+(33, 'Flamethrower', '', 'uncommon', 'skill'),
+(34, 'Slash', '', 'uncommon', 'skill'),
+(35, 'Dragon Rage', '', 'uncommon', 'skill'),
+(36, 'Fire Spin', '', 'uncommon', 'skill'),
+(37, 'Wing Attack', '', 'uncommon', 'skill');
 
 insert into heroes (num, name, title, description, rarity, hero_type, secondary_hero_type, 
     base_hp, base_attack, base_defense, base_speed, base_special_attack, base_special_defense, exp_group) values 
@@ -61,8 +71,18 @@ insert into skills (name, priority, accuracy, power, max_usages, move_type, move
     ('Sweet Scent', 0, 0, 100, 0, 'normal', 'status', (select id from items where name = 'Sweet Scent')),
     ('Growth', 0, 0, 100, 0, 'normal', 'status', (select id from items where name = 'Growth')),
     ('Synthesis', 0, 100, 0, 0, 'grass', 'status', (select id from items where name = 'Synthesis')),
-    ('Solar Beam', 0, 120, 100, 0, 'grass', 'special', (select id from items where name = 'Solar Beam'));
+    ('Solar Beam', 0, 120, 100, 0, 'grass', 'special', (select id from items where name = 'Solar Beam'))
 
+    ('Scratch', 0, 100, 40, 0, 'normal', 'physical', (select if from items where name = 'Scratch')),
+    ('Ember', 0, 100, 40, 0, 'fire', 'special', (select if from items where name = 'Ember')),
+    ('Smoke Screen', 0, 100, 0, 0, 'normal', 'status', (select if from items where name = 'Smoke Screen')),
+    ('Rage', 0, 100, 20, 0, 'normal', 'physical', (select if from items where name = 'Rage')),
+    ('Scary Face', 0, 90, 0, 0, 'normal', 'status', (select if from items where name = 'Scary Face')),
+    ('Flamethrower', 0, 100, 95, 0, 'fire', 'special', (select if from items where name = 'Flamethrower')),
+    ('Slash', 0, 100, 70, 0, 'normal', 'physical', (select if from items where name = 'Slash')),
+    ('Dragon Rage', 0, 100, 0, 0, 'dragon', 'special', (select if from items where name = 'Dragon Rage')),
+    ('Fire Spin', 0, 70, 15, 0, 'fire', 'special', (select if from items where name = 'Fire Spin')),
+    ('Wing Attack', 0, 100, 60, 0, 'flying', 'physical', (select if from items where name = 'Wing Attack'));
 
 insert into skill_hero_pairs (hero_id, skill_id, autolearn, level) values
     ((select id from heroes where id = 1), (select id from skills where name = 'Tackle'), TRUE, 1),
@@ -103,4 +123,41 @@ insert into skill_hero_pairs (hero_id, skill_id, autolearn, level) values
     ((select id from heroes where id = 3), (select id from skills where name = 'Sweet Scent'), TRUE, 29),
     ((select id from heroes where id = 3), (select id from skills where name = 'Growth'), TRUE, 41),
     ((select id from heroes where id = 3), (select id from skills where name = 'Synthesis'), TRUE, 53),
-    ((select id from heroes where id = 3), (select id from skills where name = 'Solar Beam'), TRUE, 65);
+    ((select id from heroes where id = 3), (select id from skills where name = 'Solar Beam'), TRUE, 65)
+
+    ((select id from heroes where id = 4), (select id from skills where name = 'Growl'), TRUE, 1),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Scratch'), TRUE, 1),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Ember'), TRUE, 7),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Smoke Screen'), TRUE, 13),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Rage'), TRUE, 19),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Scary Face'), TRUE, 25),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Flamethrower'), TRUE, 31),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Slash'), TRUE, 37),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Dragon Rage'), TRUE, 43),
+    ((select id from heroes where id = 4), (select id from skills where name = 'Fire Spin'), TRUE, 49),
+
+    ((select id from heroes where id = 5), (select id from skills where name = 'Growl'), TRUE, 1),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Scratch'), TRUE, 1),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Ember'), TRUE, 1),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Ember'), TRUE, 7),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Smoke Screen'), TRUE, 13),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Rage'), TRUE, 20),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Scary Face'), TRUE, 27),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Flamethrower'), TRUE, 34),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Slash'), TRUE, 41),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Dragon Rage'), TRUE, 48),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Fire Spin'), TRUE, 55),
+
+    ((select id from heroes where id = 5), (select id from skills where name = 'Growl'), TRUE, 1),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Scratch'), TRUE, 1),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Ember'), TRUE, 1),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Ember'), TRUE, 7),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Smoke Screen'), TRUE, 1),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Smoke Screen'), TRUE, 13),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Rage'), TRUE, 20),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Scary Face'), TRUE, 27),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Flamethrower'), TRUE, 34),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Wing Attack'), TRUE, 36),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Slash'), TRUE, 44),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Dragon Rage'), TRUE, 54),
+    ((select id from heroes where id = 5), (select id from skills where name = 'Fire Spin'), TRUE, 64);
