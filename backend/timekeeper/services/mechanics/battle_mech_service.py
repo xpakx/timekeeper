@@ -195,18 +195,8 @@ def calculate_damage(
     if not move:
         return 0
     level = hero.level
-    attack = 0
-    defense = 0
-    if (move.move_category == MoveCategory.special):
-        attack = stage_to_modifier(hero_mods.special_attack) *\
-            calculate_special_atk(hero)
-        defense = stage_to_modifier(enemy_mods.special_defense) *\
-            calculate_special_def(enemy)
-    else:
-        attack = stage_to_modifier(hero_mods.attack) *\
-            calculate_attack(hero)
-        defense = stage_to_modifier(enemy_mods.defense) *\
-            calculate_defense(enemy)
+    attack = calculate_current_attack(hero, hero_mods, move, enemy, enemy_mods)
+    defense = calculate_current_defense(hero, hero_mods, move, enemy, enemy_mods)
     stab = 1
     if (test_hero_move_type(hero, move)):
         stab = 1.5
@@ -233,3 +223,31 @@ def test_hero_move_type(hero: UserHero, move: Skill) -> bool:
                 hero.hero.secondary_hero_type == move.move_type
             )
         )
+
+
+def calculate_current_attack(
+        hero: UserHero,
+        hero_mods: HeroMods,
+        move: Skill,
+        enemy: UserHero,
+        enemy_mods: HeroMods,
+        ) -> int:
+    if (move.move_category == MoveCategory.special):
+        return stage_to_modifier(hero_mods.special_attack) *\
+            calculate_special_atk(hero)
+    return stage_to_modifier(hero_mods.attack) *\
+        calculate_attack(hero)
+
+
+def calculate_current_defense(
+        hero: UserHero,
+        hero_mods: HeroMods,
+        move: Skill,
+        enemy: UserHero,
+        enemy_mods: HeroMods,
+        ) -> int:
+    if (move.move_category == MoveCategory.special):
+        return stage_to_modifier(enemy_mods.special_defense) *\
+            calculate_special_def(enemy)
+    return stage_to_modifier(enemy_mods.defense) *\
+        calculate_defense(enemy)
