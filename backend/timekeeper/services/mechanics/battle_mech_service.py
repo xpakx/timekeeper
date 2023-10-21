@@ -197,9 +197,7 @@ def calculate_damage(
     level = hero.level
     attack = calculate_current_attack(hero, hero_mods, move, enemy, enemy_mods)
     defense = calculate_current_defense(hero, hero_mods, move, enemy, enemy_mods)
-    stab = 1
-    if (test_hero_move_type(hero, move)):
-        stab = 1.5
+    stab = calculate_stab_factor(hero, move)
     type_mod = get_effectiveness(move.move_type, enemy.hero)
     crit = 2 if critical else 1
     rand = random.randint(85, 101)/100
@@ -251,3 +249,9 @@ def calculate_current_defense(
             calculate_special_def(enemy)
     return stage_to_modifier(enemy_mods.defense) *\
         calculate_defense(enemy)
+
+
+def calculate_stab_factor(hero: UserHero, move: Skill) -> float:
+    if (test_hero_move_type(hero, move)):
+        return 1.5
+    return 1
