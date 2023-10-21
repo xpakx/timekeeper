@@ -19,7 +19,7 @@ from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 
 
-def create_battle(user_id: int, equipment_id: int, db: Session):
+def create_battle(user_id: int, equipment_id: int, db: Session) -> Battle:
     team = team_repo.get_team(user_id, db)
     entry = equipment_repo.get_item_entry(equipment_id, user_id, db)
     old_battle = battle_repo.get_current_battle(user_id, db)
@@ -46,7 +46,7 @@ def create_battle(user_id: int, equipment_id: int, db: Session):
     return battle
 
 
-def select_first_hero_in_team(team: Team) -> UserHero:
+def select_first_hero_in_team(team: Team) -> Optional[UserHero]:
     heroes = [
             team.hero_1,
             team.hero_2,
@@ -64,7 +64,7 @@ def select_first_hero_in_team(team: Team) -> UserHero:
     return None
 
 
-def get_battle(user_id: int, battle_id: int, db: Session) -> Optional[Battle]:
+def get_battle(user_id: int, battle_id: int, db: Session) -> Battle:
     battle = battle_repo.get_battle(user_id, battle_id, db)
     if not battle:
         raise not_battle_found_exception()
@@ -138,7 +138,11 @@ def not_battle_found_exception():
     )
 
 
-def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
+def make_move(
+        user_id: int,
+        battle_id: int,
+        move: MoveRequest,
+        db: Session) -> Battle:
     battle: Battle = battle_repo.get_battle(user_id, battle_id, db)
     if not battle:
         raise not_battle_found_exception()
@@ -172,11 +176,11 @@ def make_move(user_id: int, battle_id: int, move: MoveRequest, db: Session):
 
 
 def apply_damage(
-        hero,
-        hero_mods,
-        skill,
-        other_hero,
-        other_mods):
+        hero: UserHero,
+        hero_mods: HeroMods,
+        skill: Skill,
+        other_hero: UserHero,
+        other_mods: HeroMods):
     crit = battle_mech.test_crit(0)  # TODO: crit mod
     dmg = battle_mech.calculate_damage(
             hero,
@@ -190,7 +194,13 @@ def apply_damage(
         other_hero.fainted = True
 
 
-def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
+def battle_turn(
+        hero: UserHero,
+        hero_mods: HeroMods,
+        skill: Optional[Skill],
+        other_hero: UserHero,
+        other_mods: HeroMods,
+        other_skill: Optional[Skill]) -> None:
     hero_turn(hero, hero_mods, skill, other_hero, other_mods)
     if not other_hero.fainted:
         hero_turn(other_hero, other_mods, other_skill, hero, hero_mods)
@@ -199,9 +209,9 @@ def battle_turn(hero, hero_mods, skill, other_hero, other_mods, other_skill):
 def hero_turn(
         hero: UserHero,
         hero_mods,
-        skill: Skill,
+        skill: Optional[Skill],
         other_hero: UserHero,
-        other_mods):
+        other_mods: HeroMods) -> None:
     if not skill:
         return
     if skill.self_targetted:
@@ -226,7 +236,7 @@ def hero_turn(
         apply_status_skill(other_hero, skill)
 
 
-def get_current_skill(move: MoveRequest, hero: UserHero):
+def get_current_skill(move: MoveRequest, hero: UserHero) -> Optional[Skill]:
     if move.move != MoveType.skill:
         return None
     if move.id == 1:
@@ -240,7 +250,7 @@ def get_current_skill(move: MoveRequest, hero: UserHero):
 
 
 # TODO
-def get_enemy_skill(hero: UserHero):
+def get_enemy_skill(hero: UserHero) -> Optional[Skill]:
     return hero.skillset.skill_1
 
 
