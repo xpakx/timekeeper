@@ -93,12 +93,12 @@ def calculate_hp(hero: UserHero) -> int:
             * hero.level/100 + hero.level + 10)
 
 
-def calculate_hp_(base_hp: int, hp: int, level: int):
+def calculate_hp_(base_hp: int, hp: int, level: int) -> int:
     return math.floor(
             (2 * base_hp + hp + 0) * level/100 + level + 10)
 
 
-def calculate_speed(hero: UserHero):
+def calculate_speed(hero: UserHero) -> int:
     return calculate_stat(
             hero.hero.base_speed,
             hero.speed,
@@ -106,7 +106,7 @@ def calculate_speed(hero: UserHero):
             hero.level)
 
 
-def calculate_attack(hero: UserHero):
+def calculate_attack(hero: UserHero) -> int:
     return calculate_stat(
             hero.hero.base_attack,
             hero.attack,
@@ -114,7 +114,7 @@ def calculate_attack(hero: UserHero):
             hero.level)
 
 
-def calculate_defense(hero: UserHero):
+def calculate_defense(hero: UserHero) -> int:
     return calculate_stat(
             hero.hero.base_defense,
             hero.defense,
@@ -122,7 +122,7 @@ def calculate_defense(hero: UserHero):
             hero.level)
 
 
-def calculate_special_atk(hero: UserHero):
+def calculate_special_atk(hero: UserHero) -> int:
     return calculate_stat(
             hero.hero.base_special_attack,
             hero.special_attack,
@@ -130,7 +130,7 @@ def calculate_special_atk(hero: UserHero):
             hero.level)
 
 
-def calculate_special_def(hero: UserHero):
+def calculate_special_def(hero: UserHero) -> int:
     return calculate_stat(
             hero.hero.base_special_defense,
             hero.special_defense,
