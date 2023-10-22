@@ -124,7 +124,8 @@ def create_crystal() -> int:
             num=CRYSTAL,
             name="Crystal",
             description="",
-            rarity=ItemRarity.uncommon
+            rarity=ItemRarity.uncommon,
+            item_type=ItemType.crystal
             )
     db.add(item)
     db.commit()
