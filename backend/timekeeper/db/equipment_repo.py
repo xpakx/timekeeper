@@ -1,4 +1,4 @@
-from .models import EquipmentEntry, Item
+from .models import EquipmentEntry, Item, ItemType
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
@@ -65,6 +65,22 @@ def get_crystals(user_id, db: Session):
     if not entry:
         return 0
     return entry.amount
+
+
+def subtract_crystals(amount: int, user_id: int, db: Session) -> bool:
+    entry = db\
+        .query(EquipmentEntry)\
+        .join(Item, EquipmentEntry.item)\
+        .where(
+             and_(
+                 EquipmentEntry.owner_id == user_id,
+                 Item.item_type == ItemType.crystal)
+            ) .first()
+    if not entry or entry.amount < amount:
+        return False
+    else:
+        entry.amount = entry.amount - amount
+    return True
 
 
 def get_item_entry(item_id, user_id, db: Session):

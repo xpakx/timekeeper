@@ -2,11 +2,9 @@ from ..db import hero_repo, user_hero_repo, equipment_repo, skillset_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-CRYSTAL = 6
-
 
 def get_hero(user_id: int, db: Session):
-    if not equipment_repo.subtract_items(CRYSTAL, 1, user_id, db):
+    if not equipment_repo.subtract_crystals(1, user_id, db):
         raise not_enough_crystal_exception()
     hero = hero_repo.get_random_hero(db)
     if not hero:
