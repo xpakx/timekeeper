@@ -103,7 +103,7 @@ def switch_heroes(user_id: int, request: TeamRequest, db: Session) -> Team:
     return TeamResponse.transform_data(team)
 
 
-def delete_hero(user_id: int, num: int, db: Session):
+def delete_hero(user_id: int, num: int, db: Session) -> TeamResponse:
     team = team_repo.get_team(user_id, db)
     if team is None:
         raise no_team_object_exception()
@@ -142,7 +142,7 @@ def gap_in_team_exception():
     )
 
 
-def test_for_gap(team: Team):
+def test_for_gap(team: Team) -> None:
     team_list = [
             team.hero_1_id,
             team.hero_2_id,
@@ -159,7 +159,7 @@ def test_for_gap(team: Team):
             initial_gap_ended = True
 
 
-def move_up(num: int, team: Team):
+def move_up(num: int, team: Team) -> None:
     if num < 2:
         team.hero_1_id = team.hero_2_id
     if num < 3:

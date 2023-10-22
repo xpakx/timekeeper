@@ -180,7 +180,7 @@ def apply_damage(
         hero_mods: HeroMods,
         skill: Skill,
         other_hero: UserHero,
-        other_mods: HeroMods):
+        other_mods: HeroMods) -> None:
     crit = battle_mech.test_crit(0)  # TODO: crit mod
     dmg = battle_mech.calculate_damage(
             hero,

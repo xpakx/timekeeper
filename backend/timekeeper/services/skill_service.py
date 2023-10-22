@@ -1,7 +1,7 @@
 from ..db import user_hero_repo, skillset_repo, equipment_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from ..db.models import ItemType
+from ..db.models import ItemType, UserHero
 
 
 def teach_hero(
@@ -9,7 +9,7 @@ def teach_hero(
         hero_id: int,
         item_id: int,
         num: int,
-        db: Session):
+        db: Session) -> UserHero:
     item = equipment_repo.get_item_entry(item_id, user_id, db)
     if not item or item.amount < 1:
         raise no_item_exception()

@@ -1,9 +1,10 @@
 from ..db import item_repo, timer_repo, equipment_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from ..db.models import Item, EquipmentEntry
 
 
-def get_reward(timer_id: int, user_id: int, db: Session):
+def get_reward(timer_id: int, user_id: int, db: Session) -> Item:
     timer = timer_repo.get_timer_inst(timer_id, user_id, db)
     if timer.reward_time is None:
         raise not_reward_time_exception()
@@ -39,5 +40,5 @@ def already_rewarded_exception():
     )
 
 
-def get_items(page, size, user_id: int, db: Session):
+def get_items(page, size, user_id: int, db: Session) -> list[EquipmentEntry]:
     return equipment_repo.get_items(page, size, user_id, db)

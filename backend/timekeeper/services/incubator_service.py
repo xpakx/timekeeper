@@ -2,10 +2,10 @@ from ..db import equipment_repo, incubator_repo, user_hero_repo, point_repo
 from .mechanics import battle_mech_service as battle_mech
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from ..db.models import ItemType
+from ..db.models import ItemType, Incubator, UserHero
 
 
-def install_incubator(user_id: int, item_id: int, db: Session):
+def install_incubator(user_id: int, item_id: int, db: Session) -> Incubator:
     entry = equipment_repo.get_item_entry(item_id, user_id, db)
     if not entry or entry.amount < 1:
         raise not_incubators_exception()
@@ -24,11 +24,15 @@ def install_incubator(user_id: int, item_id: int, db: Session):
     return incubator
 
 
-def get_incubators(user_id: int, db: Session):
+def get_incubators(user_id: int, db: Session) -> list[Incubator]:
     return incubator_repo.get_incubators(user_id, db)
 
 
-def insert_hero(user_id: int, hero_id: int, incubator_id: int, db: Session):
+def insert_hero(
+        user_id: int,
+        hero_id: int,
+        incubator_id: int,
+        db: Session) -> Incubator:
     hero = user_hero_repo.get_hero(user_id, hero_id, db)
     if not hero:
         raise no_such_hero_exception()
@@ -48,7 +52,7 @@ def insert_hero(user_id: int, hero_id: int, incubator_id: int, db: Session):
     return incubator
 
 
-def get_hero(user_id: int, incubator_id: int, db: Session):
+def get_hero(user_id: int, incubator_id: int, db: Session) -> UserHero:
     incubator = incubator_repo.get_incubator(user_id, incubator_id, db)
     if not incubator:
         raise no_such_incubator_exception()
@@ -72,7 +76,7 @@ def get_hero(user_id: int, incubator_id: int, db: Session):
     return hero
 
 
-def delete_incubator(user_id: int, incubator_id: int, db: Session):
+def delete_incubator(user_id: int, incubator_id: int, db: Session) -> None:
     incubator = incubator_repo.get_incubator(user_id, incubator_id, db)
     if not incubator:
         raise no_such_incubator_exception()
