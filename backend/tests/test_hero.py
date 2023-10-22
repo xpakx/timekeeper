@@ -6,9 +6,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Item, ItemRarity, EquipmentEntry, ItemType, SkillSet, Skill, SkillHero
+from timekeeper.db.models import (
+        User,
+        Item,
+        ItemRarity,
+        EquipmentEntry,
+        ItemType,
+        SkillSet,
+        Skill,
+        SkillHero)
 from timekeeper.db.models import Hero, UserHero
-from timekeeper.db.equipment_repo import CRYSTAL
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from typing import Optional
@@ -28,6 +35,7 @@ TestingSessionLocal = sessionmaker(autocommit=False,
                                    autoflush=False,
                                    bind=engine)
 ITEM_ID = 4
+CRYSTAL = 6
 
 
 def override_get_db():

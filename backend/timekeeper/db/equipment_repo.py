@@ -3,8 +3,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from typing import Optional
 
-CRYSTAL = 6
-
 
 def create_entry(
         item_id: int,
@@ -73,7 +71,7 @@ def get_crystals(user_id: int, db: Session) -> int:
         .where(
              and_(
                  EquipmentEntry.owner_id == user_id,
-                 Item.num == CRYSTAL)
+                 Item.item_type == ItemType.crystal)
             ) .first()
     if not entry:
         return 0
