@@ -1,11 +1,16 @@
 from .models import EquipmentEntry, Item, ItemType
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from typing import Optional
 
 CRYSTAL = 6
 
 
-def create_entry(item_id, amount, user_id, db: Session):
+def create_entry(
+        item_id: int,
+        amount: int,
+        user_id: int,
+        db: Session) -> EquipmentEntry:
     entry_db = db\
         .query(EquipmentEntry)\
         .where(
@@ -24,7 +29,11 @@ def create_entry(item_id, amount, user_id, db: Session):
         db.add(entry)
 
 
-def get_items(page: int, size: int, user_id: int, db: Session):
+def get_items(
+        page: int,
+        size: int,
+        user_id: int,
+        db: Session) -> list[EquipmentEntry]:
     offset = page*size
     return db\
         .query(EquipmentEntry)\
@@ -37,7 +46,11 @@ def get_items(page: int, size: int, user_id: int, db: Session):
         .all()
 
 
-def subtract_items(item_id, amount, user_id, db: Session):
+def subtract_items(
+        item_id: int,
+        amount: int,
+        user_id: int,
+        db: Session) -> bool:
     entry = db\
         .query(EquipmentEntry)\
         .join(Item, EquipmentEntry.item)\
@@ -53,7 +66,7 @@ def subtract_items(item_id, amount, user_id, db: Session):
     return True
 
 
-def get_crystals(user_id, db: Session):
+def get_crystals(user_id: int, db: Session) -> int:
     entry = db\
         .query(EquipmentEntry)\
         .join(Item, EquipmentEntry.item)\
@@ -83,7 +96,10 @@ def subtract_crystals(amount: int, user_id: int, db: Session) -> bool:
     return True
 
 
-def get_item_entry(item_id, user_id, db: Session):
+def get_item_entry(
+        item_id: int,
+        user_id: int,
+        db: Session) -> Optional[EquipmentEntry]:
     return db\
         .query(EquipmentEntry)\
         .join(Item, EquipmentEntry.item)\

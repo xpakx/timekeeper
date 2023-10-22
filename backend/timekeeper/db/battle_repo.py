@@ -10,7 +10,7 @@ def create_entry(
         enemy: UserHero,
         enemies: int,
         user_id,
-        db: Session):
+        db: Session) -> Battle:
     hero = HeroMods(
             accuracy=0,
             evasion=0,
