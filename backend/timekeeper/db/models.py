@@ -160,6 +160,9 @@ class MoveCategory(enum.Enum):
 
 class StatusEffect(enum.Enum):
     poisoned = "poisoned"
+    leech_seed = "leech seed"
+    confused = "confused"
+    asleep = "asleep"
 
 
 class StageEffect(enum.Enum):
@@ -185,6 +188,8 @@ class Skill(Base):
     self_targetted = Column(Boolean)
     stage_effect = Column(Enum(StageEffect))
     mod = Column(Integer)
+    secondary_stage_effect = Column(Enum(StageEffect))
+    secondary_mod = Column(Integer)
     status_effect = Column(Enum(StatusEffect))
     item_id = Column(Integer, ForeignKey("items.id"))
     item = relationship("Item")

@@ -263,6 +263,11 @@ def apply_status_skill(hero_mods: HeroMods, skill: Skill) -> None:
             pass
     if skill.stage_effect:
         apply_stage_change(hero_mods, skill.stage_change, skill.mod)
+    if skill.secondary_stage_effect:
+        apply_stage_change(
+                hero_mods,
+                skill.secondary_stage_change,
+                skill.secondary_mod)
 
 
 def apply_stage_change(
