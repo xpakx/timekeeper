@@ -158,6 +158,20 @@ class MoveCategory(enum.Enum):
     status = "status"
 
 
+class StatusEffect(enum.Enum):
+    poisoned = "poisoned"
+
+
+class StageEffect(enum.Enum):
+    accuracy = "accuracy"
+    evasion = "evasion"
+    attack = "attack"
+    defense = "defense"
+    special_attack = "special attack"
+    special_defense = "special defense"
+    speed = "speed"
+
+
 class Skill(Base):
     __tablename__ = "skills"
     id = Column(Integer, primary_key=True, index=True)
@@ -169,6 +183,9 @@ class Skill(Base):
     move_type = Column(Enum(HeroType))
     move_category = Column(Enum(MoveCategory))
     self_targetted = Column(Boolean)
+    stage_effect = Column(Enum(StageEffect))
+    mod = Column(Integer)
+    status_effect = Column(Enum(StatusEffect))
     item_id = Column(Integer, ForeignKey("items.id"))
     item = relationship("Item")
 
