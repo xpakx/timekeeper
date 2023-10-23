@@ -12,6 +12,7 @@ from ..db.models import (
         ItemType,
         UserHero,
         HeroMods,
+        HeroType,
         Team,
         Skill,
         StatusEffect,
@@ -217,7 +218,7 @@ def hero_turn(
     if not skill:
         return
     if skill.self_targetted:
-        apply_status_skill(hero_mods, skill)
+        apply_status_skill(hero, hero_mods, skill)
         return
     hit = battle_mech.test_accuracy(
             hero,
@@ -235,7 +236,7 @@ def hero_turn(
                 other_hero,
                 other_mods)
     else:
-        apply_status_skill(other_mods, skill)
+        apply_status_skill(other_hero, other_mods, skill)
 
 
 def get_current_skill(move: MoveRequest, hero: UserHero) -> Optional[Skill]:
@@ -257,10 +258,13 @@ def get_enemy_skill(hero: UserHero) -> Optional[Skill]:
 
 
 # TODO
-def apply_status_skill(hero_mods: HeroMods, skill: Skill) -> None:
+def apply_status_skill(
+        hero: UserHero,
+        hero_mods: HeroMods,
+        skill: Skill) -> None:
     if skill.status_effect:
         if skill.status_effect == StatusEffect.poisoned:
-            pass
+            apply_poison_status(hero, hero_mods)
     if skill.stage_effect:
         apply_stage_change(hero_mods, skill.stage_change, skill.mod)
     if skill.secondary_stage_effect:
@@ -297,3 +301,16 @@ def calculate_new_stage(old_value: int, mod: int) -> int:
     if value < -6:
         return -6
     return value
+
+
+def apply_poison_status(hero: UserHero, hero_mods: HeroMods) -> None:
+    if hero.poisoned:
+        return
+    htype = hero.hero.hero_type
+    if htype == HeroType.poison or htype == HeroType.steel:
+        return
+    htype = hero.hero.secondary_hero_type
+    if htype == HeroType.poison or htype == HeroType.steel:
+        return
+    htype = hero.hero.hero_type
+    hero.poisoned = True

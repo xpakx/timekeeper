@@ -20,6 +20,7 @@ def create_entry(hero_id, user_id, db: Session) -> UserHero:
             incubated=False,
             in_team=False,
             fainted=False,
+            poisoned=False,
             damage=0
             )
     db.add(entry)
