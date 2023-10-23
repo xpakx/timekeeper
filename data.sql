@@ -60,29 +60,29 @@ insert into heroes (num, name, title, description, rarity, hero_type, secondary_
     (19, 'Rattata', '', '', 'common', 'normal', NULL, 100, 50, 50, 50, 50, 50, 'medium_fast'),
     (20, 'Raticate', '', '', 'common', 'normal', NULL, 100, 50, 50, 50, 50, 50, 'medium_fast');
 
-insert into skills (name, priority, accuracy, power, max_usages, move_type, move_category, item_id) values 
-    ('Tackle', 0, 95, 35, 35, 'normal', 'physical', (select id from items where name = 'Tackle')),
-    ('Growl', 0, 100, 0, 40, 'normal', 'status', (select id from items where name = 'Growl')),
-    ('Leech Seed', 0, 90, 0, 10, 'grass', 'status', (select id from items where name = 'Leech Seed')),
-    ('Vine Whip', 0, 100, 45, 25, 'grass', 'physical', (select id from items where name = 'Vine Whip')),
-    ('Poison Powder', 0, 75, 0, 35, 'poison', 'status', (select id from items where name = 'Poison Powder')),
-    ('Sleep Powder', 0, 0, 75, 0, 'grass', 'status', (select id from items where name = 'Sleep Powder')),
-    ('Razor Leaf', 0, 55, 95, 0, 'grass', 'special', (select id from items where name = 'Razor Leaf')),
-    ('Sweet Scent', 0, 0, 100, 0, 'normal', 'status', (select id from items where name = 'Sweet Scent')),
-    ('Growth', 0, 0, 100, 0, 'normal', 'status', (select id from items where name = 'Growth')),
-    ('Synthesis', 0, 100, 0, 0, 'grass', 'status', (select id from items where name = 'Synthesis')),
-    ('Solar Beam', 0, 120, 100, 0, 'grass', 'special', (select id from items where name = 'Solar Beam'))
+insert into skills (name, priority, accuracy, power, max_usages, move_type, move_category, item_id, self_targeted, stage_effect, mod, secondary_stage_effect, secondary_mod, status_effect) values 
+    ('Tackle', 0, 95, 35, 35, 'normal', 'physical', (select id from items where name = 'Tackle'), False, NULL, 0, NULL, 0, NULL),
+    ('Growl', 0, 100, 0, 40, 'normal', 'status', (select id from items where name = 'Growl'), False, 'attack', -1, NULL, 0, NULL),
+    ('Leech Seed', 0, 90, 0, 10, 'grass', 'status', (select id from items where name = 'Leech Seed'), False, NULL, 0, NULL, 0, 'leech seed'),
+    ('Vine Whip', 0, 100, 45, 25, 'grass', 'physical', (select id from items where name = 'Vine Whip'), False, NULL, 0, NULL, 0, NULL),
+    ('Poison Powder', 0, 75, 0, 35, 'poison', 'status', (select id from items where name = 'Poison Powder'), False, NULL, 0, NULL, 0, 'poisoned'),
+    ('Sleep Powder', 0, 0, 75, 0, 'grass', 'status', (select id from items where name = 'Sleep Powder'), False, NULL, 0, NULL, 0, 'asleep'),
+    ('Razor Leaf', 0, 55, 95, 0, 'grass', 'special', (select id from items where name = 'Razor Leaf'), False, NULL, 0, NULL, 0, NULL),
+    ('Sweet Scent', 0, 0, 100, 0, 'normal', 'status', (select id from items where name = 'Sweet Scent'), False, 'evasion', -1, NULL, 0, NULL),
+    ('Growth', 0, 0, 100, 0, 'normal', 'status', (select id from items where name = 'Growth'), True, 'attack', 1, 'special attack', 1, NULL),
+    ('Synthesis', 0, 100, 0, 0, 'grass', 'status', (select id from items where name = 'Synthesis'), True, NULL, 0, NULL, 0, NULL),
+    ('Solar Beam', 0, 120, 100, 0, 'grass', 'special', (select id from items where name = 'Solar Beam'), False, NULL, 0, NULL, 0, NULL),
 
-    ('Scratch', 0, 100, 40, 0, 'normal', 'physical', (select if from items where name = 'Scratch')),
-    ('Ember', 0, 100, 40, 0, 'fire', 'special', (select if from items where name = 'Ember')),
-    ('Smoke Screen', 0, 100, 0, 0, 'normal', 'status', (select if from items where name = 'Smoke Screen')),
-    ('Rage', 0, 100, 20, 0, 'normal', 'physical', (select if from items where name = 'Rage')),
-    ('Scary Face', 0, 90, 0, 0, 'normal', 'status', (select if from items where name = 'Scary Face')),
-    ('Flamethrower', 0, 100, 95, 0, 'fire', 'special', (select if from items where name = 'Flamethrower')),
-    ('Slash', 0, 100, 70, 0, 'normal', 'physical', (select if from items where name = 'Slash')),
-    ('Dragon Rage', 0, 100, 0, 0, 'dragon', 'special', (select if from items where name = 'Dragon Rage')),
-    ('Fire Spin', 0, 70, 15, 0, 'fire', 'special', (select if from items where name = 'Fire Spin')),
-    ('Wing Attack', 0, 100, 60, 0, 'flying', 'physical', (select if from items where name = 'Wing Attack'));
+    ('Scratch', 0, 100, 40, 0, 'normal', 'physical', (select if from items where name = 'Scratch'), False, NULL, 0, NULL, 0, NULL),
+    ('Ember', 0, 100, 40, 0, 'fire', 'special', (select if from items where name = 'Ember'), False, NULL, 0, NULL, 0, NULL),
+    ('Smoke Screen', 0, 100, 0, 0, 'normal', 'status', (select if from items where name = 'Smoke Screen'), False, NULL, 0, NULL, 0, NULL),
+    ('Rage', 0, 100, 20, 0, 'normal', 'physical', (select if from items where name = 'Rage'), False, NULL, 0, NULL, 0, NULL),
+    ('Scary Face', 0, 90, 0, 0, 'normal', 'status', (select if from items where name = 'Scary Face'), False, NULL, 0, NULL, 0, NULL),
+    ('Flamethrower', 0, 100, 95, 0, 'fire', 'special', (select if from items where name = 'Flamethrower'), False, NULL, 0, NULL, 0, NULL),
+    ('Slash', 0, 100, 70, 0, 'normal', 'physical', (select if from items where name = 'Slash'), False, NULL, 0, NULL, 0, NULL),
+    ('Dragon Rage', 0, 100, 0, 0, 'dragon', 'special', (select if from items where name = 'Dragon Rage'), False, NULL, 0, NULL, 0, NULL),
+    ('Fire Spin', 0, 70, 15, 0, 'fire', 'special', (select if from items where name = 'Fire Spin'), False, NULL, 0, NULL, 0, NULL),
+    ('Wing Attack', 0, 100, 60, 0, 'flying', 'physical', (select if from items where name = 'Wing Attack'), False, NULL, 0, NULL, 0, NULL);
 
 insert into skill_hero_pairs (hero_id, skill_id, autolearn, level) values
     ((select id from heroes where id = 1), (select id from skills where name = 'Tackle'), TRUE, 1),
