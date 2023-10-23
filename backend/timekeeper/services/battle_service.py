@@ -275,16 +275,25 @@ def apply_stage_change(
         effect: StageEffect,
         value: int) -> None:
     if effect == StageEffect.attack:
-        hero_mods.attack += value
-    if effect == StageEffect.accuracy:
-        hero_mods.accuracy += value
+        hero_mods.attack = calculate_new_stage(hero_mods.attack, value)
+    elif effect == StageEffect.accuracy:
+        hero_mods.accuracy = calculate_new_stage(hero_mods.attack, value)
     elif effect == StageEffect.evasion:
-        hero_mods.evasion += value
+        hero_mods.evasion = calculate_new_stage(hero_mods.attack, value)
     elif effect == StageEffect.defense:
-        hero_mods.defense += value
+        hero_mods.defense = calculate_new_stage(hero_mods.attack, value)
     elif effect == StageEffect.special_attack:
-        hero_mods.special_attack += value
+        hero_mods.special_attack = calculate_new_stage(hero_mods.attack, value)
     elif effect == StageEffect.special_defense:
-        hero_mods.special_defense += value
+        hero_mods.special_defense = calculate_new_stage(hero_mods.attack, value)
     elif effect == StageEffect.speed:
-        hero_mods.speed += value
+        hero_mods.speed = calculate_new_stage(hero_mods.attack, value)
+
+
+def calculate_new_stage(old_value: int, mod: int) -> int:
+    value = old_value + mod
+    if value > 6:
+        return 6
+    if value < -6:
+        return -6
+    return value

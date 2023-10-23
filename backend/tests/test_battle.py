@@ -12,6 +12,7 @@ from timekeeper.db.models import (
         EquipmentEntry,
         ItemType,
         ItemRarity,
+        MoveCategory,
         Team)
 from fastapi.testclient import TestClient
 import pytest
@@ -291,7 +292,8 @@ def create_skill() -> int:
             priority=0,
             move_type=HeroType.normal,
             max_usages=5,
-            name="Skill"
+            name="Skill",
+            move_category=MoveCategory.physical
             )
     db.add(skill)
     db.commit()
