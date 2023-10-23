@@ -257,22 +257,29 @@ def get_enemy_skill(hero: UserHero) -> Optional[Skill]:
 
 
 # TODO
-def apply_status_skill(hero_mods: HeroMods, skill: Skill):
+def apply_status_skill(hero_mods: HeroMods, skill: Skill) -> None:
     if skill.status_effect:
         if skill.status_effect == StatusEffect.poisoned:
             pass
     if skill.stage_effect:
-        if skill.stage_effect == StageEffect.attack:
-            hero_mods.attack += skill.mod
-        if skill.stage_effect == StageEffect.accuracy:
-            hero_mods.accuracy += skill.mod
-        elif skill.stage_effect == StageEffect.evasion:
-            hero_mods.evasion += skill.mod
-        elif skill.stage_effect == StageEffect.defense:
-            hero_mods.defense += skill.mod
-        elif skill.stage_effect == StageEffect.special_attack:
-            hero_mods.special_attack += skill.mod
-        elif skill.stage_effect == StageEffect.special_defense:
-            hero_mods.special_defense += skill.mod
-        elif skill.stage_effect == StageEffect.speed:
-            hero_mods.speed += skill.mod
+        apply_stage_change(hero_mods, skill.stage_change, skill.mod)
+
+
+def apply_stage_change(
+        hero_mods: HeroMods,
+        effect: StageEffect,
+        value: int) -> None:
+    if effect == StageEffect.attack:
+        hero_mods.attack += value
+    if effect == StageEffect.accuracy:
+        hero_mods.accuracy += value
+    elif effect == StageEffect.evasion:
+        hero_mods.evasion += value
+    elif effect == StageEffect.defense:
+        hero_mods.defense += value
+    elif effect == StageEffect.special_attack:
+        hero_mods.special_attack += value
+    elif effect == StageEffect.special_defense:
+        hero_mods.special_defense += value
+    elif effect == StageEffect.speed:
+        hero_mods.speed += value
