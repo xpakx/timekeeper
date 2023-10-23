@@ -9,7 +9,7 @@ import random
 from typing import Optional
 
 
-def create_timer(timer: TimerRequest, user_id: int, db: Session):
+def create_timer(timer: TimerRequest, user_id: int, db: Session) -> Timer:
     new_timer = Timer(
             name=timer.name,
             description=timer.description,
@@ -26,7 +26,7 @@ def create_timer(timer: TimerRequest, user_id: int, db: Session):
     return new_timer
 
 
-def get_timers(page: int, size: int, user_id: int, db: Session):
+def get_timers(page: int, size: int, user_id: int, db: Session) -> list[Timer]:
     offset = page*size
     return db\
         .query(Timer)\
@@ -38,14 +38,18 @@ def get_timers(page: int, size: int, user_id: int, db: Session):
         .all()
 
 
-def get_timer(timer_id: int, user_id: int, db: Session):
+def get_timer(timer_id: int, user_id: int, db: Session) -> Timer:
     db_timer = db.get(Timer, timer_id)
     if (not db_timer) or db_timer.owner_id != user_id:
         raise not_found_exception()
     return db_timer
 
 
-def edit_timer(timer_id: int, timer: TimerRequest, user_id: int, db: Session):
+def edit_timer(
+        timer_id: int,
+        timer: TimerRequest,
+        user_id: int,
+        db: Session) -> Timer:
     db_timer = db.get(Timer, timer_id)
     if db_timer:
         if db_timer.owner_id != user_id:
@@ -113,7 +117,11 @@ def change_timer_state(
         raise ownership_exception()
 
 
-def get_active_timers(page: int, size: int, user_id: int, db: Session):
+def get_active_timers(
+        page: int,
+        size: int,
+        user_id: int,
+        db: Session) -> list[TimerInstance]:
     offset = page*size
     return db\
         .query(TimerInstance)\
@@ -153,7 +161,11 @@ def not_found_exception():
     )
 
 
-def get_history(page: int, size: int, user_id: int, db: Session):
+def get_history(
+        page: int,
+        size: int,
+        user_id: int,
+        db: Session) -> list[TimerInstance]:
     offset = page*size
     return db\
         .query(TimerInstance)\
@@ -173,7 +185,7 @@ def get_timer_history(
         size: int,
         user_id: int,
         timer_id: int,
-        db: Session):
+        db: Session) -> list[TimerInstance]:
     offset = page*size
     return db\
         .query(TimerInstance)\

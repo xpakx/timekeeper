@@ -5,7 +5,7 @@ import random
 from typing import Optional
 
 
-def create_entry(hero_id, user_id, db: Session):
+def create_entry(hero_id, user_id, db: Session) -> UserHero:
     entry = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
@@ -26,7 +26,11 @@ def create_entry(hero_id, user_id, db: Session):
     return entry
 
 
-def get_heroes(page: int, size: int, user_id: int, db: Session):
+def get_heroes(
+        page: int,
+        size: int,
+        user_id: int,
+        db: Session) -> list[UserHero]:
     offset = page*size
     return db\
         .query(UserHero)\

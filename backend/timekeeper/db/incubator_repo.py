@@ -32,7 +32,7 @@ def install_incubator(
     return entry
 
 
-def get_incubators(user_id: int, db: Session):
+def get_incubators(user_id: int, db: Session) -> list[Incubator]:
     return db\
         .query(Incubator)\
         .where(

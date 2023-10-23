@@ -1,8 +1,9 @@
 from .models import Points
 from sqlalchemy.orm import Session
+from typing import Optional
 
 
-def create_points(user_id: int, db: Session):
+def create_points(user_id: int, db: Session) -> Points:
     new_points = Points(
             points=0,
             user_id=user_id,
@@ -13,7 +14,7 @@ def create_points(user_id: int, db: Session):
     return new_points
 
 
-def get_points(user_id: int, db: Session):
+def get_points(user_id: int, db: Session) -> Optional[Points]:
     return db\
         .query(Points)\
         .where(
@@ -22,7 +23,7 @@ def get_points(user_id: int, db: Session):
         .first()
 
 
-def add_points(points: int, user_id: int, db: Session):
+def add_points(points: int, user_id: int, db: Session) -> Points:
     db_points = db\
         .query(Points)\
         .where(

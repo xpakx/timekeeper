@@ -1,13 +1,14 @@
 from .models import Hero
 from sqlalchemy.orm import Session
 import random
+from typing import Optional
 
 COMMON = range(1, 6)
 UNCOMMON = range(6, 16)
 RARE = range(16, 21)
 
 
-def get_random_hero(db: Session):
+def get_random_hero(db: Session) -> Optional[Hero]:
     rnd = random.randint(0, 6)
     if rnd < 3:
         rnd = random.choice(COMMON)

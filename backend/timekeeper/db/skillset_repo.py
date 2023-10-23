@@ -2,9 +2,10 @@ from .models import SkillSet, Skill, SkillHero
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from fastapi import HTTPException
+from typing import Optional
 
 
-def create_entry(hero, db: Session):
+def create_entry(hero, db: Session) -> None:
     entry = SkillSet(
             hero=hero,
             usages_1=0,
@@ -15,7 +16,7 @@ def create_entry(hero, db: Session):
     db.add(entry)
 
 
-def teach_skill(hero_id: int, skill_id: int, num: int, db: Session):
+def teach_skill(hero_id: int, skill_id: int, num: int, db: Session) -> None:
     entry: SkillSet = db\
         .query(SkillSet)\
         .where(SkillSet.hero_id == hero_id)\
@@ -33,7 +34,7 @@ def teach_skill(hero_id: int, skill_id: int, num: int, db: Session):
     db.commit()
 
 
-def get_skill(item_id: int, db: Session):
+def get_skill(item_id: int, db: Session) -> Optional[Skill]:
     return db\
         .query(Skill)\
         .where(Skill.item_id == item_id)\
