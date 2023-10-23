@@ -14,6 +14,8 @@ from ..db.models import (
         HeroMods,
         Team,
         Skill,
+        StatusEffect,
+        StageEffect,
         MoveCategory)
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
@@ -215,7 +217,7 @@ def hero_turn(
     if not skill:
         return
     if skill.self_targetted:
-        apply_status_skill(hero, skill)
+        apply_status_skill(hero_mods, skill)
         return
     hit = battle_mech.test_accuracy(
             hero,
@@ -233,7 +235,7 @@ def hero_turn(
                 other_hero,
                 other_mods)
     else:
-        apply_status_skill(other_hero, skill)
+        apply_status_skill(other_mods, skill)
 
 
 def get_current_skill(move: MoveRequest, hero: UserHero) -> Optional[Skill]:
@@ -255,5 +257,22 @@ def get_enemy_skill(hero: UserHero) -> Optional[Skill]:
 
 
 # TODO
-def apply_status_skill(hero: UserHero, skill: Skill):
-    pass
+def apply_status_skill(hero_mods: HeroMods, skill: Skill):
+    if skill.status_effect:
+        if skill.status_effect == StatusEffect.poisoned:
+            pass
+    if skill.stage_effect:
+        if skill.stage_effect == StageEffect.attack:
+            hero_mods.attack += skill.mod
+        if skill.stage_effect == StageEffect.accuracy:
+            hero_mods.accuracy += skill.mod
+        elif skill.stage_effect == StageEffect.evasion:
+            hero_mods.evasion += skill.mod
+        elif skill.stage_effect == StageEffect.defense:
+            hero_mods.defense += skill.mod
+        elif skill.stage_effect == StageEffect.special_attack:
+            hero_mods.special_attack += skill.mod
+        elif skill.stage_effect == StageEffect.special_defense:
+            hero_mods.special_defense += skill.mod
+        elif skill.stage_effect == StageEffect.speed:
+            hero_mods.speed += skill.mod
