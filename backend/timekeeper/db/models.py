@@ -259,6 +259,7 @@ class HeroMods(Base):
     special_attack = Column(Integer)
     special_defense = Column(Integer)
     speed = Column(Integer)
+    leech_seed = Column(Boolean)
 
 
 class Battle(Base):

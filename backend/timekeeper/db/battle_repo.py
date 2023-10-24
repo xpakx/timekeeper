@@ -18,7 +18,8 @@ def create_entry(
             defense=0,
             special_attack=0,
             special_defense=0,
-            speed=0)
+            speed=0,
+            leech_seed=False)
     enemy_mods = HeroMods(
             accuracy=0,
             evasion=0,
@@ -26,7 +27,8 @@ def create_entry(
             defense=0,
             special_attack=0,
             special_defense=0,
-            speed=0)
+            speed=0,
+            leech_seed=False)
     entry = Battle(
             hero_id=hero_id,
             hero_mods=hero,

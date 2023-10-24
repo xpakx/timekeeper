@@ -266,6 +266,9 @@ def apply_status_skill(
     if skill.status_effect:
         if skill.status_effect == StatusEffect.poisoned:
             apply_poison_status(hero)
+        elif skill.status_effect == StatusEffect.leech_seed:
+            # TODO potential immunity?
+            hero_mods.leech_seed = True
     if skill.stage_effect:
         apply_stage_change(hero_mods, skill.stage_change, skill.mod)
     if skill.secondary_stage_effect:
