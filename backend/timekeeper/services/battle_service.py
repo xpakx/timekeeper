@@ -329,3 +329,17 @@ def apply_poison_damage(hero: UserHero) -> None:
     hero.damage = hero.damage + damage
     if hp <= hero.damage:
         hero.fainted = True
+
+
+def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
+    hp = battle_mech.calculate_hp(hero)
+    other_hp = battle_mech.calculate_hp(other_hero)
+    damage = math.floor(other_hp/8)
+    if damage == 0:
+        damage = 1
+    other_hero.damage = other_hero.damage + damage
+    if damage > hero.damage:
+        damage = hero.damage
+    hero.damage = hero.damage - damage
+    if hp <= other_hero.damage:
+        other_hero.fainted = True
