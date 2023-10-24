@@ -264,7 +264,7 @@ def apply_status_skill(
         skill: Skill) -> None:
     if skill.status_effect:
         if skill.status_effect == StatusEffect.poisoned:
-            apply_poison_status(hero, hero_mods)
+            apply_poison_status(hero)
     if skill.stage_effect:
         apply_stage_change(hero_mods, skill.stage_change, skill.mod)
     if skill.secondary_stage_effect:
@@ -281,17 +281,21 @@ def apply_stage_change(
     if effect == StageEffect.attack:
         hero_mods.attack = calculate_new_stage(hero_mods.attack, value)
     elif effect == StageEffect.accuracy:
-        hero_mods.accuracy = calculate_new_stage(hero_mods.attack, value)
+        hero_mods.accuracy = calculate_new_stage(hero_mods.accuracy, value)
     elif effect == StageEffect.evasion:
-        hero_mods.evasion = calculate_new_stage(hero_mods.attack, value)
+        hero_mods.evasion = calculate_new_stage(hero_mods.evasion, value)
     elif effect == StageEffect.defense:
-        hero_mods.defense = calculate_new_stage(hero_mods.attack, value)
+        hero_mods.defense = calculate_new_stage(hero_mods.defense, value)
     elif effect == StageEffect.special_attack:
-        hero_mods.special_attack = calculate_new_stage(hero_mods.attack, value)
+        hero_mods.special_attack = calculate_new_stage(
+                hero_mods.special_attack,
+                value)
     elif effect == StageEffect.special_defense:
-        hero_mods.special_defense = calculate_new_stage(hero_mods.attack, value)
+        hero_mods.special_defense = calculate_new_stage(
+                hero_mods.special_defense,
+                value)
     elif effect == StageEffect.speed:
-        hero_mods.speed = calculate_new_stage(hero_mods.attack, value)
+        hero_mods.speed = calculate_new_stage(hero_mods.speed, value)
 
 
 def calculate_new_stage(old_value: int, mod: int) -> int:
@@ -303,7 +307,7 @@ def calculate_new_stage(old_value: int, mod: int) -> int:
     return value
 
 
-def apply_poison_status(hero: UserHero, hero_mods: HeroMods) -> None:
+def apply_poison_status(hero: UserHero) -> None:
     if hero.poisoned:
         return
     htype = hero.hero.hero_type
