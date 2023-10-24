@@ -20,6 +20,7 @@ from ..db.models import (
         MoveCategory)
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
+import math
 
 
 def create_battle(user_id: int, equipment_id: int, db: Session) -> Battle:
@@ -318,3 +319,13 @@ def apply_poison_status(hero: UserHero) -> None:
         return
     htype = hero.hero.hero_type
     hero.poisoned = True
+
+
+def apply_poison_damage(hero: UserHero) -> None:
+    hp = battle_mech.calculate_hp(hero)
+    damage = math.floor(hp/8)
+    if damage == 0:
+        damage = 1
+    hero.damage = hero.damage + damage
+    if hp <= hero.damage:
+        hero.fainted = True
