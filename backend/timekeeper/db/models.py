@@ -183,6 +183,7 @@ class Skill(Base):
     accuracy = Column(Integer)
     power = Column(Integer)
     max_usages = Column(Integer)
+    crit_mod = Column(Integer)
     move_type = Column(Enum(HeroType))
     move_category = Column(Enum(MoveCategory))
     self_targetted = Column(Boolean)
