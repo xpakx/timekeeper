@@ -161,3 +161,11 @@ insert into skill_hero_pairs (hero_id, skill_id, autolearn, level) values
     ((select id from heroes where id = 5), (select id from skills where name = 'Slash'), TRUE, 44),
     ((select id from heroes where id = 5), (select id from skills where name = 'Dragon Rage'), TRUE, 54),
     ((select id from heroes where id = 5), (select id from skills where name = 'Fire Spin'), TRUE, 64);
+
+insert into hero_evolve_pairs (hero_id, evolve_id, min_level) values
+    ((select id from heroes where id = 1), (select id from heroes where id = 2), 16),
+    ((select id from heroes where id = 2), (select id from heroes where id = 3), 32),
+    ((select id from heroes where id = 4), (select id from heroes where id = 5), 16),
+    ((select id from heroes where id = 5), (select id from heroes where id = 6), 32),
+    ((select id from heroes where id = 7), (select id from heroes where id = 8), 16),
+    ((select id from heroes where id = 8), (select id from heroes where id = 9), 32);
