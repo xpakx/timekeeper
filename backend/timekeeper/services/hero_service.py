@@ -49,3 +49,23 @@ def get_user_hero(user_id: int, hero_id: int, db: Session) -> UserHero:
     hero = user_hero_repo.get_hero(user_id, hero_id, db)
     if not hero:
         raise no_such_hero_exception()
+    return hero
+
+
+def evolve_user_hero(
+        user_id: int,
+        hero_id: int,
+        second_hero_id: int,
+        db: Session) -> UserHero:
+    hero = user_hero_repo.get_hero(user_id, hero_id, db)
+    if not hero:
+        raise no_such_hero_exception()
+    entry = hero_repo.get_evolving_pair(hero.hero.id, second_hero_id, db)
+    if not entry:
+        return
+    if hero.level >= entry.min_level:
+        return
+    hero.hero_id = entry.evolve_id
+    db.commit()
+    db.refresh(hero)
+    return hero

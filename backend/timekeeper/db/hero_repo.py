@@ -1,7 +1,8 @@
-from .models import Hero
+from .models import Hero, HeroEvolve
 from sqlalchemy.orm import Session
 import random
 from typing import Optional
+from sqlalchemy import and_
 
 COMMON = range(1, 6)
 UNCOMMON = range(6, 16)
@@ -23,3 +24,17 @@ def get_random_hero(db: Session) -> Optional[Hero]:
               Hero.num == rnd
             )\
         .first()
+
+
+def get_evolving_pair(
+        hero_id: int,
+        second_hero_id: int,
+        db: Session) -> Optional[HeroEvolve]:
+    entry: HeroEvolve = db\
+        .query(HeroEvolve)\
+        .where(
+                and_(HeroEvolve.hero_id == hero_id,
+                     HeroEvolve.evolve_id == second_hero_id)
+                )\
+        .first()
+    return entry
