@@ -4,16 +4,16 @@ import random
 from typing import Optional
 from sqlalchemy import and_
 
-COMMON = range(1, 6)
-UNCOMMON = range(6, 16)
-RARE = range(16, 21)
+COMMON = [10, 13, 16, 19]
+UNCOMMON = [11, 14, 17, 20]
+RARE = [1, 4, 7]
 
 
 def get_random_hero(db: Session) -> Optional[Hero]:
-    rnd = random.randint(0, 6)
-    if rnd < 3:
+    rnd = random.randint(0, 100)
+    if rnd < 74:
         rnd = random.choice(COMMON)
-    elif rnd < 5:
+    elif rnd < 94:
         rnd = random.choice(UNCOMMON)
     else:
         rnd = random.choice(RARE)
