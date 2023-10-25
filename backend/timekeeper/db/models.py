@@ -342,3 +342,13 @@ class SkillHero(Base):
     skill = relationship("Skill")
     autolearn = Column(Boolean)
     level = Column(Integer)
+
+
+class HeroEvolve(Base):
+    __tablename__ = "hero_evolve_pairs"
+    id = Column(Integer, primary_key=True, index=True)
+    min_level = Column(Integer)
+    hero_id = Column(Integer, ForeignKey("heroes.id"))
+    hero = relationship("Hero", primaryjoin="Hero.id==HeroEvolve.hero_id")
+    evolve_id = Column(Integer, ForeignKey("heroes.id"))
+    evolve = relationship("Hero", primaryjoin="Hero.id==HeroEvolve.evolve_id")
