@@ -58,3 +58,19 @@ async def get_hero(
         db: Session = Depends(get_db)
         ):
     return hero_service.get_user_hero(user.id, id, db)
+
+
+@router.post("/{id}/evolve", response_model=hero_schemas.EvolveRequest)
+async def evolve_hero(
+        request: hero_schemas.EvolveRequest,
+        id: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return hero_service.evolve_user_hero(
+            user.id,
+            id,
+            request.hero_id,
+            request.num,
+            db
+            )

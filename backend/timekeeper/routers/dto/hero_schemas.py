@@ -84,3 +84,8 @@ class UserHeroDetails(UserHeroBase):
                 skillset.skill_2,
                 skillset.skill_3,
                 skillset.skill_4]
+
+
+class EvolveRequest(BaseModel):
+    hero_id: int
+    item_id: Optional[int]
