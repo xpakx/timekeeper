@@ -259,17 +259,12 @@ def get_enemy_skill(hero: UserHero) -> Optional[Skill]:
     return hero.skillset.skill_1
 
 
-# TODO
 def apply_status_skill(
         hero: UserHero,
         hero_mods: HeroMods,
         skill: Skill) -> None:
     if skill.status_effect:
-        if skill.status_effect == StatusEffect.poisoned:
-            apply_poison_status(hero)
-        elif skill.status_effect == StatusEffect.leech_seed:
-            # TODO potential immunity?
-            hero_mods.leech_seed = True
+        apply_status_change(hero, hero_mods, skill.status_effect)
     if skill.stage_effect:
         apply_stage_change(hero_mods, skill.stage_change, skill.mod)
     if skill.secondary_stage_effect:
@@ -347,3 +342,15 @@ def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
     hero.damage = hero.damage - damage
     if hp <= other_hero.damage:
         other_hero.fainted = True
+
+
+# TODO
+def apply_status_change(
+        hero: UserHero,
+        hero_mods: HeroMods,
+        status: StatusEffect) -> None:
+    if status == StatusEffect.poisoned:
+        apply_poison_status(hero)
+    elif status == StatusEffect.leech_seed:
+        # TODO potential immunity?
+        hero_mods.leech_seed = True
