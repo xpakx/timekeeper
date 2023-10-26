@@ -89,7 +89,7 @@ def teach_hero_skill_at_level(
     hero = user_hero_repo.get_hero(user_id, hero_id, db)
     if not hero:
         raise no_such_hero_exception()
-    learnable = skillset_repo.get_skill_learning_data(
+    learnable = skillset_repo.test_skill_at_level(
             hero.id,
             skill.id,
             hero.level,
