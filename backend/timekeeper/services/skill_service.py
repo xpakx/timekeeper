@@ -8,25 +8,13 @@ def teach_hero(
         user_id: int,
         hero_id: int,
         item_id: int,
+        skill_id: int,
         num: int,
         db: Session) -> UserHero:
-    item = equipment_repo.get_item_entry(item_id, user_id, db)
-    if not item or item.amount < 1:
-        raise no_item_exception()
-    if item.item.item_type != ItemType.skill:
-        raise no_skill_item_exception()
-    hero = user_hero_repo.get_hero(user_id, hero_id, db)
-    if not hero:
-        raise no_such_hero_exception()
-    skill = skillset_repo.get_skill(item.item.id, db)
-    if not skill:
-        raise not_initialized_exception()
-    if not skillset_repo.test_skill(hero.id, skill.id, db):
-        raise not_teachable_exception()
-    item.amount = item.amount - 1
-    skillset_repo.teach_skill(hero.id, skill.id, num, db)
-    db.commit()
-    return hero
+    if item_id:
+        return teach_hero_with_item(user_id, hero_id, item_id, num, db)
+    if skill_id:
+        return teach_hero_skill_at_level(user_id, hero_id, skill_id, num, db)
 
 
 def no_skill_item_exception():
@@ -64,6 +52,31 @@ def not_teachable_exception():
     )
 
 
+def teach_hero_with_item(
+        user_id: int,
+        hero_id: int,
+        item_id: int,
+        num: int,
+        db: Session) -> UserHero:
+    item = equipment_repo.get_item_entry(item_id, user_id, db)
+    if not item or item.amount < 1:
+        raise no_item_exception()
+    if item.item.item_type != ItemType.skill:
+        raise no_skill_item_exception()
+    hero = user_hero_repo.get_hero(user_id, hero_id, db)
+    if not hero:
+        raise no_such_hero_exception()
+    skill = skillset_repo.get_skill(item.item.id, db)
+    if not skill:
+        raise not_initialized_exception()
+    if not skillset_repo.test_skill(hero.id, skill.id, db):
+        raise not_teachable_exception()
+    item.amount = item.amount - 1
+    skillset_repo.teach_skill(hero.id, skill.id, num, db)
+    db.commit()
+    return hero
+
+
 def teach_hero_skill_at_level(
         user_id: int,
         hero_id: int,
@@ -76,7 +89,10 @@ def teach_hero_skill_at_level(
     hero = user_hero_repo.get_hero(user_id, hero_id, db)
     if not hero:
         raise no_such_hero_exception()
-    learning_data: SkillHero = skillset_repo.get_skill_learning_data(hero.id, skill.id, db)
+    learning_data: SkillHero = skillset_repo.get_skill_learning_data(
+            hero.id,
+            skill.id,
+            db)
     if not learning_data:
         raise not_teachable_exception()
     if learning_data.level != hero.level:

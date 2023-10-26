@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, root_validator
 from ...db.models import ItemRarity, HeroType, MoveCategory
 from typing import Optional
 
@@ -33,8 +33,19 @@ class Crystals(BaseModel):
 
 
 class SkillRequest(BaseModel):
-    item_id: int = Field(gt=0)
+    item_id: Optional[int] = Field(gt=0)
+    skill_id: Optional[int] = Field(gt=0)
     num: int = Field(gt=0, le=4)
+
+    @root_validator()
+    def validate_at_least_one_id_value(cls, values):
+        item = values.get('item_id')
+        skill = values.get('skill_id')
+        if (not item) and (not skill):
+            raise ValueError("Id cannot be empty")
+        if item and skill:
+            raise ValueError("Cannot use two ids")
+        return values
 
 
 class SkillBase(BaseModel):

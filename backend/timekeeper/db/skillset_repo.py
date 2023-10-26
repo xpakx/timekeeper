@@ -54,7 +54,10 @@ def test_skill(hero_id: int, skill_id: int, db: Session) -> bool:
     return False
 
 
-def get_skill_learning_data(hero_id: int, skill_id: int, db: Session) -> Optional[SkillHero]:
+def get_skill_learning_data(
+        hero_id: int,
+        skill_id: int,
+        db: Session) -> Optional[SkillHero]:
     entry: SkillHero = db\
         .query(SkillHero)\
         .where(

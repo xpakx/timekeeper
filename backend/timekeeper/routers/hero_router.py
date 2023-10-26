@@ -46,6 +46,7 @@ async def teach_skill(
             user.id,
             id,
             request.item_id,
+            request.skill_id,
             request.num,
             db
             )
