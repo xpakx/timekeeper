@@ -54,18 +54,22 @@ def test_skill(hero_id: int, skill_id: int, db: Session) -> bool:
     return False
 
 
-def get_skill_learning_data(
+def test_skill_at_level(
         hero_id: int,
         skill_id: int,
-        db: Session) -> Optional[SkillHero]:
+        level: int,
+        db: Session) -> bool:
     entry: SkillHero = db\
         .query(SkillHero)\
         .where(
                 and_(SkillHero.hero_id == hero_id,
-                     SkillHero.skill_id == skill_id)
+                     SkillHero.skill_id == skill_id,
+                     SkillHero.level == level)
                 )\
         .first()
-    return entry
+    if entry:
+        return True
+    return False
 
 
 def not_initialized_exception():
