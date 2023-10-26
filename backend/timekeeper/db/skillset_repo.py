@@ -54,6 +54,17 @@ def test_skill(hero_id: int, skill_id: int, db: Session) -> bool:
     return False
 
 
+def get_skill_learning_data(hero_id: int, skill_id: int, db: Session) -> Optional[SkillHero]:
+    entry: SkillHero = db\
+        .query(SkillHero)\
+        .where(
+                and_(SkillHero.hero_id == hero_id,
+                     SkillHero.skill_id == skill_id)
+                )\
+        .first()
+    return entry
+
+
 def not_initialized_exception():
     return HTTPException(
         status_code=500,
