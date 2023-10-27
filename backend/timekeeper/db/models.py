@@ -161,6 +161,7 @@ class MoveCategory(enum.Enum):
 class StatusEffect(enum.Enum):
     poisoned = "poisoned"
     burned = "burned"
+    paralyzed = "paralyzed"
     leech_seed = "leech seed"
     confused = "confused"
     asleep = "asleep"
@@ -241,6 +242,7 @@ class UserHero(Base):
     fainted = Column(Boolean)
     poisoned = Column(Boolean)
     burned = Column(Boolean)
+    paralyzed = Column(Boolean)
     in_team = Column(Boolean)
     damage = Column(Integer)
     experience = Column(Integer)

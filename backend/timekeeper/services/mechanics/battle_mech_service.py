@@ -99,11 +99,15 @@ def calculate_hp_(base_hp: int, hp: int, level: int) -> int:
 
 
 def calculate_speed(hero: UserHero) -> int:
-    return calculate_stat(
+    speed = calculate_stat(
             hero.hero.base_speed,
             hero.speed,
             0,
             hero.level)
+    if hero.paralyzed:
+        return math.floor(speed/4)
+    else:
+        return speed
 
 
 def calculate_attack(hero: UserHero) -> int:

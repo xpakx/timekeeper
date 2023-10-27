@@ -22,6 +22,7 @@ def create_entry(hero_id, user_id, db: Session) -> UserHero:
             fainted=False,
             poisoned=False,
             burned=False,
+            paralyzed=False,
             damage=0
             )
     db.add(entry)

@@ -21,6 +21,7 @@ from ..db.models import (
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 import math
+import random
 
 
 def create_battle(user_id: int, equipment_id: int, db: Session) -> Battle:
@@ -223,6 +224,10 @@ def hero_turn(
         other_mods: HeroMods) -> None:
     if not skill:
         return
+    if hero.paralyzed:
+        rand = random.randint(0, 4)
+        if rand == 0:
+            return
     if skill.self_targetted:
         apply_status_skill(hero, hero_mods, skill)
         return
@@ -371,6 +376,19 @@ def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
         other_hero.fainted = True
 
 
+def apply_paralyzed_status(hero: UserHero) -> None:
+    if hero.paralyzed:
+        return
+    htype = hero.hero.hero_type
+    if htype == HeroType.electric:
+        return
+    htype = hero.hero.secondary_hero_type
+    if htype == HeroType.electric:
+        return
+    htype = hero.hero.hero_type
+    hero.paralyzed = True
+
+
 def apply_post_movement_statuses(
         hero: UserHero,
         hero_mods: HeroMods,
@@ -392,6 +410,8 @@ def apply_status_change(
         apply_poison_status(hero)
     if status == StatusEffect.burn:
         apply_burn_status(hero)
+    if status == StatusEffect.paralyzed:
+        apply_paralyzed_status(hero)
     elif status == StatusEffect.leech_seed:
         # TODO potential immunity?
         hero_mods.leech_seed = True
