@@ -201,11 +201,15 @@ def calculate_damage(
     type_mod = get_effectiveness(move.move_type, enemy.hero)
     crit = 2 if critical else 1
     rand = random.randint(85, 101)/100
-    return (math.floor(
+    dmg = (math.floor(
             math.floor(
                 math.floor((2*level)/5+2)
                 * attack * move.power / defense)
             / 50) + 2)*crit*rand*stab*type_mod
+    if hero.burned and move.move_category == MoveCategory.physical:
+        return math.floor(dmg/2)
+    else:
+        return dmg
 
 
 def test_hero_move_type(hero: UserHero, move: Skill) -> bool:
