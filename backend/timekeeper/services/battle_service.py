@@ -351,7 +351,7 @@ def apply_post_movement_statuses(
         hero_mods: HeroMods,
         other_hero: UserHero) -> None:
     if not hero.fainted and hero_mods.leech_seed:
-        apply_leech_seed(hero, other_hero)
+        apply_leech_seed(other_hero, hero)
     if not hero.fainted and hero.poisoned:
         apply_poison_damage(hero)
 
