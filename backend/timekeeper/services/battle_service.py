@@ -194,6 +194,8 @@ def apply_damage(
             other_hero,
             other_mods,
             crit)
+    if hero.burned and skill.move_category == MoveCategory.physical:
+        dmg = math.floor(dmg/2)
     other_hero.damage = other_hero.damage + dmg
     if battle_mech.calculate_hp(other_hero) <= other_hero.damage:
         other_hero.fainted = True
@@ -332,6 +334,29 @@ def apply_poison_damage(hero: UserHero) -> None:
         hero.fainted = True
 
 
+def apply_burn_status(hero: UserHero) -> None:
+    if hero.burned:
+        return
+    htype = hero.hero.hero_type
+    if htype == HeroType.fire:
+        return
+    htype = hero.hero.secondary_hero_type
+    if htype == HeroType.fire:
+        return
+    htype = hero.hero.hero_type
+    hero.burned = True
+
+
+def apply_burn_damage(hero: UserHero) -> None:
+    hp = battle_mech.calculate_hp(hero)
+    damage = math.floor(hp/8)
+    if damage == 0:
+        damage = 1
+    hero.damage = hero.damage + damage
+    if hp <= hero.damage:
+        hero.fainted = True
+
+
 def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
     hp = battle_mech.calculate_hp(hero)
     other_hp = battle_mech.calculate_hp(other_hero)
@@ -354,6 +379,8 @@ def apply_post_movement_statuses(
         apply_leech_seed(other_hero, hero)
     if not hero.fainted and hero.poisoned:
         apply_poison_damage(hero)
+    if not hero.fainted and hero.burned:
+        apply_burn_damage(hero)
 
 
 # TODO
@@ -363,6 +390,8 @@ def apply_status_change(
         status: StatusEffect) -> None:
     if status == StatusEffect.poisoned:
         apply_poison_status(hero)
+    if status == StatusEffect.burn:
+        apply_burn_status(hero)
     elif status == StatusEffect.leech_seed:
         # TODO potential immunity?
         hero_mods.leech_seed = True
