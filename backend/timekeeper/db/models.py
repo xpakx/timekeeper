@@ -245,6 +245,7 @@ class UserHero(Base):
     burned = Column(Boolean)
     paralyzed = Column(Boolean)
     asleep = Column(Boolean)
+    sleep_counter = Column(Integer)
     frozen = Column(Boolean)
     in_team = Column(Boolean)
     damage = Column(Integer)

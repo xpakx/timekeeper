@@ -420,6 +420,10 @@ def apply_post_movement_statuses(
         rand = random.randint(0, 100)
         if rand < 20:
             hero.frozen = False
+    if not hero.fainted and hero.asleep:
+        hero.sleep_counter = hero.sleep_counter - 1
+        if hero.sleep_counter == 0:
+            hero.asleep = False
 
 
 # TODO
@@ -437,6 +441,7 @@ def apply_status_change(
         # TODO potential immunity?
         hero_mods.leech_seed = True
     if status == StatusEffect.asleep:
+        hero.sleep_counter = random.randint(1, 6)
         hero_mods.asleep = True
     if status == StatusEffect.frozen:
         apply_frozen_status(hero)
