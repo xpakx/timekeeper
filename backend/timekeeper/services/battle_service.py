@@ -210,10 +210,10 @@ def battle_turn(
         other_mods: HeroMods,
         other_skill: Optional[Skill]) -> None:
     hero_turn(hero, hero_mods, skill, other_hero, other_mods)
-    apply_post_movement_statuses(hero, hero_mods, other_hero)
+    apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
     if not other_hero.fainted:
         hero_turn(other_hero, other_mods, other_skill, hero, hero_mods)
-        apply_post_movement_statuses(other_hero, other_mods, hero)
+        apply_post_movement_statuses(other_hero, other_mods, other_skill, hero)
 
 
 def hero_turn(
@@ -245,6 +245,8 @@ def hero_turn(
                 skill,
                 other_hero,
                 other_mods)
+        if other_hero.frozen and skill.move_type == MoveType.fire:
+            hero.frozen = False
     else:
         apply_status_skill(other_hero, other_mods, skill)
 
@@ -404,6 +406,7 @@ def apply_paralyzed_status(hero: UserHero) -> None:
 def apply_post_movement_statuses(
         hero: UserHero,
         hero_mods: HeroMods,
+        move: Skill,
         other_hero: UserHero) -> None:
     if not hero.fainted and hero_mods.leech_seed:
         apply_leech_seed(other_hero, hero)
@@ -411,6 +414,12 @@ def apply_post_movement_statuses(
         apply_poison_damage(hero)
     if not hero.fainted and hero.burned:
         apply_burn_damage(hero)
+    if not hero.fainted and hero.frozen:
+        if move.move_type == MoveType.fire:
+            hero.frozen = False
+        rand = random.randint(0, 100)
+        if rand < 20:
+            hero.frozen = False
 
 
 # TODO
