@@ -361,6 +361,19 @@ def apply_burn_damage(hero: UserHero) -> None:
         hero.fainted = True
 
 
+def apply_frozen_status(hero: UserHero) -> None:
+    if hero.frozen:
+        return
+    htype = hero.hero.hero_type
+    if htype == HeroType.ice:
+        return
+    htype = hero.hero.secondary_hero_type
+    if htype == HeroType.ice:
+        return
+    htype = hero.hero.hero_type
+    hero.frozen = True
+
+
 def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
     hp = battle_mech.calculate_hp(hero)
     other_hp = battle_mech.calculate_hp(other_hero)
@@ -411,9 +424,13 @@ def apply_status_change(
         apply_burn_status(hero)
     if status == StatusEffect.paralyzed:
         apply_paralyzed_status(hero)
-    elif status == StatusEffect.leech_seed:
+    if status == StatusEffect.leech_seed:
         # TODO potential immunity?
         hero_mods.leech_seed = True
+    if status == StatusEffect.asleep:
+        hero_mods.asleep = True
+    if status == StatusEffect.frozen:
+        apply_frozen_status(hero)
 
 
 def is_hero_able_to_move(hero: UserHero) -> bool:
@@ -421,4 +438,6 @@ def is_hero_able_to_move(hero: UserHero) -> bool:
         rand = random.randint(0, 100)
         if rand < 25:
             return False
+    if hero.frozen or hero.asleep:
+        return False
     return True
