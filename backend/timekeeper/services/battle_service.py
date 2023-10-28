@@ -224,10 +224,9 @@ def hero_turn(
         other_mods: HeroMods) -> None:
     if not skill:
         return
-    if hero.paralyzed:
-        rand = random.randint(0, 4)
-        if rand == 0:
-            return
+    able = is_hero_able_to_move(hero)
+    if not able:
+        return
     if skill.self_targetted:
         apply_status_skill(hero, hero_mods, skill)
         return
@@ -415,3 +414,11 @@ def apply_status_change(
     elif status == StatusEffect.leech_seed:
         # TODO potential immunity?
         hero_mods.leech_seed = True
+
+
+def is_hero_able_to_move(hero: UserHero) -> bool:
+    if hero.paralyzed:
+        rand = random.randint(0, 100)
+        if rand < 25:
+            return False
+    return True
