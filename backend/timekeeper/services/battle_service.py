@@ -403,6 +403,20 @@ def apply_paralyzed_status(hero: UserHero) -> None:
     hero.paralyzed = True
 
 
+def apply_frozen_changes(hero: UserHero, move: Skill) -> None:
+    if move.move_type == MoveType.fire:
+        hero.frozen = False
+    rand = random.randint(0, 100)
+    if rand < 20:
+        hero.frozen = False
+
+
+def apply_asleep_changes(hero: UserHero) -> None:
+    hero.sleep_counter = hero.sleep_counter - 1
+    if hero.sleep_counter == 0:
+        hero.asleep = False
+
+
 def apply_post_movement_statuses(
         hero: UserHero,
         hero_mods: HeroMods,
@@ -415,15 +429,9 @@ def apply_post_movement_statuses(
     if not hero.fainted and hero.burned:
         apply_burn_damage(hero)
     if not hero.fainted and hero.frozen:
-        if move.move_type == MoveType.fire:
-            hero.frozen = False
-        rand = random.randint(0, 100)
-        if rand < 20:
-            hero.frozen = False
+        apply_frozen_changes(hero, move)
     if not hero.fainted and hero.asleep:
-        hero.sleep_counter = hero.sleep_counter - 1
-        if hero.sleep_counter == 0:
-            hero.asleep = False
+        apply_asleep_changes(hero)
 
 
 # TODO
