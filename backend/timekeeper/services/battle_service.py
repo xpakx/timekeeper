@@ -246,7 +246,7 @@ def hero_turn(
                 other_hero,
                 other_mods)
         if other_hero.frozen and skill.move_type == MoveType.fire:
-            hero.frozen = False
+            other_hero.frozen = False
     else:
         apply_status_skill(other_hero, other_mods, skill)
 
