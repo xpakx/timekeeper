@@ -82,7 +82,19 @@ insert into skills (name, priority, accuracy, power, max_usages, move_type, move
     ('Slash', 0, 100, 70, 0, 'normal', 'physical', (select if from items where name = 'Slash'), False, NULL, 0, NULL, 0, NULL, 1, NULL),
     ('Dragon Rage', 0, 100, 0, 0, 'dragon', 'special', (select if from items where name = 'Dragon Rage'), False, NULL, 0, NULL, 0, NULL, 0, NULL),
     ('Fire Spin', 0, 70, 15, 0, 'fire', 'special', (select if from items where name = 'Fire Spin'), False, NULL, 0, NULL, 0, NULL, 0, NULL),
-    ('Wing Attack', 0, 100, 60, 0, 'flying', 'physical', (select if from items where name = 'Wing Attack'), False, NULL, 0, NULL, 0, NULL, 0, NULL);
+    ('Wing Attack', 0, 100, 60, 0, 'flying', 'physical', (select if from items where name = 'Wing Attack'), False, NULL, 0, NULL, 0, NULL, 0, NULL),
+
+    ("Tackle", 0, 95, 35, 0, "normal", "physical", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Tail Whip", 0, 100, 0, 0, "normal", "status", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Bubble", 0, 100, 20, 0, "water", "special", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Withdraw", 0, 0, 0, 0, "water", "status", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Water Gun", 0, 100, 40, 0, "water", "special", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Bite", 0, 100, 60, 0, "dark", "special", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Rapid Spin", 0, 100, 20, 0, "normal", "physical", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Protect", 0, 0, 0, 0, "normal", "status", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Rain Dance", 0, 0, 0, 0, "water", "status", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Skull Bash", 0, 100, 100, 0, "normal", "physical", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL), 
+    ("Hydro Pump", 0, 80, 120, 0, "water", "special", NULL, False, NULL, 0, NULL, 0, NULL, 0, NULL); 
 
 insert into skill_hero_pairs (hero_id, skill_id, autolearn, level) values
     ((select id from heroes where id = 1), (select id from skills where name = 'Tackle'), TRUE, 1),
@@ -148,19 +160,31 @@ insert into skill_hero_pairs (hero_id, skill_id, autolearn, level) values
     ((select id from heroes where id = 5), (select id from skills where name = 'Dragon Rage'), TRUE, 48),
     ((select id from heroes where id = 5), (select id from skills where name = 'Fire Spin'), TRUE, 55),
 
-    ((select id from heroes where id = 5), (select id from skills where name = 'Growl'), TRUE, 1),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Scratch'), TRUE, 1),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Ember'), TRUE, 1),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Ember'), TRUE, 7),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Smoke Screen'), TRUE, 1),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Smoke Screen'), TRUE, 13),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Rage'), TRUE, 20),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Scary Face'), TRUE, 27),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Flamethrower'), TRUE, 34),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Wing Attack'), TRUE, 36),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Slash'), TRUE, 44),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Dragon Rage'), TRUE, 54),
-    ((select id from heroes where id = 5), (select id from skills where name = 'Fire Spin'), TRUE, 64);
+    ((select id from heroes where id = 6), (select id from skills where name = 'Growl'), TRUE, 1),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Scratch'), TRUE, 1),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Ember'), TRUE, 1),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Ember'), TRUE, 7),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Smoke Screen'), TRUE, 1),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Smoke Screen'), TRUE, 13),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Rage'), TRUE, 20),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Scary Face'), TRUE, 27),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Flamethrower'), TRUE, 34),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Wing Attack'), TRUE, 36),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Slash'), TRUE, 44),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Dragon Rage'), TRUE, 54),
+    ((select id from heroes where id = 6), (select id from skills where name = 'Fire Spin'), TRUE, 64),
+
+    ((select id from heroes where id = 7), (select id from skills where name = 'Tackle'), TRUE, 1), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Tail Whip'), TRUE, 4), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Bubble'), TRUE, 7), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Withdraw'), TRUE, 10), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Water Gun'), TRUE, 13), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Bite'), TRUE, 18), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Rapid Spin'), TRUE, 23), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Protect'), TRUE, 28), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Rain Dance'), TRUE, 33), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Skull Bash'), TRUE, 40), 
+    ((select id from heroes where id = 7), (select id from skills where name = 'Hydro Pump'), TRUE, 47); 
 
 insert into hero_evolve_pairs (hero_id, evolve_id, min_level) values
     ((select id from heroes where id = 1), (select id from heroes where id = 2), 16),
