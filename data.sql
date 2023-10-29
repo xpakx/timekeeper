@@ -75,11 +75,11 @@ insert into skills (name, priority, accuracy, power, max_usages, move_type, move
 
     ('Scratch', 0, 100, 40, 0, 'normal', 'physical', (select if from items where name = 'Scratch'), False, NULL, 0, NULL, 0, NULL, 0),
     ('Ember', 0, 100, 40, 0, 'fire', 'special', (select if from items where name = 'Ember'), False, NULL, 0, NULL, 0, NULL, 0),
-    ('Smoke Screen', 0, 100, 0, 0, 'normal', 'status', (select if from items where name = 'Smoke Screen'), False, NULL, 0, NULL, 0, NULL, 0),
+    ('Smoke Screen', 0, 100, 0, 0, 'normal', 'status', (select if from items where name = 'Smoke Screen'), False, 'accuracy', -1, NULL, 0, NULL, 0),
     ('Rage', 0, 100, 20, 0, 'normal', 'physical', (select if from items where name = 'Rage'), False, NULL, 0, NULL, 0, NULL, 0),
-    ('Scary Face', 0, 90, 0, 0, 'normal', 'status', (select if from items where name = 'Scary Face'), False, NULL, 0, NULL, 0, NULL, 0),
+    ('Scary Face', 0, 90, 0, 0, 'normal', 'status', (select if from items where name = 'Scary Face'), False, 'speed', -2, NULL, 0, NULL, 0),
     ('Flamethrower', 0, 100, 95, 0, 'fire', 'special', (select if from items where name = 'Flamethrower'), False, NULL, 0, NULL, 0, NULL, 0),
-    ('Slash', 0, 100, 70, 0, 'normal', 'physical', (select if from items where name = 'Slash'), False, NULL, 0, NULL, 0, NULL, 0),
+    ('Slash', 0, 100, 70, 0, 'normal', 'physical', (select if from items where name = 'Slash'), False, NULL, 0, NULL, 0, NULL, 1),
     ('Dragon Rage', 0, 100, 0, 0, 'dragon', 'special', (select if from items where name = 'Dragon Rage'), False, NULL, 0, NULL, 0, NULL, 0),
     ('Fire Spin', 0, 70, 15, 0, 'fire', 'special', (select if from items where name = 'Fire Spin'), False, NULL, 0, NULL, 0, NULL, 0),
     ('Wing Attack', 0, 100, 60, 0, 'flying', 'physical', (select if from items where name = 'Wing Attack'), False, NULL, 0, NULL, 0, NULL, 0);
