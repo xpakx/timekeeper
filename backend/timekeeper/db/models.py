@@ -195,6 +195,7 @@ class Skill(Base):
     secondary_stage_effect = Column(Enum(StageEffect))
     secondary_mod = Column(Integer)
     status_effect = Column(Enum(StatusEffect))
+    secondary_status_chance = Column(Integer)
     item_id = Column(Integer, ForeignKey("items.id"))
     item = relationship("Item")
 

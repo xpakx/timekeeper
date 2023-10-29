@@ -247,6 +247,10 @@ def hero_turn(
                 other_mods)
         if other_hero.frozen and skill.move_type == MoveType.fire:
             other_hero.frozen = False
+        if skill.secondary_status_chance:
+            rand = random.randint(0, 100)
+            if rand < skill.secondary_status_chance:
+                apply_status_change(hero, hero_mods, skill.status_effect)
     else:
         apply_status_skill(other_hero, other_mods, skill)
 
