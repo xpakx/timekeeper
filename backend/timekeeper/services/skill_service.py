@@ -83,7 +83,7 @@ def teach_hero_skill_at_level(
         skill_id: int,
         num: int,
         db: Session) -> UserHero:
-    skill = skillset_repo.get_skill(skill_id, db)
+    skill = skillset_repo.get_skill_by_id(skill_id, db)
     if not skill:
         raise not_initialized_exception()
     hero = user_hero_repo.get_hero(user_id, hero_id, db)

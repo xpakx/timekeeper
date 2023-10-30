@@ -41,6 +41,13 @@ def get_skill(item_id: int, db: Session) -> Optional[Skill]:
         .first()
 
 
+def get_skill_by_id(skill_id: int, db: Session) -> Optional[Skill]:
+    return db\
+        .query(Skill)\
+        .where(Skill.id == skill_id)\
+        .first()
+
+
 def test_skill(hero_id: int, skill_id: int, db: Session) -> bool:
     entry: SkillHero = db\
         .query(SkillHero)\
