@@ -19,6 +19,7 @@ from timekeeper.db.models import (
         SkillSet)
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
+from typing import Optional
 
 url = URL.create(
         "postgresql",
@@ -138,12 +139,13 @@ def create_hero(id: int, name: str) -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int):
+def create_user_hero(hero_id: int, user_id: int, level: int = 1):
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
-            incubated=False
+            incubated=False, 
+            level=level
             )
     db.add(item)
     db.commit()
@@ -165,11 +167,13 @@ def create_skill(item_id: int) -> int:
     return skill.id
 
 
-def make_skill_teachable_for(skill_id: int, hero_id: int):
+def make_skill_teachable_for(skill_id: int, hero_id: int, level: Optional[int] = None):
     db = TestingSessionLocal()
     hero_skill = SkillHero(
             skill_id=skill_id,
-            hero_id=hero_id
+            hero_id=hero_id,
+            autolearn=level is not None,
+            level=level
             )
     db.add(hero_skill)
     db.commit()
@@ -422,6 +426,114 @@ def test_teaching_skill_with_num_higher_than_four(test_db):
                            json={
                                "item_id": 10,
                                "num": 5
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 400
+
+
+# teaching level-available skills
+def test_teaching_level_skill_with_no_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    skill_id = create_skill(None)
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               "skill_id": skill_id,
+                               "num": 1
+                               }
+                           )
+    assert response.status_code == 404
+
+
+def test_teaching_level_skill_to_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id, 5)
+    create_skillset(hero_id)
+    skill_id = create_skill(None)
+    make_skill_teachable_for(skill_id, hero_id, 5)
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               "skill_id": skill_id,
+                               "num": 1
+                               }
+                           )
+    assert response.status_code == 200
+
+
+def test_teaching_level_skill_while_no_skill_found(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id)
+    create_skillset(hero_id)
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               "skill_id": 5,
+                               "num": 1
+                               }
+                           )
+    assert response.status_code == 500
+
+
+def test_teaching_non_teachable_level_skill(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id)
+    create_skillset(hero_id)
+    skill_id = create_skill(None)
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               "skill_id": skill_id,
+                               "num": 1
+                               }
+                           )
+    assert response.status_code == 400
+
+
+def test_teaching_level_skill_without_skillset(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id)
+    item_id = create_item(10, skill=True)
+    skill_id = create_skill(item_id)
+    make_skill_teachable_for(skill_id, hero_id)
+    create_equipment_item(item_id, user_id, 1)
+    response = client.post(f"/heroes/{hero_id}/skills",
+                           headers=headers,
+                           json={
+                               "item_id": 10,
+                               "num": 1
+                               }
+                           )
+    assert response.status_code == 500
+
+
+def test_teaching_level_skill_with_no_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               "skill_id": 10,
+                               }
+                           )
+    print(response.text)
+    assert response.status_code == 400
+
+
+def test_teaching_level_skill_with_negative_num(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/heroes/1/skills",
+                           headers=headers,
+                           json={
+                               "skill_id": 10,
+                               "num": -1
                                }
                            )
     print(response.text)
