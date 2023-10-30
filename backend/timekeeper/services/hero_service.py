@@ -63,7 +63,7 @@ def evolve_user_hero(
     entry = hero_repo.get_evolving_pair(hero.hero.id, second_hero_id, db)
     if not entry:
         return
-    if hero.level >= entry.min_level:
+    if hero.level != entry.min_level:
         return
     hero.hero_id = entry.evolve_id
     db.commit()
