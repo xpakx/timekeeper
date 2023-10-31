@@ -762,8 +762,8 @@ def test_evolving_hero_with_higher_level(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     hero_id = create_hero(1, 'Hero')
     next_id = create_hero(2, 'New Hero')
-    add_evolved_form(hero_id, next_id, 15)
-    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    add_evolved_form(hero_id, next_id, 10)
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=15)
     response = client.post(f"/heroes/{user_hero_id}/evolve",
                            headers=headers,
                            json={
