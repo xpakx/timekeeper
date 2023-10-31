@@ -644,3 +644,65 @@ def test_teaching_skill_at_already_taken_postion(test_db):
                                },
                            )
     assert response.status_code == 200
+
+
+# evolving hero
+def test_evolving_hero_without_authentication(test_db):
+    response = client.post("/heroes/1/evolve")
+    assert response.status_code == 401
+
+
+def test_evolving_hero_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.post("/heroes/1/evolve",
+                           headers=headers,
+                           json={
+                               'hero_id': 2
+                               },
+                           )
+    assert response.status_code == 401
+
+
+def test_evolving_hero_if_no_next_form(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_hero(1, 'Hero')
+    next_id = create_hero(2, 'New Hero')
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True)
+    response = client.post(f"/heroes/{user_hero_id}/evolve",
+                           headers=headers,
+                           json={
+                               'hero_id': next_id
+                               },
+                           )
+    assert response.status_code == 400
+
+
+def test_evolving_hero_if_nonexistent_next_form(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_hero(1, 'Hero')
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True)
+    response = client.post(f"/heroes/{user_hero_id}/evolve",
+                           headers=headers,
+                           json={
+                               'hero_id': 1
+                               },
+                           )
+    assert response.status_code == 400
+
+
+def test_evolving_hero_if_no_hero(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    next_id = create_hero(2, 'New Hero')
+    response = client.post("/heroes/1/evolve",
+                           headers=headers,
+                           json={
+                               'hero_id': next_id
+                               },
+                           )
+    assert response.status_code == 404
