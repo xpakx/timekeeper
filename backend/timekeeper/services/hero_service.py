@@ -2,6 +2,7 @@ from ..db import hero_repo, user_hero_repo, equipment_repo, skillset_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..db.models import Hero, UserHero
+from typing import Optional
 
 
 def get_hero(user_id: int, db: Session) -> Hero:
@@ -56,6 +57,7 @@ def evolve_user_hero(
         user_id: int,
         hero_id: int,
         second_hero_id: int,
+        item_id: Optional[int],
         db: Session) -> UserHero:
     hero = user_hero_repo.get_hero(user_id, hero_id, db)
     if not hero:

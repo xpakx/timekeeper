@@ -72,7 +72,7 @@ async def evolve_hero(
             user.id,
             id,
             request.hero_id,
-            request.num,
+            request.item_id,
             db
             )
 
