@@ -42,6 +42,13 @@ def no_such_hero_exception():
     )
 
 
+def cannot_evolve_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Hero cannot evolve!",
+    )
+
+
 def get_heroes(page, size, user_id: int, db: Session) -> list[UserHero]:
     return user_hero_repo.get_heroes(page, size, user_id, db)
 
@@ -64,9 +71,9 @@ def evolve_user_hero(
         raise no_such_hero_exception()
     entry = hero_repo.get_evolving_pair(hero.hero.id, second_hero_id, db)
     if not entry:
-        return
+        raise cannot_evolve_exception()
     if hero.level != entry.min_level:
-        return
+        raise cannot_evolve_exception()
     hero.hero_id = entry.evolve_id
     db.commit()
     db.refresh(hero)

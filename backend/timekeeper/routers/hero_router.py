@@ -61,7 +61,7 @@ async def get_hero(
     return hero_service.get_user_hero(user.id, id, db)
 
 
-@router.post("/{id}/evolve", response_model=hero_schemas.EvolveRequest)
+@router.post("/{id}/evolve", response_model=hero_schemas.UserHeroMin)
 async def evolve_hero(
         request: hero_schemas.EvolveRequest,
         id: int,
