@@ -14,7 +14,8 @@ from timekeeper.db.models import (
         ItemType,
         SkillSet,
         Skill,
-        SkillHero)
+        SkillHero,
+        HeroEvolve)
 from timekeeper.db.models import Hero, UserHero
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
@@ -187,12 +188,13 @@ def create_hero(id: int, name: str) -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int, skillset: bool = False) -> int:
+def create_user_hero(hero_id: int, user_id: int, skillset: bool = False, level: int = 1) -> int:
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
-            incubated=False
+            incubated=False,
+            level=level
             )
     db.add(item)
     if skillset:
@@ -224,6 +226,18 @@ def create_heroes():
     db = TestingSessionLocal()
     for i in range(1, 21):
         create_hero_(i, db)
+    db.commit()
+    db.close()
+
+
+def add_evolved_form(hero_id: int, evolved_id: int, level: int) -> None:
+    db = TestingSessionLocal()
+    item = HeroEvolve(
+            hero_id=hero_id,
+            evolve_id=evolved_id,
+            min_level=level
+            )
+    db.add(item)
     db.commit()
     db.close()
 
@@ -706,3 +720,54 @@ def test_evolving_hero_if_no_hero(test_db):
                                },
                            )
     assert response.status_code == 404
+
+
+def test_evolving_hero_if_wrong_level(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_hero(1, 'Hero')
+    next_id = create_hero(2, 'New Hero')
+    add_evolved_form(hero_id, next_id, 10)
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=9)
+    response = client.post(f"/heroes/{user_hero_id}/evolve",
+                           headers=headers,
+                           json={
+                               'hero_id': next_id
+                               },
+                           )
+    assert response.status_code == 400
+
+
+def test_evolving_hero(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_hero(1, 'Hero')
+    next_id = create_hero(2, 'New Hero')
+    add_evolved_form(hero_id, next_id, 10)
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    response = client.post(f"/heroes/{user_hero_id}/evolve",
+                           headers=headers,
+                           json={
+                               'hero_id': next_id
+                               },
+                           )
+    assert response.status_code == 200
+
+
+def test_evolving_hero_with_higher_level(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_hero(1, 'Hero')
+    next_id = create_hero(2, 'New Hero')
+    add_evolved_form(hero_id, next_id, 15)
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    response = client.post(f"/heroes/{user_hero_id}/evolve",
+                           headers=headers,
+                           json={
+                               'hero_id': next_id
+                               },
+                           )
+    assert response.status_code == 200
