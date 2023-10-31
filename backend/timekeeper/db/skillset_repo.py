@@ -84,3 +84,15 @@ def not_initialized_exception():
         status_code=500,
         detail="Skillset not initialized",
     )
+
+
+def get_skills(hero_id: int, level: int,  db: Session) -> list[Skill]:
+    return db\
+        .query(SkillHero)\
+        .join(Skill, SkillHero.skill)\
+        .where(
+             and_(
+                 SkillHero.hero_id == hero_id,
+                 SkillHero.level == level
+                 )
+            ).all()

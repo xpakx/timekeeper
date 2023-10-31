@@ -1,7 +1,7 @@
 from ..db import user_hero_repo, skillset_repo, equipment_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from ..db.models import ItemType, UserHero, SkillHero
+from ..db.models import ItemType, UserHero, Skill
 
 
 def teach_hero(
@@ -99,3 +99,13 @@ def teach_hero_skill_at_level(
     skillset_repo.teach_skill(hero.id, skill.id, num, db)
     db.commit()
     return hero
+
+
+def get_learnable_skills(
+        user_id: int,
+        hero_id: int,
+        db: Session) -> list[Skill]:
+    hero = user_hero_repo.get_hero(user_id, hero_id, db)
+    if not hero:
+        raise no_such_hero_exception()
+    return skillset_repo.get_skills(hero.hero.id, hero.level, db)
