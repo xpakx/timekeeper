@@ -88,8 +88,11 @@ def create_skill(item_id: Optional[int]) -> int:
     db = TestingSessionLocal()
     skill = Skill(
             power=100,
+            accuracy=100,
             priority=0,
-            item_id=item_id
+            item_id=item_id,
+            name="Skill",
+            max_usages=5
             )
     db.add(skill)
     db.commit()
@@ -98,11 +101,13 @@ def create_skill(item_id: Optional[int]) -> int:
     return skill.id
 
 
-def make_teachable(skill_id: int, hero_id: int) -> int:
+def make_teachable(skill_id: int, hero_id: int, level: Optional[int] = None) -> int:
     db = TestingSessionLocal()
     skill = SkillHero(
             skill_id=skill_id,
             hero_id=hero_id,
+            level=level,
+            autolearn=True if level else False
             )
     db.add(skill)
     db.commit()
@@ -796,6 +801,48 @@ def test_getting_empty_list_of_learnable_skills(test_db):
     user_id = create_user_and_return_id()
     hero_id = create_hero(1, 'Hero')
     user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/heroes/{user_hero_id}/skills/learnable",
+                          headers=headers)
+    assert response.status_code == 200
+    message = response.json()
+    assert len(message) == 0
+
+
+def test_getting_learnable_skills(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_hero(1, 'Hero')
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    skill_id = create_skill(None)
+    make_teachable(skill_id, hero_id, level=10)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/heroes/{user_hero_id}/skills/learnable",
+                          headers=headers)
+    assert response.status_code == 200
+    message = response.json()
+    assert len(message) == 1
+
+
+def test_getting_learnable_skills_from_lower_levels(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_hero(1, 'Hero')
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    skill_id = create_skill(None)
+    make_teachable(skill_id, hero_id, level=9)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/heroes/{user_hero_id}/skills/learnable",
+                          headers=headers)
+    assert response.status_code == 200
+    message = response.json()
+    assert len(message) == 0
+
+
+def test_getting_learnable_skills_from_higher_levels(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_hero(1, 'Hero')
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    skill_id = create_skill(None)
+    make_teachable(skill_id, hero_id, level=11)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.get(f"/heroes/{user_hero_id}/skills/learnable",
                           headers=headers)
