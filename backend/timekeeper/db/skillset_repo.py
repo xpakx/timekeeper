@@ -88,7 +88,7 @@ def not_initialized_exception():
 
 def get_skills(hero_id: int, level: int,  db: Session) -> list[Skill]:
     return db\
-        .query(SkillHero)\
+        .query(Skill)\
         .join(Skill, SkillHero.skill)\
         .where(
              and_(
