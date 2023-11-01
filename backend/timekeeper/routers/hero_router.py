@@ -83,4 +83,4 @@ async def get_learnable_skills(
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return skill_service.get_skills_for_level(user.id, id, db)
+    return skill_service.get_learnable_skills(user.id, id, db)
