@@ -101,7 +101,10 @@ def create_skill(item_id: Optional[int]) -> int:
     return skill.id
 
 
-def make_teachable(skill_id: int, hero_id: int, level: Optional[int] = None) -> int:
+def make_teachable(
+        skill_id: int,
+        hero_id: int,
+        level: Optional[int] = None) -> int:
     db = TestingSessionLocal()
     skill = SkillHero(
             skill_id=skill_id,
@@ -193,7 +196,11 @@ def create_hero(id: int, name: str) -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int, skillset: bool = False, level: int = 1) -> int:
+def create_user_hero(
+        hero_id: int,
+        user_id: int,
+        skillset: bool = False,
+        level: int = 1) -> int:
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,

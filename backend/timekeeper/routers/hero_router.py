@@ -77,7 +77,8 @@ async def evolve_hero(
             )
 
 
-@router.get("/{id}/skills/learnable", response_model=list[hero_schemas.SkillBase])
+@router.get("/{id}/skills/learnable",
+            response_model=list[hero_schemas.SkillBase])
 async def get_learnable_skills(
         id: int,
         user: Annotated[CurrentUser, Depends(get_current_user)],
