@@ -771,3 +771,34 @@ def test_evolving_hero_with_higher_level(test_db):
                                },
                            )
     assert response.status_code == 200
+
+
+# getting learnable skills
+def test_getting_learnable_skills_without_authentication(test_db):
+    response = client.get("/heroes/1/skills/learnable")
+    assert response.status_code == 401
+
+
+def test_getting_learnable_skills_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/heroes/1/skills/learnable", headers=headers)
+    assert response.status_code == 401
+
+
+def test_getting_learnable_skills_with_no_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/heroes/1/skills/learnable", headers=headers)
+    assert response.status_code == 404
+
+
+def test_getting_empty_list_of_learnable_skills(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_hero(1, 'Hero')
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/heroes/{user_hero_id}/skills/learnable",
+                          headers=headers)
+    assert response.status_code == 200
+    message = response.json()
+    assert len(message) == 0
