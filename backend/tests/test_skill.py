@@ -553,3 +553,25 @@ def test_teaching_level_skill_to_hero_at_wrong_level(test_db):
                                }
                            )
     assert response.status_code == 400
+
+
+def test_updating_hero_in_db_after_evolving(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_hero(1, 'Hero'), user_id, 5)
+    create_skillset(hero_id)
+    skill_id = create_skill(None)
+    make_skill_teachable_for(skill_id, hero_id, 5)
+    client.post(f"/heroes/{hero_id}/skills",
+                headers=headers,
+                json={
+                    "skill_id": skill_id,
+                    "num": 1
+                    }
+                )
+    db = TestingSessionLocal()
+    hero = db.query(UserHero).where(UserHero.id == hero_id).first()
+    skillset = hero.skillset
+    db.close()
+    assert skillset is not None
+    assert skillset.skill_1_id == skill_id
