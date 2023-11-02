@@ -785,6 +785,28 @@ def test_evolving_hero_with_higher_level(test_db):
     assert response.status_code == 200
 
 
+def test_updating_hero_in_db_after_evolving(test_db):
+    create_heroes()
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_hero(1, 'Hero')
+    next_id = create_hero(2, 'New Hero')
+    add_evolved_form(hero_id, next_id, 10)
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=15)
+    client.post(f"/heroes/{user_hero_id}/evolve",
+                headers=headers,
+                json={
+                    'hero_id': next_id
+                    },
+                )
+    db = TestingSessionLocal()
+    user_hero = db.query(UserHero).where(UserHero.id == user_hero_id).first()
+    hero = user_hero.hero
+    db.close()
+    assert hero is not None
+    assert hero.id == next_id
+
+
 # getting learnable skills
 def test_getting_learnable_skills_without_authentication(test_db):
     response = client.get("/heroes/1/skills/learnable")
