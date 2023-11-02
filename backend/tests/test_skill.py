@@ -477,6 +477,8 @@ def test_teaching_level_skill_while_no_skill_found(test_db):
                                }
                            )
     assert response.status_code == 500
+    error = response.json()
+    assert "not initialized" in error['detail'].lower()
 
 
 def test_teaching_non_teachable_level_skill(test_db):
@@ -493,6 +495,8 @@ def test_teaching_non_teachable_level_skill(test_db):
                                }
                            )
     assert response.status_code == 400
+    error = response.json()
+    assert "not teachable" in error['detail'].lower()
 
 
 def test_teaching_level_skill_without_skillset(test_db):
@@ -511,6 +515,8 @@ def test_teaching_level_skill_without_skillset(test_db):
                                }
                            )
     assert response.status_code == 500
+    error = response.json()
+    assert "not initialized" in error['detail'].lower()
 
 
 def test_teaching_level_skill_with_no_num(test_db):
@@ -553,6 +559,8 @@ def test_teaching_level_skill_to_hero_at_wrong_level(test_db):
                                }
                            )
     assert response.status_code == 400
+    error = response.json()
+    assert "not teachable" in error['detail'].lower()
 
 
 def test_updating_hero_in_db_after_evolving(test_db):

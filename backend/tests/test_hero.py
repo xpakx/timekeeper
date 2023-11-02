@@ -571,7 +571,7 @@ def test_teaching_skill_to_nonexistent_hero(test_db):
                            )
     assert response.status_code == 404
     error = response.json()
-    assert "not" in error['detail'].lower()
+    assert "no" in error['detail'].lower()
     assert "hero" in error['detail'].lower()
 
 
@@ -703,6 +703,8 @@ def test_evolving_hero_if_no_next_form(test_db):
                                },
                            )
     assert response.status_code == 400
+    error = response.json()
+    assert "cannot evolve" in error['detail'].lower()
 
 
 def test_evolving_hero_if_nonexistent_next_form(test_db):
@@ -718,6 +720,8 @@ def test_evolving_hero_if_nonexistent_next_form(test_db):
                                },
                            )
     assert response.status_code == 400
+    error = response.json()
+    assert "cannot evolve" in error['detail'].lower()
 
 
 def test_evolving_hero_if_no_hero(test_db):
@@ -732,6 +736,9 @@ def test_evolving_hero_if_no_hero(test_db):
                                },
                            )
     assert response.status_code == 404
+    error = response.json()
+    assert "hero" in error['detail'].lower()
+    assert "no such" in error['detail'].lower()
 
 
 def test_evolving_hero_if_wrong_level(test_db):
@@ -749,6 +756,8 @@ def test_evolving_hero_if_wrong_level(test_db):
                                },
                            )
     assert response.status_code == 400
+    error = response.json()
+    assert "cannot evolve" in error['detail'].lower()
 
 
 def test_evolving_hero(test_db):
@@ -824,6 +833,9 @@ def test_getting_learnable_skills_with_no_hero(test_db):
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.get("/heroes/1/skills/learnable", headers=headers)
     assert response.status_code == 404
+    error = response.json()
+    assert "no such" in error['detail'].lower()
+    assert "hero" in error['detail'].lower()
 
 
 def test_getting_empty_list_of_learnable_skills(test_db):
