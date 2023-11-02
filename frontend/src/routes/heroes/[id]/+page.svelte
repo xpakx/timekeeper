@@ -18,7 +18,7 @@
         }
 
         try {
-            let response = await fetch(`${apiUri}/timers/${heroId}/history`, {
+            let response = await fetch(`${apiUri}/heroes/${heroId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
