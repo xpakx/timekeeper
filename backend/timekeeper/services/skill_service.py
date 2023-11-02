@@ -34,7 +34,7 @@ def no_item_exception():
 def no_such_hero_exception():
     return HTTPException(
         status_code=404,
-        detail="Not such hero!",
+        detail="No such hero!",
     )
 
 
