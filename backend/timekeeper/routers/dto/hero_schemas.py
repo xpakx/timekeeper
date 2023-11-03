@@ -106,3 +106,9 @@ class EvolveRequest(BaseModel):
 class EvolvingOption(BaseModel):
     evolve: HeroBase
     item_id: Optional[ItemBase]
+
+    @root_validator()
+    def transform_data(cls, values):
+        hero = values.pop('evolve')
+        values['hero'] = hero
+        return values
