@@ -135,6 +135,47 @@
             }
         }
     }
+
+
+    async function evolve(hero_id: number) {
+        if (hero == undefined) {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        let body = {
+            hero_id: hero_id,
+        };
+        try {
+            let response = await fetch(`${apiUri}/heroes/${id}/evolve`, {
+                method: "POST",
+                body: JSON.stringify(body),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                hero = fromEndpoint;
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                showMessage(errorBody.detail);
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                showMessage(err.message);
+            }
+        }
+    }
 </script>
 
 <svelte:head>
