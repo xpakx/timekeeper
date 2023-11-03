@@ -5,6 +5,7 @@
     import type { UserHeroDetails } from "../../../types/UserHeroDetails";
     import type { Skill } from "../../../types/Skill";
     import SkillChoice from "../../../components/SkillChoice.svelte";
+    import type { EvolvingOption } from "../../../types/EvolvingOption";
     let apiUri = "http://localhost:8000";
     let message: String;
     let id = Number($page.params.id);
@@ -13,6 +14,8 @@
     let skills: Skill[] = [];
     let showSkillsToLearn: boolean = false;
     let numChoiceFor: number | undefined = undefined;
+    let toEvolve: EvolvingOption[] = [];
+    let showEvolveOptions: boolean = false;
 
     async function getHero(heroId: number) {
         let token: String = await getToken();
@@ -138,6 +141,7 @@
 
 
     async function evolve(hero_id: number) {
+        showEvolveOptions = false;
         if (hero == undefined) {
             return;
         }
@@ -163,6 +167,44 @@
             if (response.ok) {
                 let fromEndpoint = await response.json();
                 hero = fromEndpoint;
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                showMessage(errorBody.detail);
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                showMessage(err.message);
+            }
+        }
+    }
+
+
+    async function getEvolvingOptions() {
+        showEvolveOptions = true;
+        if (hero == undefined) {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        try {
+            let response = await fetch(`${apiUri}/heroes/${id}/evolve`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+                toEvolve = fromEndpoint;
             } else {
                 if (response.status == 401) {
                     goto("/logout");
@@ -217,6 +259,17 @@
                     on:message={(event) => showMessage(event.detail.body)}
                 />
             {/if}
+        {/each}
+    </div>
+{/if}
+
+{#if !showEvolveOptions}
+    <button on:click={getEvolvingOptions}>Evolve</button>
+{:else}
+    <div class="skill">
+        {#each toEvolve as evolution}
+                {evolution.hero.name}
+                <button on:click={() => evolve(evolution.hero.id)}>Evolve</button>
         {/each}
     </div>
 {/if}
