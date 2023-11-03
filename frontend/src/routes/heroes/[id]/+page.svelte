@@ -4,6 +4,7 @@
     import { page } from "$app/stores";
     import type { UserHeroDetails } from "../../../types/UserHeroDetails";
     import type { Skill } from "../../../types/Skill";
+    import SkillChoice from "../../../components/SkillChoice.svelte";
     let apiUri = "http://localhost:8000";
     let message: String;
     let id = Number($page.params.id);
@@ -11,6 +12,7 @@
     let hero: UserHeroDetails;
     let skills: Skill[] = [];
     let showSkillsToLearn: boolean = false;
+    let numChoiceFor: number | undefined = undefined;
 
     async function getHero(heroId: number) {
         let token: String = await getToken();
@@ -80,6 +82,59 @@
             }
         }
     }
+
+    function showMessage(text: String) {
+        message = text;
+    }
+
+
+    function chooseNum(skill_id: number) {
+        numChoiceFor = skill_id;
+    }
+
+
+    async function teachSkill(num: number, skill_id: number) {
+        numChoiceFor = undefined;
+        if (hero == undefined) {
+            return;
+        }
+
+        let token: String = await getToken();
+        if (!token || token == "") {
+            return;
+        }
+
+        let id = hero.id;
+
+        let body = {
+            skill_id: skill_id,
+            num: num,
+        };
+        try {
+            let response = await fetch(`${apiUri}/heroes/${id}/skills`, {
+                method: "POST",
+                body: JSON.stringify(body),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                let fromEndpoint = await response.json();
+            } else {
+                if (response.status == 401) {
+                    goto("/logout");
+                }
+                const errorBody = await response.json();
+                showMessage(errorBody.detail);
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                showMessage(err.message);
+            }
+        }
+    }
 </script>
 
 <svelte:head>
@@ -108,9 +163,18 @@
         {#each skills as skill}
             {#if skill != undefined}
                 {skill.name}
-                <button>Learn</button>
+                <button on:click={() => chooseNum(skill.id)}>Learn</button>
             {:else}
                 No skill
+            {/if}
+            {#if numChoiceFor == skill.id}
+                <SkillChoice
+                    id={hero.id}
+                    on:choice={(event) => {
+                        teachSkill(event.detail.id, skill.id);
+                    }}
+                    on:message={(event) => showMessage(event.detail.body)}
+                />
             {/if}
         {/each}
     </div>
