@@ -1,7 +1,7 @@
 from ..db import hero_repo, user_hero_repo, equipment_repo, skillset_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from ..db.models import Hero, UserHero
+from ..db.models import Hero, UserHero, HeroEvolve
 from typing import Optional
 
 
@@ -78,3 +78,13 @@ def evolve_user_hero(
     db.commit()
     db.refresh(hero)
     return hero
+
+
+def get_evolving_options(
+        user_id: int,
+        hero_id: int,
+        db: Session) -> list[HeroEvolve]:
+    hero = user_hero_repo.get_hero(user_id, hero_id, db)
+    if not hero:
+        raise no_such_hero_exception()
+    return hero_repo.get_evolving_pairs_for_level(hero.hero.id, hero.level, db)

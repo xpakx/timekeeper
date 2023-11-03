@@ -85,3 +85,12 @@ async def get_learnable_skills(
         db: Session = Depends(get_db)
         ):
     return skill_service.get_learnable_skills(user.id, id, db)
+
+
+@router.get("/{id}/evolve", response_model=list[hero_schemas.EvolvingOption])
+def get_evolving_options(
+        id: int,
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+        db: Session = Depends(get_db)
+        ):
+    return hero_service.get_evolving_options(user.id, id, db)

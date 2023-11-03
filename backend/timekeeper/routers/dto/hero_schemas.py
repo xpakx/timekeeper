@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, validator, root_validator
 from ...db.models import ItemRarity, HeroType, MoveCategory
+from .item_schemas import ItemBase
 from typing import Optional
 
 
@@ -100,3 +101,8 @@ class UserHeroDetails(UserHeroBase):
 class EvolveRequest(BaseModel):
     hero_id: int
     item_id: Optional[int]
+
+
+class EvolvingOption(BaseModel):
+    evolve: HeroBase
+    item_id: Optional[ItemBase]

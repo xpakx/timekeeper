@@ -38,3 +38,17 @@ def get_evolving_pair(
                 )\
         .first()
     return entry
+
+
+def get_evolving_pairs_for_level(
+        hero_id: int,
+        level: int,
+        db: Session) -> list[HeroEvolve]:
+    entry: HeroEvolve = db\
+        .query(HeroEvolve)\
+        .where(
+                and_(HeroEvolve.hero_id == hero_id,
+                     HeroEvolve.min_level <= level)
+                )\
+        .all()
+    return entry
