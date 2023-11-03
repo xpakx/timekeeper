@@ -10,6 +10,7 @@
     getHero(id);
     let hero: UserHeroDetails;
     let skills: Skill[] = [];
+    let showSkillsToLearn: boolean = false;
 
     async function getHero(heroId: number) {
         let token: String = await getToken();
@@ -43,20 +44,25 @@
         }
     }
 
-    async function getLearnableSkills(heroId: number) {
+    async function getLearnableSkills() {
         let token: String = await getToken();
         if (!token || token == "") {
             return;
         }
+        showSkillsToLearn = true;
+        let heroId = hero.id;
 
         try {
-            let response = await fetch(`${apiUri}/heroes/${heroId}/skills/learnable`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            let response = await fetch(
+                `${apiUri}/heroes/${heroId}/skills/learnable`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
             if (response.ok) {
                 let fromEndpoint = await response.json();
@@ -88,6 +94,21 @@
         {#each hero.skillset as skill}
             {#if skill != undefined}
                 {skill.name}
+            {:else}
+                No skill
+            {/if}
+        {/each}
+    </div>
+{/if}
+
+{#if !showSkillsToLearn}
+    <button on:click={getLearnableSkills}>Check skills to learn</button>
+{:else}
+    <div class="skill">
+        {#each skills as skill}
+            {#if skill != undefined}
+                {skill.name}
+                <button>Learn</button>
             {:else}
                 No skill
             {/if}
