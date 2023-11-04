@@ -890,3 +890,81 @@ def test_getting_learnable_skills_from_higher_levels(test_db):
     assert response.status_code == 200
     message = response.json()
     assert len(message) == 0
+
+
+# getting evolving options
+def test_getting_evolving_options_without_authentication(test_db):
+    response = client.get("/heroes/1/evolve")
+    assert response.status_code == 401
+
+
+def test_getting_evolving_options_with_wrong_token(test_db):
+    headers = {"Authorization": "Bearer wrong_token"}
+    response = client.get("/heroes/1/evolve", headers=headers)
+    assert response.status_code == 401
+
+
+def test_getting_evolving_options_with_no_hero(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get("/heroes/1/evolve", headers=headers)
+    assert response.status_code == 404
+    error = response.json()
+    assert "no such" in error['detail'].lower()
+    assert "hero" in error['detail'].lower()
+
+
+def test_getting_empty_list_of_evolving_options(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_hero(1, 'Hero')
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/heroes/{user_hero_id}/evolve",
+                          headers=headers)
+    assert response.status_code == 200
+    message = response.json()
+    assert len(message) == 0
+
+
+def test_getting_evolving_options(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_hero(1, 'Hero')
+    next_id = create_hero(2, 'Evolved Hero')
+    add_evolved_form(hero_id, next_id, 10)
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/heroes/{user_hero_id}/evolve",
+                          headers=headers)
+    assert response.status_code == 200
+    message = response.json()
+    assert len(message) == 1
+    assert message[0].hero.num == 2
+
+
+def test_getting_evolving_options_from_lower_levels(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_hero(1, 'Hero')
+    next_id = create_hero(2, 'Evolved Hero')
+    add_evolved_form(hero_id, next_id, 5)
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/heroes/{user_hero_id}/evolve",
+                          headers=headers)
+    assert response.status_code == 200
+    message = response.json()
+    assert len(message) == 1
+    assert message[0].hero.num == 2
+
+
+def test_getting_evolving_options_from_higher_levels(test_db):
+    user_id = create_user_and_return_id()
+    hero_id = create_hero(1, 'Hero')
+    next_id = create_hero(2, 'Evolved Hero')
+    add_evolved_form(hero_id, next_id, 15)
+    user_hero_id = create_user_hero(hero_id, user_id, skillset=True, level=10)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.get(f"/heroes/{user_hero_id}/evolve",
+                          headers=headers)
+    assert response.status_code == 200
+    message = response.json()
+    assert len(message) == 0
