@@ -1,5 +1,5 @@
 from .models import Hero, HeroEvolve
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 import random
 from typing import Optional
 from sqlalchemy import and_
@@ -50,5 +50,6 @@ def get_evolving_pairs_for_level(
                 and_(HeroEvolve.hero_id == hero_id,
                      HeroEvolve.min_level <= level)
                 )\
+        .options(joinedload(HeroEvolve.evolve))\
         .all()
     return entry
