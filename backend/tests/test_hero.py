@@ -938,7 +938,8 @@ def test_getting_evolving_options(test_db):
     assert response.status_code == 200
     message = response.json()
     assert len(message) == 1
-    assert message[0].hero.num == 2
+    print(message)
+    assert message[0]['hero']['num'] == 2
 
 
 def test_getting_evolving_options_from_lower_levels(test_db):
@@ -953,7 +954,8 @@ def test_getting_evolving_options_from_lower_levels(test_db):
     assert response.status_code == 200
     message = response.json()
     assert len(message) == 1
-    assert message[0].hero.num == 2
+    print(message)
+    assert message[0]['hero']['num'] == 2
 
 
 def test_getting_evolving_options_from_higher_levels(test_db):
