@@ -7,6 +7,7 @@ from sqlalchemy import and_
 from sqlalchemy.sql import func
 import random
 from typing import Optional
+import datetime
 
 
 def create_timer(timer: TimerRequest, user_id: int, db: Session) -> Timer:
@@ -104,10 +105,15 @@ def change_timer_state(
         timer_state: TimerState,
         user_id: int,
         db: Session) -> None:
-    timer = db.get(TimerInstance, timer_id)
+    timer: TimerInstance = db.get(TimerInstance, timer_id)
     if timer:
         if timer.owner_id != user_id:
             raise ownership_exception()
+        if timer_state == TimerState.finished:
+            now = datetime.datetime.now(timer.start_time.astimezone().tzinfo)
+            diff = now - timer.start_time
+            if diff.seconds < timer.timer.duration_s:
+                raise timer_not_finished_exception()
         timer.state = timer_state
         if timer_state != TimerState.running:
             timer.end_time = func.now()
@@ -206,3 +212,10 @@ def get_timer_inst(timer_id: int, user_id: int, db: Session) -> TimerInstance:
     if (not db_timer) or db_timer.owner_id != user_id:
         raise not_found_exception()
     return db_timer
+
+
+def timer_not_finished_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Timer cannot be finished at this moment!",
+    )
