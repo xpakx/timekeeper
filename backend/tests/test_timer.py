@@ -73,16 +73,16 @@ def create_user_and_return_id() -> int:
     return create_user_with_username("User")
 
 
-def create_timer(name: str, user_id: int) -> int:
-    return create_timer_(name, user_id, False)
+def create_timer(name: str, user_id: int, duration: int = 100) -> int:
+    return create_timer_(name, user_id, False, duration)
 
 
-def create_timer_(name: str, user_id: int, deleted: bool) -> int:
+def create_timer_(name: str, user_id: int, deleted: bool, duration: int = 100) -> int:
     db = TestingSessionLocal()
     new_timer = Timer(
             name=name,
             description="",
-            duration_s=100,
+            duration_s=duration,
             deleted=deleted,
             owner_id=user_id
             )
@@ -630,7 +630,7 @@ def test_changing_non_existent_timer_state(test_db):
 
 def test_changing_timer_state(test_db):
     user_id = create_user_and_return_id()
-    timer_id = create_timer("Test", user_id)
+    timer_id = create_timer("Test", user_id, duration=0)
     id = create_timer_instance(user_id, timer_id)
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     response = client.post(f"/timers/instances/{id}/state",
