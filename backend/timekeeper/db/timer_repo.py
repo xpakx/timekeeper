@@ -112,7 +112,7 @@ def change_timer_state(
         if timer_state == TimerState.finished:
             now = datetime.datetime.now(timer.start_time.astimezone().tzinfo)
             diff = now - timer.start_time
-            if diff.seconds < timer.timer.duration_s:
+            if diff.total_seconds() < timer.timer.duration_s:
                 raise timer_not_finished_exception()
         timer.state = timer_state
         if timer_state != TimerState.running:
