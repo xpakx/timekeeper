@@ -7,16 +7,15 @@ from sqlalchemy import and_
 COMMON = [10, 13, 16, 19]
 UNCOMMON = [11, 14, 17, 20]
 RARE = [1, 4, 7]
+STARTER = [1, 4, 7]
 
 
-def get_random_hero(db: Session) -> Optional[Hero]:
-    rnd = random.randint(0, 100)
-    if rnd < 74:
-        rnd = random.choice(COMMON)
-    elif rnd < 94:
-        rnd = random.choice(UNCOMMON)
+def get_random_hero(db: Session, starter: bool = False) -> Optional[Hero]:
+    rnd = 0
+    if starter:
+        rnd = get_random_starter_id()
     else:
-        rnd = random.choice(RARE)
+        rnd = get_random_id()
 
     return db\
         .query(Hero)\
@@ -24,6 +23,20 @@ def get_random_hero(db: Session) -> Optional[Hero]:
               Hero.num == rnd
             )\
         .first()
+
+
+def get_random_id() -> int:
+    rnd = random.randint(0, 100)
+    if rnd < 74:
+        return random.choice(COMMON)
+    elif rnd < 94:
+        return random.choice(UNCOMMON)
+    else:
+        return random.choice(RARE)
+
+
+def get_random_starter_id() -> int:
+    return random.choice(STARTER)
 
 
 def get_evolving_pair(
