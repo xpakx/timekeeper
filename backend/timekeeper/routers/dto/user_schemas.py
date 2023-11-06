@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 
 class UserBase(BaseModel):
@@ -6,6 +6,13 @@ class UserBase(BaseModel):
 
     class Config:
         orm_mode = True
+
+    @validator('username')
+    def validate_name_not_empty(cls, name: str):
+        new_name = name.strip()
+        if len(new_name) == 0:
+            raise ValueError("Username cannot be empty")
+        return new_name
 
 
 class AuthRequest(UserBase):
