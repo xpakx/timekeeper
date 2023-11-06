@@ -6,7 +6,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from timekeeper.db.base import Base
 from timekeeper.db.manager import get_db
-from timekeeper.db.models import User, Timer, TimerInstance, TimerState, Item, ItemRarity, ItemType
+from timekeeper.db.models import (
+        User,
+        Timer,
+        TimerInstance,
+        TimerState,
+        Item,
+        ItemRarity,
+        ItemType)
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from sqlalchemy.sql import func
@@ -77,7 +84,11 @@ def create_timer(name: str, user_id: int, duration: int = 100) -> int:
     return create_timer_(name, user_id, False, duration)
 
 
-def create_timer_(name: str, user_id: int, deleted: bool, duration: int = 100) -> int:
+def create_timer_(
+        name: str,
+        user_id: int,
+        deleted: bool,
+        duration: int = 100) -> int:
     db = TestingSessionLocal()
     new_timer = Timer(
             name=name,
@@ -111,10 +122,16 @@ def create_timer_with_reward(name: str, user_id: int) -> int:
 
 
 def create_timer_instance(user_id: int, timer_id: int) -> int:
-    return create_timer_instance_with_state(user_id, timer_id, TimerState.running)
+    return create_timer_instance_with_state(
+            user_id,
+            timer_id,
+            TimerState.running)
 
 
-def create_timer_instance_with_state(user_id: int, timer_id: int, state: TimerState) -> int:
+def create_timer_instance_with_state(
+        user_id: int,
+        timer_id: int,
+        state: TimerState) -> int:
     db = TestingSessionLocal()
     new_timer = TimerInstance(
             state=state,
@@ -256,7 +273,6 @@ def test_adding_timer_with_empty_name(test_db):
     assert response.status_code == 400
 
 
-@pytest.mark.skip(reason="todo")
 def test_adding_timer_with_whitespace_only_name(test_db):
     create_user()
     headers = {"Authorization": f"Bearer {get_token()}"}
@@ -487,7 +503,6 @@ def test_editing_timer_with_empty_name(test_db):
     assert response.status_code == 400
 
 
-@pytest.mark.skip(reason="todo")
 def test_editing_timer_with_whitespace_only_name(test_db):
     user_id = create_user_and_return_id()
     id = create_timer("Test", user_id)
@@ -1065,8 +1080,8 @@ def test_not_getting_other_timers_instances_with_timer_history(test_db):
 
 
 # reward generation
-
-@patch('timekeeper.db.timer_repo.randomize_reward_generation', Mock(return_value=True))
+@patch('timekeeper.db.timer_repo.randomize_reward_generation',
+       Mock(return_value=True))
 def test_starting_timer_with_reward(test_db):
     user_id = create_user_and_return_id()
     id = create_timer_with_reward("Test", user_id)
@@ -1077,7 +1092,8 @@ def test_starting_timer_with_reward(test_db):
     assert result['reward_time'] is not None
 
 
-@patch('timekeeper.db.timer_repo.randomize_reward_generation', Mock(return_value=False))
+@patch('timekeeper.db.timer_repo.randomize_reward_generation',
+       Mock(return_value=False))
 def test_starting_timer_without_reward(test_db):
     user_id = create_user_and_return_id()
     id = create_timer_with_reward("Test", user_id)
@@ -1088,7 +1104,8 @@ def test_starting_timer_without_reward(test_db):
     assert result['reward_time'] is None
 
 
-@patch('timekeeper.db.timer_repo.randomize_reward_generation', Mock(return_value=True))
+@patch('timekeeper.db.timer_repo.randomize_reward_generation',
+       Mock(return_value=True))
 def test_starting_not_rewarded_timer_without_reward(test_db):
     user_id = create_user_and_return_id()
     id = create_timer("Test", user_id)
