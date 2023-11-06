@@ -1,4 +1,5 @@
 from ...db.models import HeroType, Hero
+from typing import Optional
 
 type_table = {
         HeroType.normal: {
@@ -149,11 +150,16 @@ type_table = {
 
 
 def get_effectiveness(attacker: HeroType, attacked: Hero) -> float:
-    first_type = 1.0
-    if (attacked.hero_type and attacked.hero_type in type_table[attacker]):
-        first_type = type_table[attacker][attacked.hero_type]
-    second_type = 1.0
-    if (attacked.secondary_hero_type and
-            attacked.secondary_hero_type in type_table[attacker]):
-        second_type = type_table[attacker][attacked.secondary_hero_type]
+    first_type = get_effectiveness_(attacker, attacked.hero_type)
+    second_type = get_effectiveness_(attacker, attacked.secondary_hero_type)
     return first_type * second_type
+
+
+def get_effectiveness_(
+        attacker: HeroType,
+        attacked: Optional[HeroType]) -> float:
+    if not attacked:
+        return 1.0
+    if attacked in type_table[attacker]:
+        return type_table[attacker][attacked]
+    return 1.0
