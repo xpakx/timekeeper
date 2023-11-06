@@ -361,3 +361,5 @@ class HeroEvolve(Base):
     hero = relationship("Hero", primaryjoin="Hero.id==HeroEvolve.hero_id")
     evolve_id = Column(Integer, ForeignKey("heroes.id"))
     evolve = relationship("Hero", primaryjoin="Hero.id==HeroEvolve.evolve_id")
+    item_id = Column(Integer, ForeignKey("items.id"))
+    item = relationship("Item")
