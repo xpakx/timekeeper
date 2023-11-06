@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import Optional
 from datetime import datetime
 from ...db.models import TimerState, TimerDifficulty
@@ -31,7 +31,13 @@ class TimerRequest(BaseModel):
 
     class Config:
         orm_mode = True
-    pass
+
+    @validator('name')
+    def validate_name_not_empty(cls, name: str):
+        new_name = name.strip()
+        if len(new_name) == 0:
+            raise ValueError("Name cannot be empty")
+        return new_name
 
 
 class TimerResponse(TimerSummary):
