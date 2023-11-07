@@ -328,16 +328,21 @@ class StatusChangeEffect(Enum):
     already_present = 3
 
 
+def test_if_hero_has_types(hero: UserHero, types: list[HeroType]) -> bool:
+    htype = hero.hero.hero_type
+    if htype in types:
+        return True
+    htype = hero.hero.secondary_hero_type
+    if htype in types:
+        return True
+    return False
+
+
 def apply_poison_status(hero: UserHero) -> StatusChangeEffect:
     if hero.poisoned:
         return StatusChangeEffect.already_present
-    htype = hero.hero.hero_type
-    if htype == HeroType.poison or htype == HeroType.steel:
+    if test_if_hero_has_types(hero, [HeroType.poison, HeroType.steel]):
         return StatusChangeEffect.immune
-    htype = hero.hero.secondary_hero_type
-    if htype == HeroType.poison or htype == HeroType.steel:
-        return StatusChangeEffect.immune
-    htype = hero.hero.hero_type
     hero.poisoned = True
     return StatusChangeEffect.success
 
@@ -355,13 +360,8 @@ def apply_poison_damage(hero: UserHero) -> None:
 def apply_burn_status(hero: UserHero) -> StatusChangeEffect:
     if hero.burned:
         return StatusChangeEffect.already_present
-    htype = hero.hero.hero_type
-    if htype == HeroType.fire:
+    if test_if_hero_has_types(hero, [HeroType.fire]):
         return StatusChangeEffect.immune
-    htype = hero.hero.secondary_hero_type
-    if htype == HeroType.fire:
-        return StatusChangeEffect.immune
-    htype = hero.hero.hero_type
     hero.burned = True
     return StatusChangeEffect.success
 
@@ -379,13 +379,8 @@ def apply_burn_damage(hero: UserHero) -> None:
 def apply_frozen_status(hero: UserHero) -> StatusChangeEffect:
     if hero.frozen:
         return StatusChangeEffect.already_present
-    htype = hero.hero.hero_type
-    if htype == HeroType.ice:
+    if test_if_hero_has_types(hero, [HeroType.ice]):
         return StatusChangeEffect.immune
-    htype = hero.hero.secondary_hero_type
-    if htype == HeroType.ice:
-        return StatusChangeEffect.immune
-    htype = hero.hero.hero_type
     hero.frozen = True
     return StatusChangeEffect.success
 
@@ -407,13 +402,8 @@ def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
 def apply_paralyzed_status(hero: UserHero) -> StatusChangeEffect:
     if hero.paralyzed:
         return StatusChangeEffect.already_present
-    htype = hero.hero.hero_type
-    if htype == HeroType.electric:
+    if test_if_hero_has_types(hero, [HeroType.electric]):
         return StatusChangeEffect.immune
-    htype = hero.hero.secondary_hero_type
-    if htype == HeroType.electric:
-        return StatusChangeEffect.immune
-    htype = hero.hero.hero_type
     hero.paralyzed = True
     return StatusChangeEffect.success
 
