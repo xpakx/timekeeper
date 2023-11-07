@@ -22,6 +22,7 @@ from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 import math
 import random
+from enum import Enum
 
 
 def create_battle(user_id: int, equipment_id: int, db: Session) -> Battle:
@@ -321,17 +322,24 @@ def calculate_new_stage(old_value: int, mod: int) -> int:
     return value
 
 
-def apply_poison_status(hero: UserHero) -> None:
+class StatusChangeEffect(Enum):
+    immune = 1
+    success = 2
+    already_present = 3
+
+
+def apply_poison_status(hero: UserHero) -> StatusChangeEffect:
     if hero.poisoned:
-        return
+        return StatusChangeEffect.already_present
     htype = hero.hero.hero_type
     if htype == HeroType.poison or htype == HeroType.steel:
-        return
+        return StatusChangeEffect.immune
     htype = hero.hero.secondary_hero_type
     if htype == HeroType.poison or htype == HeroType.steel:
-        return
+        return StatusChangeEffect.immune
     htype = hero.hero.hero_type
     hero.poisoned = True
+    return StatusChangeEffect.success
 
 
 def apply_poison_damage(hero: UserHero) -> None:
@@ -344,17 +352,18 @@ def apply_poison_damage(hero: UserHero) -> None:
         hero.fainted = True
 
 
-def apply_burn_status(hero: UserHero) -> None:
+def apply_burn_status(hero: UserHero) -> StatusChangeEffect:
     if hero.burned:
-        return
+        return StatusChangeEffect.already_present
     htype = hero.hero.hero_type
     if htype == HeroType.fire:
-        return
+        return StatusChangeEffect.immune
     htype = hero.hero.secondary_hero_type
     if htype == HeroType.fire:
-        return
+        return StatusChangeEffect.immune
     htype = hero.hero.hero_type
     hero.burned = True
+    return StatusChangeEffect.success
 
 
 def apply_burn_damage(hero: UserHero) -> None:
@@ -367,17 +376,18 @@ def apply_burn_damage(hero: UserHero) -> None:
         hero.fainted = True
 
 
-def apply_frozen_status(hero: UserHero) -> None:
+def apply_frozen_status(hero: UserHero) -> StatusChangeEffect:
     if hero.frozen:
-        return
+        return StatusChangeEffect.already_present
     htype = hero.hero.hero_type
     if htype == HeroType.ice:
-        return
+        return StatusChangeEffect.immune
     htype = hero.hero.secondary_hero_type
     if htype == HeroType.ice:
-        return
+        return StatusChangeEffect.immune
     htype = hero.hero.hero_type
     hero.frozen = True
+    return StatusChangeEffect.success
 
 
 def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
@@ -394,17 +404,18 @@ def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
         other_hero.fainted = True
 
 
-def apply_paralyzed_status(hero: UserHero) -> None:
+def apply_paralyzed_status(hero: UserHero) -> StatusChangeEffect:
     if hero.paralyzed:
-        return
+        return StatusChangeEffect.already_present
     htype = hero.hero.hero_type
     if htype == HeroType.electric:
-        return
+        return StatusChangeEffect.immune
     htype = hero.hero.secondary_hero_type
     if htype == HeroType.electric:
-        return
+        return StatusChangeEffect.immune
     htype = hero.hero.hero_type
     hero.paralyzed = True
+    return StatusChangeEffect.success
 
 
 def apply_frozen_changes(hero: UserHero, move: Skill) -> None:
