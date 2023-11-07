@@ -289,10 +289,20 @@ def apply_status_skill(
                 skill.secondary_mod)
 
 
+class StageChangeResult():
+    stage: StageEffect
+    change: int
+
+    def __init__(self, stage, change):
+        self.stage = stage
+        self.change = change
+
+
 def apply_stage_change(
         hero_mods: HeroMods,
         effect: StageEffect,
-        value: int) -> None:
+        value: int) -> StageChangeResult:
+    old_value = get_stage_for_effect(hero_mods, effect)
     if effect == StageEffect.attack:
         hero_mods.attack = calculate_new_stage(hero_mods.attack, value)
     elif effect == StageEffect.accuracy:
@@ -311,6 +321,26 @@ def apply_stage_change(
                 value)
     elif effect == StageEffect.speed:
         hero_mods.speed = calculate_new_stage(hero_mods.speed, value)
+    new_value = get_stage_for_effect(hero_mods, effect)
+    return StageChangeResult(effect, new_value - old_value)
+
+
+def get_stage_for_effect(hero_mods: HeroMods, effect: StageEffect) -> int:
+    if effect == StageEffect.attack:
+        return hero_mods.attack
+    elif effect == StageEffect.accuracy:
+        return hero_mods.accuracy
+    elif effect == StageEffect.evasion:
+        return hero_mods.evasion
+    elif effect == StageEffect.defense:
+        return hero_mods.defense
+    elif effect == StageEffect.special_attack:
+        return hero_mods.special_attack
+    elif effect == StageEffect.special_defense:
+        return hero_mods.special_defense
+    elif effect == StageEffect.speed:
+        return hero_mods.speed
+    return 0
 
 
 def calculate_new_stage(old_value: int, mod: int) -> int:
@@ -439,25 +469,44 @@ def apply_post_movement_statuses(
         apply_asleep_changes(hero)
 
 
-# TODO
+class StatusChangeResult():
+    status: StatusEffect
+    effect: StatusChangeEffect
+
+    def __init__(self, status, effect):
+        self.status = status
+        self.effect = effect
+
+
 def apply_status_change(
         hero: UserHero,
         hero_mods: HeroMods,
-        status: StatusEffect) -> None:
+        status: StatusEffect) -> list[StatusChangeResult]:
+    result = []
     if status == StatusEffect.poisoned:
-        apply_poison_status(hero)
+        effect = apply_poison_status(hero)
+        result.append(StatusChangeResult(StatusEffect.poisoned, effect))
     if status == StatusEffect.burn:
-        apply_burn_status(hero)
+        effect = apply_burn_status(hero)
+        result.append(StatusChangeResult(StatusEffect.burn, effect))
     if status == StatusEffect.paralyzed:
-        apply_paralyzed_status(hero)
+        effect = apply_paralyzed_status(hero)
+        result.append(StatusChangeResult(StatusEffect.paralyzed, effect))
     if status == StatusEffect.leech_seed:
-        # TODO potential immunity?
         hero_mods.leech_seed = True
+        result.append(StatusChangeResult(
+            StatusEffect.leech_seed,
+            StatusChangeEffect.success))
     if status == StatusEffect.asleep:
         hero.sleep_counter = random.randint(1, 6)
         hero_mods.asleep = True
+        result.append(StatusChangeResult
+                      (StatusEffect.sleep,
+                       StatusChangeEffect.success))
     if status == StatusEffect.frozen:
-        apply_frozen_status(hero)
+        effect = apply_frozen_status(hero)
+        result.append(StatusChangeResult(StatusEffect.frozen, effect))
+    return result
 
 
 def is_hero_able_to_move(hero: UserHero) -> bool:
