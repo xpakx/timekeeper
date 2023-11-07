@@ -271,7 +271,19 @@ def get_current_skill(move: MoveRequest, hero: UserHero) -> Optional[Skill]:
 
 # TODO
 def get_enemy_skill(hero: UserHero) -> Optional[Skill]:
-    return hero.skillset.skill_1
+    skills: list[Skill] = [hero.skillset.skill_1,
+                           hero.skillset.skill_2,
+                           hero.skillset.skill_3,
+                           hero.skillset.skill_4]
+    best_skill: Skill = None
+    for skill in skills:
+        if not skill:
+            continue
+        if skill.move_category == MoveCategory.status:
+            continue
+        if not best_skill or skill.power > best_skill.power:
+            best_skill = skill
+    return best_skill
 
 
 def apply_status_skill(
