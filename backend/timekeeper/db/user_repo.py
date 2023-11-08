@@ -16,7 +16,8 @@ def create_user(user: RegistrationRequest, db: Session) -> User:
     hashed_password = hashpw(user.password.encode('utf-8'), gensalt()).decode()
     new_user = User(
                 username=user.username,
-                password=hashed_password
+                password=hashed_password,
+                starter=False
             )
     db.add(new_user)
     db.commit()

@@ -1,13 +1,20 @@
-from ..db import hero_repo, user_hero_repo, equipment_repo, skillset_repo
+from ..db import (
+        hero_repo,
+        user_hero_repo,
+        equipment_repo,
+        skillset_repo,
+        user_repo)
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..db.models import Hero, UserHero, HeroEvolve
 from typing import Optional
 
 
-def get_hero(user_id: int, db: Session) -> Hero:
+def get_hero(user_id: int, starter: bool, db: Session) -> Hero:
     if not equipment_repo.subtract_crystals(1, user_id, db):
         raise not_enough_crystal_exception()
+    if starter:
+        return get_starter(user_id, db)
     hero = hero_repo.get_random_hero(db)
     if not hero:
         raise not_initialized_exception()
@@ -15,6 +22,13 @@ def get_hero(user_id: int, db: Session) -> Hero:
     skillset_repo.create_entry(user_hero, db)
     db.commit()
     return hero
+
+
+def get_starter(user_id: int, db: Session) -> Hero:
+    user = user_repo.get_user_by_id(id, db)
+    if not user.starter:
+        raise starter_already_taken_exception()
+    return hero_repo.get_random_hero(db, starter=True)
 
 
 def get_crystals(user_id: int, db: Session) -> int:
@@ -46,6 +60,13 @@ def cannot_evolve_exception():
     return HTTPException(
         status_code=400,
         detail="Hero cannot evolve!",
+    )
+
+
+def starter_already_taken_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Starter already taken!",
     )
 
 

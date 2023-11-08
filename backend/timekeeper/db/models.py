@@ -17,6 +17,7 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     password = Column(String)
     timers = relationship("Timer", back_populates="owner")
+    starter = Column(Boolean)
 
 
 class TimerDifficulty(enum.Enum):
