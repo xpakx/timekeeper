@@ -115,3 +115,7 @@ class EvolvingOption(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class HeroGenerateRequest(BaseModel):
+    starter: Optional[bool]

@@ -19,12 +19,14 @@ async def get_heroes(
     return hero_service.get_heroes(page, size, user.id, db)
 
 
-@router.get("/reward", response_model=hero_schemas.HeroBase)
+@router.post("/reward", response_model=hero_schemas.HeroBase)
 async def generate_hero(
+        request: hero_schemas.HeroGenerateRequest,
         user: Annotated[CurrentUser, Depends(get_current_user)],
         db: Session = Depends(get_db)
         ):
-    return hero_service.get_hero(user.id, False, db)
+    starter = request.starter if request.starter else False
+    return hero_service.get_hero(user.id, starter, db)
 
 
 @router.get("/crystals", response_model=hero_schemas.Crystals)
