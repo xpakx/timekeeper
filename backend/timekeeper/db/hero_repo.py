@@ -1,8 +1,9 @@
-from .models import Hero, HeroEvolve
+from .models import Hero, HeroEvolve, Encounter
 from sqlalchemy.orm import Session, joinedload
 import random
 from typing import Optional
 from sqlalchemy import and_
+from functools import reduce
 
 COMMON = [10, 13, 16, 19]
 UNCOMMON = [11, 14, 17, 20]
@@ -33,6 +34,24 @@ def get_random_id() -> int:
         return random.choice(UNCOMMON)
     else:
         return random.choice(RARE)
+
+
+def get_random_hero_for_encounter(db: Session, battle_pass_id: int) -> Optional[Hero]:
+    rnd = 0
+    encounters = db\
+        .query(Encounter)\
+        .where(
+              Encounter.item_id == battle_pass_id
+            )\
+        .all()
+    max = reduce(lambda x, y: x + y.rate, encounters, 0)
+    rnd = random.randint(0, max)
+    cumulative_rate = 0
+    for encounter in encounters:
+        cumulative_rate += encounter.rate
+        if rnd < cumulative_rate:
+            return encounter.hero
+    return None
 
 
 def get_random_starter_id() -> int:

@@ -43,7 +43,10 @@ def create_battle(user_id: int, equipment_id: int, db: Session) -> Battle:
     hero = team.hero_1
     if not hero:
         raise empty_team_exception()
-    enemy = hero_repo.get_random_hero(db)
+    enemy = hero_repo.get_random_hero_for_encounter(db, entry.item.id)
+    if not enemy:
+        # TODO temporary fallback for tests, delete it later
+        enemy = hero_repo.get_random_hero(db)
     if not enemy:
         raise not_initialized_exception()
     enemy_entry = user_hero_repo.create_entry(enemy.id, None, db)
