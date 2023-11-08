@@ -17,9 +17,12 @@
             return;
         }
 
+        let body = {}
+
         try {
             let response = await fetch(`${apiUri}/heroes/reward`, {
-                method: "GET",
+                method: "POST",
+                body: JSON.stringify(body),
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
