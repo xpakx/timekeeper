@@ -28,6 +28,7 @@ def get_starter(user_id: int, db: Session) -> Hero:
     user = user_repo.get_user_by_id(id, db)
     if not user.starter:
         raise starter_already_taken_exception()
+    user.starter = False
     return hero_repo.get_random_hero(db, starter=True)
 
 
