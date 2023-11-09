@@ -25,6 +25,59 @@ import random
 from enum import Enum
 
 
+class StatusChangeEffect(Enum):
+    immune = 1
+    success = 2
+    already_present = 3
+
+
+class StageChangeResult():
+    stage: StageEffect
+    change: int
+
+    def __init__(self, stage, change):
+        self.stage = stage
+        self.change = change
+
+
+class StatusChangeResult():
+    status: StatusEffect
+    effect: StatusChangeEffect
+
+    def __init__(self, status, effect):
+        self.status = status
+        self.effect = effect
+
+
+class StatusChangeEffect(Enum):
+    immune = 1
+    success = 2
+    already_present = 3
+
+
+class StatusSkillResults():
+    stage_changes: list[StageChangeResult]
+    status_changes: list[StatusChangeResult]
+
+    def __init__(self):
+        self.stage_changes = []
+        self.status_changes = []
+
+
+class DamageSkillResults():
+    damage: int = 0
+    secondary_status_changes: list[StatusChangeResult]
+
+    def __init__(self):
+        self.secondary_status_changes = []
+
+
+class SkillResult():
+    missed: bool = False
+    status_skill: StatusSkillResults
+    skill: DamageSkillResults
+
+
 def create_battle(user_id: int, equipment_id: int, db: Session) -> Battle:
     team = team_repo.get_team(user_id, db)
     entry = equipment_repo.get_item_entry(equipment_id, user_id, db)
@@ -189,7 +242,7 @@ def apply_damage(
         hero_mods: HeroMods,
         skill: Skill,
         other_hero: UserHero,
-        other_mods: HeroMods) -> None:
+        other_mods: HeroMods) -> int:
     crit_mod = skill.crit_mod if skill.crit_mod else 0
     crit = battle_mech.test_crit(crit_mod)
     dmg = battle_mech.calculate_damage(
@@ -204,6 +257,7 @@ def apply_damage(
     other_hero.damage = other_hero.damage + dmg
     if battle_mech.calculate_hp(other_hero) <= other_hero.damage:
         other_hero.fainted = True
+    return dmg
 
 
 def battle_turn(
@@ -225,15 +279,17 @@ def hero_turn(
         hero_mods,
         skill: Optional[Skill],
         other_hero: UserHero,
-        other_mods: HeroMods) -> None:
+        other_mods: HeroMods) -> SkillResult:
+    result = SkillResult()
     if not skill:
-        return
+        return result
     able = is_hero_able_to_move(hero)
     if not able:
-        return
+        return result
     if skill.self_targetted:
-        apply_status_skill(hero, hero_mods, skill)
-        return
+        change = apply_status_skill(hero, hero_mods, skill)
+        result.status_skill = change
+        return result
     hit = battle_mech.test_accuracy(
             hero,
             hero_mods,
@@ -241,9 +297,10 @@ def hero_turn(
             other_hero,
             other_mods)
     if not hit:
-        return
+        result.missed = True
+        return result
     if skill.move_category != MoveCategory.status:
-        apply_damage(
+        damage = apply_damage(
                 hero,
                 hero_mods,
                 skill,
@@ -251,12 +308,20 @@ def hero_turn(
                 other_mods)
         if other_hero.frozen and skill.move_type == MoveType.fire:
             other_hero.frozen = False
+        damage_result = DamageSkillResults()
+        damage_result.damage = damage
         if skill.secondary_status_chance:
             rand = random.randint(0, 100)
             if rand < skill.secondary_status_chance:
-                apply_status_change(hero, hero_mods, skill.status_effect)
+                change = apply_status_change(
+                        hero,
+                        hero_mods,
+                        skill.status_effect)
+                damage_result.secondary_status_changes = change
     else:
-        apply_status_skill(other_hero, other_mods, skill)
+        change = apply_status_skill(other_hero, other_mods, skill)
+        result.status_skill = change
+    return result
 
 
 def get_current_skill(move: MoveRequest, hero: UserHero) -> Optional[Skill]:
@@ -292,25 +357,20 @@ def get_enemy_skill(hero: UserHero) -> Optional[Skill]:
 def apply_status_skill(
         hero: UserHero,
         hero_mods: HeroMods,
-        skill: Skill) -> None:
+        skill: Skill) -> StatusSkillResults:
+    result = StatusSkillResults()
     if skill.status_effect:
-        apply_status_change(hero, hero_mods, skill.status_effect)
+        change = apply_status_change(hero, hero_mods, skill.status_effect)
+        result.append(change)
     if skill.stage_effect:
-        apply_stage_change(hero_mods, skill.stage_change, skill.mod)
+        change = apply_stage_change(hero_mods, skill.stage_change, skill.mod)
+        result.append(change)
     if skill.secondary_stage_effect:
-        apply_stage_change(
+        change = apply_stage_change(
                 hero_mods,
                 skill.secondary_stage_change,
                 skill.secondary_mod)
-
-
-class StageChangeResult():
-    stage: StageEffect
-    change: int
-
-    def __init__(self, stage, change):
-        self.stage = stage
-        self.change = change
+        result.append(change)
 
 
 def apply_stage_change(
@@ -365,12 +425,6 @@ def calculate_new_stage(old_value: int, mod: int) -> int:
     if value < -6:
         return -6
     return value
-
-
-class StatusChangeEffect(Enum):
-    immune = 1
-    success = 2
-    already_present = 3
 
 
 def test_if_hero_has_types(hero: UserHero, types: list[HeroType]) -> bool:
@@ -482,15 +536,6 @@ def apply_post_movement_statuses(
         apply_frozen_changes(hero, move)
     if not hero.fainted and hero.asleep:
         apply_asleep_changes(hero)
-
-
-class StatusChangeResult():
-    status: StatusEffect
-    effect: StatusChangeEffect
-
-    def __init__(self, status, effect):
-        self.status = status
-        self.effect = effect
 
 
 def apply_status_change(
