@@ -24,7 +24,8 @@ from .model.battle_model import (
         StageChangeResult,
         StatusSkillResults,
         DamageSkillResults,
-        SkillResult)
+        SkillResult,
+        MoveResult)
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 import math
@@ -219,12 +220,14 @@ def battle_turn(
         skill: Optional[Skill],
         other_hero: UserHero,
         other_mods: HeroMods,
-        other_skill: Optional[Skill]) -> None:
-    hero_turn(hero, hero_mods, skill, other_hero, other_mods)
+        other_skill: Optional[Skill]) -> MoveResult:
+    result = MoveResult()
+    result.hero = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
     apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
     if not other_hero.fainted:
-        hero_turn(other_hero, other_mods, other_skill, hero, hero_mods)
+        result.enemy = hero_turn(other_hero, other_mods, other_skill, hero, hero_mods)
         apply_post_movement_statuses(other_hero, other_mods, other_skill, hero)
+    return result
 
 
 def hero_turn(

@@ -48,3 +48,8 @@ class SkillResult():
     missed: bool = False
     status_skill: StatusSkillResults
     skill: DamageSkillResults
+
+
+class MoveResult():
+    hero: SkillResult
+    enemy: SkillResult
