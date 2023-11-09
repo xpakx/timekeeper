@@ -224,9 +224,10 @@ def battle_turn(
     result = MoveResult()
     result.hero = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
     apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
-    if not other_hero.fainted:
-        result.enemy = hero_turn(other_hero, other_mods, other_skill, hero, hero_mods)
-        apply_post_movement_statuses(other_hero, other_mods, other_skill, hero)
+    if other_hero.fainted:
+        return result
+    result.enemy = hero_turn(other_hero, other_mods, other_skill, hero, hero_mods)
+    apply_post_movement_statuses(other_hero, other_mods, other_skill, hero)
     return result
 
 
