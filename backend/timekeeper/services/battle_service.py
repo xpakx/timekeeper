@@ -196,7 +196,7 @@ def apply_damage(
         hero_mods: HeroMods,
         skill: Skill,
         other_hero: UserHero,
-        other_mods: HeroMods) -> int:
+        other_mods: HeroMods) -> DamageSkillResults:
     crit_mod = skill.crit_mod if skill.crit_mod else 0
     crit = battle_mech.test_crit(crit_mod)
     dmg = battle_mech.calculate_damage(
@@ -211,7 +211,11 @@ def apply_damage(
     other_hero.damage = other_hero.damage + dmg
     if battle_mech.calculate_hp(other_hero) <= other_hero.damage:
         other_hero.fainted = True
-    return dmg
+    result = DamageSkillResults()
+    result.critical = crit
+    result.damage = dmg
+    result.effectiveness = battle_mech.get_effectiveness(skill.move_type, other_hero.hero)
+    return result
 
 
 def battle_turn(
@@ -265,8 +269,6 @@ def hero_turn(
                 other_mods)
         if other_hero.frozen and skill.move_type == MoveType.fire:
             other_hero.frozen = False
-        damage_result = DamageSkillResults()
-        damage_result.damage = damage
         if skill.secondary_status_chance:
             rand = random.randint(0, 100)
             if rand < skill.secondary_status_chance:
@@ -274,7 +276,8 @@ def hero_turn(
                         hero,
                         hero_mods,
                         skill.status_effect)
-                damage_result.secondary_status_changes = change
+                damage.secondary_status_changes = change
+        result.skill = damage
     else:
         change = apply_status_skill(other_hero, other_mods, skill)
         result.status_skill = change

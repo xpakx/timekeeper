@@ -41,6 +41,8 @@ class StatusSkillResults():
 
 class DamageSkillResults():
     damage: int = 0
+    critical: bool = False
+    effectiveness: float = 0.0
     secondary_status_changes: list[StatusChangeResult] = []
 
 
