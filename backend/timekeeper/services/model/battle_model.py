@@ -59,8 +59,10 @@ class SkillResult():
     status_skill: StatusSkillResults
     skill: DamageSkillResults
     able: MovementTestResult
+    fainted: bool = False
+    other_fainted: bool = False
 
 
 class MoveResult():
-    hero: SkillResult
-    enemy: SkillResult
+    first: SkillResult
+    second: SkillResult
