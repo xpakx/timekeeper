@@ -25,7 +25,8 @@ from .model.battle_model import (
         StatusSkillResults,
         DamageSkillResults,
         SkillResult,
-        MoveResult)
+        MoveResult,
+        MovementTestResult)
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 import math
@@ -251,8 +252,8 @@ def hero_turn(
     result = SkillResult()
     if not skill:
         return result
-    able = is_hero_able_to_move(hero)
-    if not able:
+    result.able = is_hero_able_to_move(hero)
+    if not result.able.able:
         return result
     if skill.self_targetted:
         change = apply_status_skill(hero, hero_mods, skill)
@@ -536,11 +537,24 @@ def apply_status_change(
     return result
 
 
-def is_hero_able_to_move(hero: UserHero) -> bool:
+def is_hero_able_to_move(hero: UserHero) -> MovementTestResult:
+    result = MovementTestResult()
+    result.paralyzed = hero.paralyzed
+    result.sleep = hero.asleep
+    result.frozen = hero.frozen
     if hero.paralyzed:
         rand = random.randint(0, 100)
         if rand < 25:
-            return False
-    if hero.frozen or hero.asleep:
-        return False
-    return True
+            result.able = False
+            result.reason = StatusEffect.paralyzed
+            return result
+    if hero.frozen:
+        result.able = False
+        result.reason = StatusEffect.frozen
+        return result
+    if hero.asleep:
+        result.able = False
+        result.reason = StatusEffect.asleep
+        return result
+    result.able = True
+    return result

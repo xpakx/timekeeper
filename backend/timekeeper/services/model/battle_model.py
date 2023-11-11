@@ -46,10 +46,19 @@ class DamageSkillResults():
     secondary_status_changes: list[StatusChangeResult] = []
 
 
+class MovementTestResult():
+    able: bool
+    reason: StatusEffect
+    sleep: bool
+    parlyzed: bool
+    frozen: bool
+
+
 class SkillResult():
     missed: bool = False
     status_skill: StatusSkillResults
     skill: DamageSkillResults
+    able: MovementTestResult
 
 
 class MoveResult():
