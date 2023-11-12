@@ -242,7 +242,7 @@ def battle_turn(
             hero,
             hero_mods)
     apply_post_movement_statuses(other_hero, other_mods, other_skill, hero)
-    result = MoveResult(first=first, second=second)
+    result = MoveResult(first=first, second=second, other_fainted=other_hero.fainted)
     return result
 
 
