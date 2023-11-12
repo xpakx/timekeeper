@@ -6,6 +6,7 @@ from ..security.jwt import get_current_user, CurrentUser
 from ..db.manager import get_db
 from sqlalchemy.orm import Session
 from typing import Optional
+from ..services.model.battle_model import BattleResult
 
 router = APIRouter(prefix="/battles")
 
@@ -36,7 +37,7 @@ async def get_battle(
     return battle_service.get_battle(user.id, id, db)
 
 
-@router.post("/{id}", response_model=battle_schemas.BattleBase)
+@router.post("/{id}", response_model=BattleResult)
 async def make_move(
         request: battle_schemas.MoveRequest,
         id: int,

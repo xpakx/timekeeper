@@ -26,7 +26,8 @@ from .model.battle_model import (
         DamageSkillResults,
         SkillResult,
         MoveResult,
-        MovementTestResult)
+        MovementTestResult,
+        BattleResult)
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 import math
@@ -159,7 +160,7 @@ def make_move(
         user_id: int,
         battle_id: int,
         move: MoveRequest,
-        db: Session) -> Battle:
+        db: Session) -> BattleResult:
     battle: Battle = battle_repo.get_battle(user_id, battle_id, db)
     if not battle:
         raise not_battle_found_exception()
@@ -183,13 +184,15 @@ def make_move(
             enemy_skill,
             flee,
             switch)
+    turn = None
     if player_first:
-        battle_turn(hero, hero_mods, skill, enemy, enemy_mods, enemy_skill)
+        turn = battle_turn(hero, hero_mods, skill, enemy, enemy_mods, enemy_skill)
     else:
-        battle_turn(enemy, enemy_mods, enemy_skill, hero, hero_mods, skill)
+        turn = battle_turn(enemy, enemy_mods, enemy_skill, hero, hero_mods, skill)
     battle.turn = battle.turn + 1
     db.commit()
-    return battle
+    result = BattleResult(turn=turn, hero_first=player_first)
+    return result
 
 
 def apply_damage(
