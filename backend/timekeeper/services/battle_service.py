@@ -228,18 +228,18 @@ def battle_turn(
         other_hero: UserHero,
         other_mods: HeroMods,
         other_skill: Optional[Skill]) -> MoveResult:
-    result = MoveResult()
-    result.first = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
+    first = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
     apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
     if other_hero.fainted:
-        return result
-    result.second = hero_turn(
+        return MoveResult(first=first)
+    second = hero_turn(
             other_hero,
             other_mods,
             other_skill,
             hero,
             hero_mods)
     apply_post_movement_statuses(other_hero, other_mods, other_skill, hero)
+    result = MoveResult(first=first, second=second)
     return result
 
 
@@ -540,23 +540,12 @@ def apply_status_change(
 
 
 def is_hero_able_to_move(hero: UserHero) -> MovementTestResult:
-    result = MovementTestResult()
-    result.paralyzed = hero.paralyzed
-    result.sleep = hero.asleep
-    result.frozen = hero.frozen
     if hero.paralyzed:
         rand = random.randint(0, 100)
         if rand < 25:
-            result.able = False
-            result.reason = StatusEffect.paralyzed
-            return result
+            return MovementTestResult(reason=StatusEffect.paralyzed)
     if hero.frozen:
-        result.able = False
-        result.reason = StatusEffect.frozen
-        return result
+        return MovementTestResult(reason=StatusEffect.frozen)
     if hero.asleep:
-        result.able = False
-        result.reason = StatusEffect.asleep
-        return result
-    result.able = True
-    return result
+        return MovementTestResult(reason=StatusEffect.asleep)
+    return MovementTestResult(able=True)
