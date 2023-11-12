@@ -16,18 +16,10 @@ class StageChangeResult(BaseModel):
     stage: StageEffect
     change: int
 
-    def __init__(self, stage, change):
-        self.stage = stage
-        self.change = change
-
 
 class StatusChangeResult(BaseModel):
     status: StatusEffect
     effect: StatusChangeEffect
-
-    def __init__(self, status, effect):
-        self.status = status
-        self.effect = effect
 
 
 class StatusChangeEffect(Enum):

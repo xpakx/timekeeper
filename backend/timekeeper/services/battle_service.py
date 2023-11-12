@@ -367,7 +367,7 @@ def apply_stage_change(
     elif effect == StageEffect.speed:
         hero_mods.speed = calculate_new_stage(hero_mods.speed, value)
     new_value = get_stage_for_effect(hero_mods, effect)
-    return StageChangeResult(effect, new_value - old_value)
+    return StageChangeResult(stage=effect, change=new_value - old_value)
 
 
 def get_stage_for_effect(hero_mods: HeroMods, effect: StageEffect) -> int:
@@ -515,27 +515,27 @@ def apply_status_change(
     result = []
     if status == StatusEffect.poisoned:
         effect = apply_poison_status(hero)
-        result.append(StatusChangeResult(StatusEffect.poisoned, effect))
+        result.append(StatusChangeResult(status=StatusEffect.poisoned, effect=effect))
     if status == StatusEffect.burn:
         effect = apply_burn_status(hero)
-        result.append(StatusChangeResult(StatusEffect.burn, effect))
+        result.append(StatusChangeResult(status=StatusEffect.burn, effect=effect))
     if status == StatusEffect.paralyzed:
         effect = apply_paralyzed_status(hero)
-        result.append(StatusChangeResult(StatusEffect.paralyzed, effect))
+        result.append(StatusChangeResult(status=StatusEffect.paralyzed, effect=effect))
     if status == StatusEffect.leech_seed:
         hero_mods.leech_seed = True
         result.append(StatusChangeResult(
-            StatusEffect.leech_seed,
-            StatusChangeEffect.success))
+            status=StatusEffect.leech_seed,
+            effect=StatusChangeEffect.success))
     if status == StatusEffect.asleep:
         hero.sleep_counter = random.randint(1, 6)
         hero_mods.asleep = True
         result.append(StatusChangeResult
-                      (StatusEffect.sleep,
-                       StatusChangeEffect.success))
+                      (status=StatusEffect.sleep,
+                       effect=StatusChangeEffect.success))
     if status == StatusEffect.frozen:
         effect = apply_frozen_status(hero)
-        result.append(StatusChangeResult(StatusEffect.frozen, effect))
+        result.append(StatusChangeResult(status=StatusEffect.frozen, effect=effect))
     return result
 
 
