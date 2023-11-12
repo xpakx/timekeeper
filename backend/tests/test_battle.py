@@ -141,6 +141,7 @@ def create_user_hero(hero_id: int, user_id: int, skillset: bool = True):
             hero_id=hero_id,
             owner_id=user_id,
             incubated=False,
+            fainted=False,
             hp=0,
             attack=0,
             defense=0,
