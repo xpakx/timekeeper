@@ -1,7 +1,6 @@
 from ...db.models import (
         StatusEffect,
-        StageEffect,
-        Battle)
+        StageEffect)
 from enum import Enum
 from pydantic import BaseModel
 from typing import Optional
@@ -55,9 +54,17 @@ class SkillResult(BaseModel):
     other_fainted: bool = False
 
 
+class PostTurnEffects(BaseModel):
+    reason: StatusEffect
+    hp_change: Optional[int]
+    status_end: bool = False
+
+
 class MoveResult(BaseModel):
     first: SkillResult
+    first_changes: list[PostTurnEffects]
     second: SkillResult
+    second_changes: list[PostTurnEffects]
     other_fainted: bool = False
 
 

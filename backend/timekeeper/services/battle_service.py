@@ -27,7 +27,8 @@ from .model.battle_model import (
         SkillResult,
         MoveResult,
         MovementTestResult,
-        BattleResult)
+        BattleResult,
+        PostTurnEffects)
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 import math
@@ -232,7 +233,7 @@ def battle_turn(
         other_mods: HeroMods,
         other_skill: Optional[Skill]) -> MoveResult:
     first = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
-    apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
+    first_changes = apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
     if other_hero.fainted:
         return MoveResult(first=first)
     second = hero_turn(
@@ -241,8 +242,13 @@ def battle_turn(
             other_skill,
             hero,
             hero_mods)
-    apply_post_movement_statuses(other_hero, other_mods, other_skill, hero)
-    result = MoveResult(first=first, second=second, other_fainted=other_hero.fainted)
+    second_changes = apply_post_movement_statuses(other_hero, other_mods, other_skill, hero)
+    result = MoveResult(
+            first=first,
+            first_changes=first_changes,
+            second=second,
+            second_changes=second_changes,
+            other_fainted=other_hero.fainted)
     return result
 
 
@@ -419,7 +425,7 @@ def apply_poison_status(hero: UserHero) -> StatusChangeEffect:
     return StatusChangeEffect.success
 
 
-def apply_poison_damage(hero: UserHero) -> None:
+def apply_poison_damage(hero: UserHero) -> PostTurnEffects:
     hp = battle_mech.calculate_hp(hero)
     damage = math.floor(hp/8)
     if damage == 0:
@@ -427,6 +433,7 @@ def apply_poison_damage(hero: UserHero) -> None:
     hero.damage = hero.damage + damage
     if hp <= hero.damage:
         hero.fainted = True
+    return PostTurnEffects(reason=StatusEffect.poisoned, hp_change=damage)
 
 
 def apply_burn_status(hero: UserHero) -> StatusChangeEffect:
@@ -438,7 +445,7 @@ def apply_burn_status(hero: UserHero) -> StatusChangeEffect:
     return StatusChangeEffect.success
 
 
-def apply_burn_damage(hero: UserHero) -> None:
+def apply_burn_damage(hero: UserHero) -> PostTurnEffects:
     hp = battle_mech.calculate_hp(hero)
     damage = math.floor(hp/8)
     if damage == 0:
@@ -446,6 +453,7 @@ def apply_burn_damage(hero: UserHero) -> None:
     hero.damage = hero.damage + damage
     if hp <= hero.damage:
         hero.fainted = True
+    return PostTurnEffects(reason=StatusEffect.burned, hp_change=damage)
 
 
 def apply_frozen_status(hero: UserHero) -> StatusChangeEffect:
@@ -457,7 +465,7 @@ def apply_frozen_status(hero: UserHero) -> StatusChangeEffect:
     return StatusChangeEffect.success
 
 
-def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
+def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> PostTurnEffects:
     hp = battle_mech.calculate_hp(hero)
     other_hp = battle_mech.calculate_hp(other_hero)
     damage = math.floor(other_hp/8)
@@ -469,6 +477,7 @@ def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> None:
     hero.damage = hero.damage - damage
     if hp <= other_hero.damage:
         other_hero.fainted = True
+    return PostTurnEffects(reason=StatusEffect.leech_seed, hp_change=damage)
 
 
 def apply_paralyzed_status(hero: UserHero) -> StatusChangeEffect:
@@ -480,35 +489,44 @@ def apply_paralyzed_status(hero: UserHero) -> StatusChangeEffect:
     return StatusChangeEffect.success
 
 
-def apply_frozen_changes(hero: UserHero, move: Skill) -> None:
+def apply_frozen_changes(hero: UserHero, move: Skill) -> PostTurnEffects:
     if move.move_type == MoveType.fire:
         hero.frozen = False
     rand = random.randint(0, 100)
     if rand < 20:
         hero.frozen = False
+    return PostTurnEffects(reason=StatusEffect.frozen, status_end=hero.frozen)
 
 
 def apply_asleep_changes(hero: UserHero) -> None:
     hero.sleep_counter = hero.sleep_counter - 1
     if hero.sleep_counter == 0:
         hero.asleep = False
+    return PostTurnEffects(reason=StatusEffect.asleep, status_end=hero.frozen)
 
 
 def apply_post_movement_statuses(
         hero: UserHero,
         hero_mods: HeroMods,
         move: Skill,
-        other_hero: UserHero) -> None:
+        other_hero: UserHero) -> list[PostTurnEffects]:
+    result = []
     if not hero.fainted and hero_mods.leech_seed:
-        apply_leech_seed(other_hero, hero)
+        change = apply_leech_seed(other_hero, hero)
+        result.append(change)
     if not hero.fainted and hero.poisoned:
-        apply_poison_damage(hero)
+        change = apply_poison_damage(hero)
+        result.append(change)
     if not hero.fainted and hero.burned:
-        apply_burn_damage(hero)
+        change = apply_burn_damage(hero)
+        result.append(change)
     if not hero.fainted and hero.frozen:
-        apply_frozen_changes(hero, move)
+        change = apply_frozen_changes(hero, move)
+        result.append(change)
     if not hero.fainted and hero.asleep:
-        apply_asleep_changes(hero)
+        change = apply_asleep_changes(hero)
+        result.append(change)
+    return result
 
 
 def apply_status_change(
