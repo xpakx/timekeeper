@@ -3,6 +3,9 @@
     import { getToken } from "../../token-manager";
     import type { Battle } from "../../types/Battle";
     import BattleCard from "../../components/BattleCard.svelte";
+    import type { MoveResponse, SkillResult, StageChange, StatusChange } from "../../types/MoveResponse";
+    import type { UserHeroBattle } from "../../types/UserHeroBattle";
+    import HeroCard from "../../components/HeroCard.svelte";
     let apiUri = "http://localhost:8000";
     let message: String;
     getCurrentBattle();
@@ -84,6 +87,8 @@
         },
     };
 
+    let battleMessages: String[] = [];
+
     async function getCurrentBattle() {
         let token: String = await getToken();
         if (!token || token == "") {
@@ -137,7 +142,8 @@
             });
 
             if (response.ok) {
-                let fromEndpoint = await response.json();
+                let result: MoveResponse = await response.json();
+                applyChanges(result);
             } else {
                 if (response.status == 401) {
                     goto("/logout");
@@ -220,6 +226,102 @@
             if (err instanceof Error) {
                 message = err.message;
             }
+        }
+    }
+
+    function applyChanges(changes: MoveResponse) {
+        if (changes.hero_first) {
+            applyTurn(changes.turn.first, battle.hero.hero.name, battle.enemy.hero.name);
+            applyTurn(changes.turn.second, battle.enemy.hero.name, battle.hero.hero.name);
+        } else {
+            applyTurn(changes.turn.first, battle.enemy.hero.name, battle.hero.hero.name);
+            applyTurn(changes.turn.second, battle.hero.hero.name, battle.enemy.hero.name);
+        }
+
+    }
+
+    function applyTurn(result: SkillResult, firstName: String, secondName: String) {
+        if (!result.skill && !result.status_skill) {
+            return;
+        }
+        battleMessages.push(`${firstName} used Y.`);
+
+        if (!result.able.able) {
+            if (result.able.reason == "paralyzed") {
+                battleMessages.push(`${firstName} is paralyzed! It can't move!`);
+            }
+            else if (result.able.reason == "asleep") {
+                battleMessages.push(`${firstName} is fast asleep!`);
+            }
+            else if (result.able.reason == "frozen") {
+                battleMessages.push(`${firstName} is frozen solid!`);
+            }
+            return;
+        }
+        if (result.missed) {
+            battleMessages.push(`${firstName}'s attack missed!`);
+            return;
+        }
+        if (result.skill) {
+            if (result.skill.critical) {
+                battleMessages.push("A critical hit!")
+            }
+            if (result.skill.effectiveness == 0) {
+                battleMessages.push(`It doesn't affect ${secondName}.`);
+            }
+            else if (result.skill.effectiveness < 1) {
+                battleMessages.push("It's not very effective…")
+            }
+            else if (result.skill.effectiveness > 1) {
+                battleMessages.push("It's super effective!")
+            }
+            // apply result.skill.damage;
+            for (let status of result.skill.secondary_status_changes) {
+                applyEffect(secondName, status);
+            }
+        } else if (result.status_skill) {
+            for (let status of result.status_skill.status_changes) {
+                applyEffect(secondName, status);
+            }
+            for (let stage of result.status_skill.stage_changes) {
+                applyStage(secondName, stage);
+            }
+            
+        }
+    }
+
+    function applyEffect(name: String, status: StatusChange) {
+        if (status.effect != 2) {
+            return; // TODO
+        }
+        if (status.status == "asleep") {
+            battleMessages.push(`${name} fell asleep!`);
+        } else if (status.status == "paralyzed") {
+            battleMessages.push(`${name} is paralyzed! It may be unable to move!`);
+        } else if (status.status == "frozen") {
+            battleMessages.push(`${name} was frozen solid!`);
+        } else if (status.status == "poisoned") {
+            battleMessages.push(`${name} was poisoned!`);
+        } else if (status.status == "burn") {
+            battleMessages.push(`${name} was sustained a burn!`);
+        } else if (status.status == "leech seed") {
+            battleMessages.push(`${name} was seeded!`);
+        }
+    }
+
+    function applyStage(name: String, stage: StageChange) {
+        if (stage.change > 2) {
+            battleMessages.push(`${name}'s ${stage.stage} rose drastically!`);
+        } else if (stage.change == 2) {
+            battleMessages.push(`${name}'s ${stage.stage} rose sharply!`);
+        } else if (stage.change == 1) {
+            battleMessages.push(`${name}'s ${stage.stage} rose!`);
+        } else if (stage.change == -1) {
+            battleMessages.push(`${name}'s ${stage.stage} fell!`);
+        } else if (stage.change == -2) {
+            battleMessages.push(`${name}'s ${stage.stage} harshly fell!`);
+        } else {
+            battleMessages.push(`${name}'s ${stage.stage} severely fell!`);
         }
     }
 </script>
