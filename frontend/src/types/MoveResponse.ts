@@ -26,7 +26,9 @@ export type MovementTest = {
 }
 
 export type SkillResult = {
+    name: String,
     missed: boolean,
+    self_targetted: boolean,
     status_skill: SkillStatus,
     skill: SkillDamage,
     able: MovementTest,
@@ -34,18 +36,23 @@ export type SkillResult = {
     second_fainted: boolean,
 }
 
-export type PostTurn = {
+export type PostTurnEffect = {
     reason: String,
     hp_change: number,
     status_end: boolean 
 }
 
+export type PostTurn = {
+    changes: PostTurn[],
+    fainted: boolean,
+    second_fainted: boolean,
+}
+
 export type Turn = {
     first: SkillResult,
-    first_changes: PostTurn[],
+    first_changes: PostTurn,
     second: SkillResult,
     second_changes: PostTurn[],
-    other_fainted: boolean
 }
 
 export type MoveResponse = {
