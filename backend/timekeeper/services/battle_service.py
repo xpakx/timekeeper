@@ -261,12 +261,14 @@ def hero_turn(
     result = SkillResult()
     if not skill:
         return result
+    result.name = skill.name
     result.able = is_hero_able_to_move(hero)
     if not result.able.able:
         return result
     if skill.self_targetted:
         change = apply_status_skill(hero, hero_mods, skill)
         result.status_skill = change
+        result.self_targetted = True
         return result
     hit = battle_mech.test_accuracy(
             hero,

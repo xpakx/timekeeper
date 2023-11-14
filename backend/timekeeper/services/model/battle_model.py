@@ -46,6 +46,8 @@ class MovementTestResult(BaseModel):
 
 
 class SkillResult(BaseModel):
+    name: Optional[str]
+    self_targetted: bool = False
     missed: bool = False
     status_skill: Optional[StatusSkillResults]
     skill: Optional[DamageSkillResults]
