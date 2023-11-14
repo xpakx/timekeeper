@@ -244,7 +244,7 @@
         if (!result.skill && !result.status_skill) {
             return;
         }
-        battleMessages.push(`${firstName} used Y.`);
+        battleMessages.push(`${firstName} used ${result.name}.`);
 
         if (!result.able.able) {
             if (result.able.reason == "paralyzed") {
