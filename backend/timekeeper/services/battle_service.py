@@ -28,7 +28,8 @@ from .model.battle_model import (
         MoveResult,
         MovementTestResult,
         BattleResult,
-        PostTurnEffects)
+        PostTurnEffects,
+        PostTurnResult)
 from ..routers.dto.battle_schemas import MoveRequest, MoveType
 from .mechanics import battle_mech_service as battle_mech
 import math
@@ -247,8 +248,7 @@ def battle_turn(
             first=first,
             first_changes=first_changes,
             second=second,
-            second_changes=second_changes,
-            other_fainted=other_hero.fainted)
+            second_changes=second_changes)
     return result
 
 
@@ -299,7 +299,7 @@ def hero_turn(
         change = apply_status_skill(other_hero, other_mods, skill)
         result.status_skill = change
     result.fainted = hero.fainted
-    result.other_fainted = other_hero.fainted
+    result.second_fainted = other_hero.fainted
     return result
 
 
@@ -509,7 +509,7 @@ def apply_post_movement_statuses(
         hero: UserHero,
         hero_mods: HeroMods,
         move: Skill,
-        other_hero: UserHero) -> list[PostTurnEffects]:
+        other_hero: UserHero) -> PostTurnResult:
     result = []
     if not hero.fainted and hero_mods.leech_seed:
         change = apply_leech_seed(other_hero, hero)
@@ -526,7 +526,9 @@ def apply_post_movement_statuses(
     if not hero.fainted and hero.asleep:
         change = apply_asleep_changes(hero)
         result.append(change)
-    return result
+    return PostTurnResult(changes=result,
+                          fainted=hero.fainted,
+                          second_fainted=other_hero.fainted)
 
 
 def apply_status_change(

@@ -51,7 +51,7 @@ class SkillResult(BaseModel):
     skill: Optional[DamageSkillResults]
     able: Optional[MovementTestResult]
     fainted: bool = False
-    other_fainted: bool = False
+    second_fainted: bool = False
 
 
 class PostTurnEffects(BaseModel):
@@ -60,12 +60,17 @@ class PostTurnEffects(BaseModel):
     status_end: bool = False
 
 
+class PostTurnResult(BaseModel):
+    changes: list[PostTurnEffects]
+    fainted: bool = False
+    second_fainted: bool = False
+
+
 class MoveResult(BaseModel):
     first: SkillResult
-    first_changes: list[PostTurnEffects]
+    first_changes: PostTurnResult
     second: SkillResult
-    second_changes: list[PostTurnEffects]
-    other_fainted: bool = False
+    second_changes: PostTurnResult
 
 
 class BattleResult(BaseModel):
