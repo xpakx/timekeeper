@@ -43,7 +43,7 @@ export type PostTurnEffect = {
 }
 
 export type PostTurn = {
-    changes: PostTurn[],
+    changes: PostTurnEffect[],
     fainted: boolean,
     second_fainted: boolean,
 }
@@ -52,7 +52,7 @@ export type Turn = {
     first: SkillResult,
     first_changes: PostTurn,
     second: SkillResult,
-    second_changes: PostTurn[],
+    second_changes: PostTurn,
 }
 
 export type MoveResponse = {
