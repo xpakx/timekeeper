@@ -5,7 +5,7 @@ export type StageChange = {
 
 export type StatusChange = {
     status: String,
-    effect: number
+    effect: String
 }
 
 export type SkillStatus = {

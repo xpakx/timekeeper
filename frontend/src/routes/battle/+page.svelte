@@ -280,14 +280,15 @@
             }
             // apply result.skill.damage;
             for (let status of result.skill.secondary_status_changes) {
-                applyEffect(secondName, status);
+                applyEffect(secondName, status, true);
             }
         } else if (result.status_skill) {
+            let name = result.self_targetted ? firstName : secondName;
             for (let status of result.status_skill.status_changes) {
-                applyEffect(secondName, status);
+                applyEffect(name, status);
             }
             for (let stage of result.status_skill.stage_changes) {
-                applyStage(secondName, stage);
+                applyStage(name, stage);
             }
             
         }
@@ -299,9 +300,18 @@
         }
     }
 
-    function applyEffect(name: String, status: StatusChange) {
-        if (status.effect != 2) {
-            return; // TODO
+    function applyEffect(name: String, status: StatusChange, side_effect: boolean = false) {
+        if (status.effect == 'immune' && !side_effect) {
+            battleMessages.push(`It doesn't affect ${name}…`);
+            return;
+        }
+        if (status.effect == 'affected' && !side_effect) {
+            battleMessages.push(`${name} is already ${status.status}…`);
+            return;
+        }
+        if (status.effect == 'missed' && !side_effect) {
+            battleMessages.push('…but it failed.');
+            return;
         }
         if (status.status == "asleep") {
             battleMessages.push(`${name} fell asleep!`);
