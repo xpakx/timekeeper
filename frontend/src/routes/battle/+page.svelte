@@ -3,7 +3,7 @@
     import { getToken } from "../../token-manager";
     import type { Battle } from "../../types/Battle";
     import BattleCard from "../../components/BattleCard.svelte";
-    import type { MoveResponse, SkillResult, StageChange, StatusChange } from "../../types/MoveResponse";
+    import type { MoveResponse, PostTurn, SkillResult, StageChange, StatusChange } from "../../types/MoveResponse";
     import type { UserHeroBattle } from "../../types/UserHeroBattle";
     import HeroCard from "../../components/HeroCard.svelte";
     let apiUri = "http://localhost:8000";
@@ -232,12 +232,15 @@
     function applyChanges(changes: MoveResponse) {
         if (changes.hero_first) {
             applyTurn(changes.turn.first, battle.hero.hero.name, battle.enemy.hero.name);
+            applyPostTurn(changes.turn.first_changes, battle.hero.hero.name, battle.enemy.hero.name);
             applyTurn(changes.turn.second, battle.enemy.hero.name, battle.hero.hero.name);
+            applyPostTurn(changes.turn.second_changes, battle.enemy.hero.name, battle.hero.hero.name);
         } else {
             applyTurn(changes.turn.first, battle.enemy.hero.name, battle.hero.hero.name);
+            applyPostTurn(changes.turn.first_changes, battle.enemy.hero.name, battle.hero.hero.name);
             applyTurn(changes.turn.second, battle.hero.hero.name, battle.enemy.hero.name);
+            applyPostTurn(changes.turn.second_changes, battle.hero.hero.name, battle.enemy.hero.name);
         }
-
     }
 
     function applyTurn(result: SkillResult, firstName: String, secondName: String) {
@@ -288,6 +291,12 @@
             }
             
         }
+        if (result.fainted) {
+            battleMessages.push(`${firstName} fainted!`);
+        }
+        if (result.second_fainted) {
+            battleMessages.push(`${secondName} fainted!`);
+        }
     }
 
     function applyEffect(name: String, status: StatusChange) {
@@ -322,6 +331,32 @@
             battleMessages.push(`${name}'s ${stage.stage} harshly fell!`);
         } else {
             battleMessages.push(`${name}'s ${stage.stage} severely fell!`);
+        }
+    }
+    
+    function applyPostTurn(result: PostTurn, firstName: String, secondName: String) {
+        for (let effect of result.changes) {
+            applyPostEffect(firstName, effect.reason, effect.status_end)
+        }
+        if (result.fainted) {
+            battleMessages.push(`${firstName} fainted!`);
+        }
+        if (result.second_fainted) {
+            battleMessages.push(`${secondName} fainted!`);
+        }
+    }
+
+    function applyPostEffect(name: String, status: String, status_end: boolean) {
+        if (status == "asleep" && status_end) {
+            battleMessages.push(`${name} woke up!`);
+        } else if (status == "frozen" && status_end) {
+            battleMessages.push(`${name} thawed out!`);
+        } else if (status == "poisoned") {
+            battleMessages.push(`${name} is hurt by poison!`);
+        } else if (status == "burn") {
+            battleMessages.push(`${name} is hurt by its burn!`);
+        } else if (status == "leech seed") {
+            battleMessages.push(`The ${name}'s health is sapped by leech seed!`);
         }
     }
 </script>
