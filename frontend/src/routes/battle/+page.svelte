@@ -3,9 +3,13 @@
     import { getToken } from "../../token-manager";
     import type { Battle } from "../../types/Battle";
     import BattleCard from "../../components/BattleCard.svelte";
-    import type { MoveResponse, PostTurn, SkillResult, StageChange, StatusChange } from "../../types/MoveResponse";
-    import type { UserHeroBattle } from "../../types/UserHeroBattle";
-    import HeroCard from "../../components/HeroCard.svelte";
+    import type {
+        MoveResponse,
+        PostTurn,
+        SkillResult,
+        StageChange,
+        StatusChange,
+    } from "../../types/MoveResponse";
     let apiUri = "http://localhost:8000";
     let message: String;
     getCurrentBattle();
@@ -231,19 +235,55 @@
 
     function applyChanges(changes: MoveResponse) {
         if (changes.hero_first) {
-            applyTurn(changes.turn.first, battle.hero.hero.name, battle.enemy.hero.name);
-            applyPostTurn(changes.turn.first_changes, battle.hero.hero.name, battle.enemy.hero.name);
-            applyTurn(changes.turn.second, battle.enemy.hero.name, battle.hero.hero.name);
-            applyPostTurn(changes.turn.second_changes, battle.enemy.hero.name, battle.hero.hero.name);
+            applyTurn(
+                changes.turn.first,
+                battle.hero.hero.name,
+                battle.enemy.hero.name
+            );
+            applyPostTurn(
+                changes.turn.first_changes,
+                battle.hero.hero.name,
+                battle.enemy.hero.name
+            );
+            applyTurn(
+                changes.turn.second,
+                battle.enemy.hero.name,
+                battle.hero.hero.name
+            );
+            applyPostTurn(
+                changes.turn.second_changes,
+                battle.enemy.hero.name,
+                battle.hero.hero.name
+            );
         } else {
-            applyTurn(changes.turn.first, battle.enemy.hero.name, battle.hero.hero.name);
-            applyPostTurn(changes.turn.first_changes, battle.enemy.hero.name, battle.hero.hero.name);
-            applyTurn(changes.turn.second, battle.hero.hero.name, battle.enemy.hero.name);
-            applyPostTurn(changes.turn.second_changes, battle.hero.hero.name, battle.enemy.hero.name);
+            applyTurn(
+                changes.turn.first,
+                battle.enemy.hero.name,
+                battle.hero.hero.name
+            );
+            applyPostTurn(
+                changes.turn.first_changes,
+                battle.enemy.hero.name,
+                battle.hero.hero.name
+            );
+            applyTurn(
+                changes.turn.second,
+                battle.hero.hero.name,
+                battle.enemy.hero.name
+            );
+            applyPostTurn(
+                changes.turn.second_changes,
+                battle.hero.hero.name,
+                battle.enemy.hero.name
+            );
         }
     }
 
-    function applyTurn(result: SkillResult, firstName: String, secondName: String) {
+    function applyTurn(
+        result: SkillResult,
+        firstName: String,
+        secondName: String
+    ) {
         if (!result.skill && !result.status_skill) {
             return;
         }
@@ -251,12 +291,12 @@
 
         if (!result.able.able) {
             if (result.able.reason == "paralyzed") {
-                battleMessages.push(`${firstName} is paralyzed! It can't move!`);
-            }
-            else if (result.able.reason == "asleep") {
+                battleMessages.push(
+                    `${firstName} is paralyzed! It can't move!`
+                );
+            } else if (result.able.reason == "asleep") {
                 battleMessages.push(`${firstName} is fast asleep!`);
-            }
-            else if (result.able.reason == "frozen") {
+            } else if (result.able.reason == "frozen") {
                 battleMessages.push(`${firstName} is frozen solid!`);
             }
             return;
@@ -267,16 +307,14 @@
         }
         if (result.skill) {
             if (result.skill.critical) {
-                battleMessages.push("A critical hit!")
+                battleMessages.push("A critical hit!");
             }
             if (result.skill.effectiveness == 0) {
                 battleMessages.push(`It doesn't affect ${secondName}.`);
-            }
-            else if (result.skill.effectiveness < 1) {
-                battleMessages.push("It's not very effective…")
-            }
-            else if (result.skill.effectiveness > 1) {
-                battleMessages.push("It's super effective!")
+            } else if (result.skill.effectiveness < 1) {
+                battleMessages.push("It's not very effective…");
+            } else if (result.skill.effectiveness > 1) {
+                battleMessages.push("It's super effective!");
             }
             // apply result.skill.damage;
             for (let status of result.skill.secondary_status_changes) {
@@ -290,7 +328,6 @@
             for (let stage of result.status_skill.stage_changes) {
                 applyStage(name, stage);
             }
-            
         }
         if (result.fainted) {
             battleMessages.push(`${firstName} fainted!`);
@@ -300,23 +337,29 @@
         }
     }
 
-    function applyEffect(name: String, status: StatusChange, side_effect: boolean = false) {
-        if (status.effect == 'immune' && !side_effect) {
+    function applyEffect(
+        name: String,
+        status: StatusChange,
+        side_effect: boolean = false
+    ) {
+        if (status.effect == "immune" && !side_effect) {
             battleMessages.push(`It doesn't affect ${name}…`);
             return;
         }
-        if (status.effect == 'affected' && !side_effect) {
+        if (status.effect == "affected" && !side_effect) {
             battleMessages.push(`${name} is already ${status.status}…`);
             return;
         }
-        if (status.effect == 'missed' && !side_effect) {
-            battleMessages.push('…but it failed.');
+        if (status.effect == "missed" && !side_effect) {
+            battleMessages.push("…but it failed.");
             return;
         }
         if (status.status == "asleep") {
             battleMessages.push(`${name} fell asleep!`);
         } else if (status.status == "paralyzed") {
-            battleMessages.push(`${name} is paralyzed! It may be unable to move!`);
+            battleMessages.push(
+                `${name} is paralyzed! It may be unable to move!`
+            );
         } else if (status.status == "frozen") {
             battleMessages.push(`${name} was frozen solid!`);
         } else if (status.status == "poisoned") {
@@ -343,10 +386,14 @@
             battleMessages.push(`${name}'s ${stage.stage} severely fell!`);
         }
     }
-    
-    function applyPostTurn(result: PostTurn, firstName: String, secondName: String) {
+
+    function applyPostTurn(
+        result: PostTurn,
+        firstName: String,
+        secondName: String
+    ) {
         for (let effect of result.changes) {
-            applyPostEffect(firstName, effect.reason, effect.status_end)
+            applyPostEffect(firstName, effect.reason, effect.status_end);
         }
         if (result.fainted) {
             battleMessages.push(`${firstName} fainted!`);
@@ -356,7 +403,11 @@
         }
     }
 
-    function applyPostEffect(name: String, status: String, status_end: boolean) {
+    function applyPostEffect(
+        name: String,
+        status: String,
+        status_end: boolean
+    ) {
         if (status == "asleep" && status_end) {
             battleMessages.push(`${name} woke up!`);
         } else if (status == "frozen" && status_end) {
@@ -366,8 +417,15 @@
         } else if (status == "burn") {
             battleMessages.push(`${name} is hurt by its burn!`);
         } else if (status == "leech seed") {
-            battleMessages.push(`The ${name}'s health is sapped by leech seed!`);
+            battleMessages.push(
+                `The ${name}'s health is sapped by leech seed!`
+            );
         }
+    }
+
+    function closeMessage() {
+        battleMessages.shift();
+        battleMessages = battleMessages;
     }
 </script>
 
@@ -384,6 +442,11 @@
     />
 {:else}
     <div>No active battle</div>
+{/if}
+
+{#if battleMessages.length > 0}
+    {battleMessages[0]}
+    <button on:click={closeMessage}>close</button>
 {/if}
 
 <style>
