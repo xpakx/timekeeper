@@ -61,41 +61,61 @@
             </div>
         </div>
 
-        <div class="skills-container">
-            {#each battle.hero.skillset as skill, index}
-                <div class="skill">
-                    {#if skill != undefined}
-                        <div class="skill-header">
-                            <div class="skill-name">
-                                {skill.name}
-                            </div>
-                            <div class="skill-pp">
-                                {skill.max_usages}/{skill.max_usages}
-                            </div>
+        {#if battleMessages.length > 0}
+            <div class="message-container">
+                <div class="message">
+                    <div class="message-inner-container">
+                        {battleMessages[0].message}
+                        <div class="message-buttons-container">
+                            <button
+                                class="message-close-btn"
+                                on:click={closeMessage}>close</button
+                            >
                         </div>
-                        <div class="skill-stats">
-                            <div class="skill-power">
-                                <Fa icon={faBolt} />
-                                {skill.power}
-                            </div>
-                            <div class="skill-accuracy">
-                                <Fa icon={faCrosshairs} />
-                                {skill.accuracy}
-                            </div>
-                            <div class="skill-type {'type-' + skill.move_type}">
-                                {skill.move_type}
-                            </div>
-                        </div>
-                        <button
-                            class="skill-btn"
-                            on:click={() => emitSkill(index + 1)}>Use</button
-                        >
-                    {:else}
-                        No skill
-                    {/if}
+                    </div>
                 </div>
-            {/each}
-        </div>
+            </div>
+        {:else}
+            <div class="skills-container">
+                {#each battle.hero.skillset as skill, index}
+                    <div class="skill">
+                        {#if skill != undefined}
+                            <div class="skill-header">
+                                <div class="skill-name">
+                                    {skill.name}
+                                </div>
+                                <div class="skill-pp">
+                                    {skill.max_usages}/{skill.max_usages}
+                                </div>
+                            </div>
+                            <div class="skill-stats">
+                                <div class="skill-power">
+                                    <Fa icon={faBolt} />
+                                    {skill.power}
+                                </div>
+                                <div class="skill-accuracy">
+                                    <Fa icon={faCrosshairs} />
+                                    {skill.accuracy}
+                                </div>
+                                <div
+                                    class="skill-type {'type-' +
+                                        skill.move_type}"
+                                >
+                                    {skill.move_type}
+                                </div>
+                            </div>
+                            <button
+                                class="skill-btn"
+                                on:click={() => emitSkill(index + 1)}
+                                >Use</button
+                            >
+                        {:else}
+                            No skill
+                        {/if}
+                    </div>
+                {/each}
+            </div>
+        {/if}
     </div>
     <div class="action-container">
         <button class="action-btn" on:click={emitFleeAction}>
@@ -109,13 +129,8 @@
 
 {#if itemChoice}
     <div class="item-container">
-        <ItemChoice on:choice={(event) => emitItem(event.detail.id)}/>
+        <ItemChoice on:choice={(event) => emitItem(event.detail.id)} />
     </div>
-{/if}
-
-{#if battleMessages.length > 0}
-    {battleMessages[0].message}
-    <button on:click={closeMessage}>close</button>
 {/if}
 
 <style>
@@ -320,5 +335,50 @@
 
     .action-btn:hover {
         color: #6c7086;
+    }
+
+    .message-container {
+        width: 600px;
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .message {
+        width: 400px;
+        display: flex;
+        background-color: #45475a;
+        padding: 3px;
+    }
+
+    .message-inner-container {
+        width: 100%;
+        background-color: #45475a;
+        flex-direction: column;
+        justify-content: space-between;
+        border: solid 2px #313244;
+        padding: 2px;
+        color: #bac2de;
+    }
+
+    .message-buttons-container {
+        display: flex;
+        justify-content: end;
+    }
+
+    .message-close-btn {
+        margin-top: 5px;
+        background-color: #313244;
+        color: #a6adc8;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border: none;
+        border-radius: 10px 5px 10px 5px;
+        cursor: pointer;
+    }
+
+    .message-close-btn:hover {
+        background-color: #6c7086;
+        color: #f2cdcd;
     }
 </style>
