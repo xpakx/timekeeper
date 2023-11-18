@@ -10,8 +10,10 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { createEventDispatcher } from "svelte";
     import ItemChoice from "./ItemChoice.svelte";
+    import type { BattleMessage } from "../types/BattleMessage";
 
     export let battle: Battle;
+    export let battleMessages: BattleMessage[] = [];
     const dispatch = createEventDispatcher();
     let itemChoice: boolean = false;
 
@@ -34,6 +36,11 @@
 
     function closeItemChoice() {
         itemChoice = false;
+    }
+
+    function closeMessage() {
+        battleMessages.shift();
+        battleMessages = battleMessages;
     }
 </script>
 
@@ -104,6 +111,11 @@
     <div class="item-container">
         <ItemChoice on:choice={(event) => emitItem(event.detail.id)}/>
     </div>
+{/if}
+
+{#if battleMessages.length > 0}
+    {battleMessages[0].message}
+    <button on:click={closeMessage}>close</button>
 {/if}
 
 <style>

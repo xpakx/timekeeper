@@ -10,6 +10,7 @@
         StageChange,
         StatusChange,
     } from "../../types/MoveResponse";
+    import type { BattleMessage } from "../../types/BattleMessage";
     let apiUri = "http://localhost:8000";
     let message: String;
     getCurrentBattle();
@@ -91,7 +92,7 @@
         },
     };
 
-    let battleMessages: String[] = [];
+    let battleMessages: BattleMessage[] = [];
 
     async function getCurrentBattle() {
         let token: String = await getToken();
@@ -279,6 +280,12 @@
         }
     }
 
+    function addBattleMessage(message: String) {
+        battleMessages.push({
+            message: message,
+        });
+    }
+
     function applyTurn(
         result: SkillResult,
         firstName: String,
@@ -287,34 +294,32 @@
         if (!result.skill && !result.status_skill) {
             return;
         }
-        battleMessages.push(`${firstName} used ${result.name}.`);
+        addBattleMessage(`${firstName} used ${result.name}.`);
 
         if (!result.able.able) {
             if (result.able.reason == "paralyzed") {
-                battleMessages.push(
-                    `${firstName} is paralyzed! It can't move!`
-                );
+                addBattleMessage( `${firstName} is paralyzed! It can't move!`);
             } else if (result.able.reason == "asleep") {
-                battleMessages.push(`${firstName} is fast asleep!`);
+                addBattleMessage(`${firstName} is fast asleep!`);
             } else if (result.able.reason == "frozen") {
-                battleMessages.push(`${firstName} is frozen solid!`);
+                addBattleMessage(`${firstName} is frozen solid!`);
             }
             return;
         }
         if (result.missed) {
-            battleMessages.push(`${firstName}'s attack missed!`);
+            addBattleMessage(`${firstName}'s attack missed!`);
             return;
         }
         if (result.skill) {
             if (result.skill.critical) {
-                battleMessages.push("A critical hit!");
+                addBattleMessage("A critical hit!");
             }
             if (result.skill.effectiveness == 0) {
-                battleMessages.push(`It doesn't affect ${secondName}.`);
+                addBattleMessage(`It doesn't affect ${secondName}.`);
             } else if (result.skill.effectiveness < 1) {
-                battleMessages.push("It's not very effective…");
+                addBattleMessage("It's not very effective…");
             } else if (result.skill.effectiveness > 1) {
-                battleMessages.push("It's super effective!");
+                addBattleMessage("It's super effective!");
             }
             // apply result.skill.damage;
             for (let status of result.skill.secondary_status_changes) {
@@ -330,10 +335,10 @@
             }
         }
         if (result.fainted) {
-            battleMessages.push(`${firstName} fainted!`);
+            addBattleMessage(`${firstName} fainted!`);
         }
         if (result.second_fainted) {
-            battleMessages.push(`${secondName} fainted!`);
+            addBattleMessage(`${secondName} fainted!`);
         }
     }
 
@@ -343,47 +348,45 @@
         side_effect: boolean = false
     ) {
         if (status.effect == "immune" && !side_effect) {
-            battleMessages.push(`It doesn't affect ${name}…`);
+            addBattleMessage(`It doesn't affect ${name}…`);
             return;
         }
         if (status.effect == "affected" && !side_effect) {
-            battleMessages.push(`${name} is already ${status.status}…`);
+            addBattleMessage(`${name} is already ${status.status}…`);
             return;
         }
         if (status.effect == "missed" && !side_effect) {
-            battleMessages.push("…but it failed.");
+            addBattleMessage("…but it failed.");
             return;
         }
         if (status.status == "asleep") {
-            battleMessages.push(`${name} fell asleep!`);
+            addBattleMessage(`${name} fell asleep!`);
         } else if (status.status == "paralyzed") {
-            battleMessages.push(
-                `${name} is paralyzed! It may be unable to move!`
-            );
+            addBattleMessage(`${name} is paralyzed! It may be unable to move!`);
         } else if (status.status == "frozen") {
-            battleMessages.push(`${name} was frozen solid!`);
+            addBattleMessage(`${name} was frozen solid!`);
         } else if (status.status == "poisoned") {
-            battleMessages.push(`${name} was poisoned!`);
+            addBattleMessage(`${name} was poisoned!`);
         } else if (status.status == "burn") {
-            battleMessages.push(`${name} was sustained a burn!`);
+            addBattleMessage(`${name} was sustained a burn!`);
         } else if (status.status == "leech seed") {
-            battleMessages.push(`${name} was seeded!`);
+            addBattleMessage(`${name} was seeded!`);
         }
     }
 
     function applyStage(name: String, stage: StageChange) {
         if (stage.change > 2) {
-            battleMessages.push(`${name}'s ${stage.stage} rose drastically!`);
+            addBattleMessage(`${name}'s ${stage.stage} rose drastically!`);
         } else if (stage.change == 2) {
-            battleMessages.push(`${name}'s ${stage.stage} rose sharply!`);
+            addBattleMessage(`${name}'s ${stage.stage} rose sharply!`);
         } else if (stage.change == 1) {
-            battleMessages.push(`${name}'s ${stage.stage} rose!`);
+            addBattleMessage(`${name}'s ${stage.stage} rose!`);
         } else if (stage.change == -1) {
-            battleMessages.push(`${name}'s ${stage.stage} fell!`);
+            addBattleMessage(`${name}'s ${stage.stage} fell!`);
         } else if (stage.change == -2) {
-            battleMessages.push(`${name}'s ${stage.stage} harshly fell!`);
+            addBattleMessage(`${name}'s ${stage.stage} harshly fell!`);
         } else {
-            battleMessages.push(`${name}'s ${stage.stage} severely fell!`);
+            addBattleMessage(`${name}'s ${stage.stage} severely fell!`);
         }
     }
 
@@ -396,10 +399,10 @@
             applyPostEffect(firstName, effect.reason, effect.status_end);
         }
         if (result.fainted) {
-            battleMessages.push(`${firstName} fainted!`);
+            addBattleMessage(`${firstName} fainted!`);
         }
         if (result.second_fainted) {
-            battleMessages.push(`${secondName} fainted!`);
+            addBattleMessage(`${secondName} fainted!`);
         }
     }
 
@@ -409,23 +412,16 @@
         status_end: boolean
     ) {
         if (status == "asleep" && status_end) {
-            battleMessages.push(`${name} woke up!`);
+            addBattleMessage(`${name} woke up!`);
         } else if (status == "frozen" && status_end) {
-            battleMessages.push(`${name} thawed out!`);
+            addBattleMessage(`${name} thawed out!`);
         } else if (status == "poisoned") {
-            battleMessages.push(`${name} is hurt by poison!`);
+            addBattleMessage(`${name} is hurt by poison!`);
         } else if (status == "burn") {
-            battleMessages.push(`${name} is hurt by its burn!`);
+            addBattleMessage(`${name} is hurt by its burn!`);
         } else if (status == "leech seed") {
-            battleMessages.push(
-                `The ${name}'s health is sapped by leech seed!`
-            );
+            addBattleMessage(`The ${name}'s health is sapped by leech seed!`);
         }
-    }
-
-    function closeMessage() {
-        battleMessages.shift();
-        battleMessages = battleMessages;
     }
 </script>
 
@@ -436,17 +432,13 @@
 {#if battle}
     <BattleCard
         {battle}
+        {battleMessages}
         on:skill={(event) => makeMove(event.detail.num)}
         on:item={(event) => useItem(event.detail.id)}
         on:flee={flee}
     />
 {:else}
     <div>No active battle</div>
-{/if}
-
-{#if battleMessages.length > 0}
-    {battleMessages[0]}
-    <button on:click={closeMessage}>close</button>
 {/if}
 
 <style>
