@@ -37,7 +37,7 @@ async def get_battle(
     return battle_service.get_battle(user.id, id, db)
 
 
-@router.post("/{id}", response_model=BattleResult)
+@router.post("/{id}", responses={200: {"model": BattleResult}})
 async def make_move(
         request: battle_schemas.MoveRequest,
         id: int,

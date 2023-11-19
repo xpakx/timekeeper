@@ -98,7 +98,6 @@ class BattleResult(BaseModel):
         enemy_hp = values.get('enemy_hp')
         if hero_skill:
             new_hp = hero_skill.new_hp
-            hero_skill.new_hp = None
             hero_skill.current_hp = math.floor(100*((new_hp))/hero_hp)
         if enemy_skill:
             new_hp = enemy_skill.new_hp
