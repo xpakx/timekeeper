@@ -2,8 +2,9 @@ from ...db.models import (
         StatusEffect,
         StageEffect)
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator
 from typing import Optional
+import math
 
 
 class StatusChangeEffect(Enum):
@@ -35,7 +36,8 @@ class StatusSkillResults(BaseModel):
 
 
 class DamageSkillResults(BaseModel):
-    damage: int = 0
+    new_hp: int = 0
+    current_hp: Optional[int] = 0
     critical: bool = False
     effectiveness: float = 0.0
     secondary_status_changes: list[StatusChangeResult] = []
@@ -79,3 +81,28 @@ class MoveResult(BaseModel):
 class BattleResult(BaseModel):
     turn: MoveResult
     hero_first: bool
+    hero_hp: int
+    enemy_hp: int
+
+    @root_validator()
+    def transform_data(cls, values):
+        turn = values.get('turn')
+        if not turn:
+            return values
+        first_skill = turn.first.skill
+        second_skill = turn.second.skill
+        hero_first = values.get('hero_first')
+        hero_skill = first_skill if hero_first else second_skill
+        hero_hp = values.get('hero_hp')
+        enemy_skill = second_skill if hero_first else first_skill
+        enemy_hp = values.get('enemy_hp')
+        if hero_skill:
+            new_hp = hero_skill.new_hp
+            hero_skill.new_hp = None
+            hero_skill.current_hp = math.floor(100*((new_hp))/hero_hp)
+        if enemy_skill:
+            new_hp = enemy_skill.new_hp
+            enemy_skill.new_hp = None
+            enemy_skill.current_hp = math.floor(100*((new_hp))/enemy_hp)
+        # TODO: damage from PostTurnResults
+        return values

@@ -193,7 +193,9 @@ def make_move(
         turn = battle_turn(enemy, enemy_mods, enemy_skill, hero, hero_mods, skill)
     battle.turn = battle.turn + 1
     db.commit()
-    result = BattleResult(turn=turn, hero_first=player_first)
+    hero_hp = battle_mech.calculate_hp(hero)
+    enemy_hp = battle_mech.calculate_hp(enemy)
+    result = BattleResult(turn=turn, hero_first=player_first, hero_hp=hero_hp, enemy_hp=enemy_hp)
     return result
 
 
@@ -215,11 +217,12 @@ def apply_damage(
     if hero.burned and skill.move_category == MoveCategory.physical:
         dmg = math.floor(dmg/2)
     other_hero.damage = other_hero.damage + dmg
-    if battle_mech.calculate_hp(other_hero) <= other_hero.damage:
+    other_hero_hp = battle_mech.calculate_hp(other_hero)
+    if other_hero_hp <= other_hero.damage:
         other_hero.fainted = True
     result = DamageSkillResults()
     result.critical = crit
-    result.damage = dmg
+    result.new_hp = other_hero_hp - other_hero.damage
     result.effectiveness = battle_mech.get_effectiveness(
             skill.move_type,
             other_hero.hero)
