@@ -93,9 +93,9 @@ class BattleResult(BaseModel):
         second_skill = turn.second.skill
         hero_first = values.get('hero_first')
         hero_skill = first_skill if hero_first else second_skill
-        hero_hp = values.get('hero_hp')
+        hero_hp = values.pop('hero_hp')
         enemy_skill = second_skill if hero_first else first_skill
-        enemy_hp = values.get('enemy_hp')
+        enemy_hp = values.pop('enemy_hp')
         if hero_skill:
             new_hp = hero_skill.new_hp
             hero_skill.current_hp = math.floor(100*((new_hp))/hero_hp)
