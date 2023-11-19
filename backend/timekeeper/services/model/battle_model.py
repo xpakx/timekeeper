@@ -61,7 +61,8 @@ class SkillResult(BaseModel):
 
 class PostTurnEffects(BaseModel):
     reason: StatusEffect
-    hp_change: Optional[int]
+    new_hp: Optional[int]
+    current_hp: Optional[int]
     status_end: bool = False
 
 
@@ -103,5 +104,15 @@ class BattleResult(BaseModel):
             new_hp = enemy_skill.new_hp
             enemy_skill.new_hp = None
             enemy_skill.current_hp = math.floor(100*((new_hp))/enemy_hp)
-        # TODO: damage from PostTurnResults
+        first_changes = turn.first_changes.changes
+        second_changes = turn.second_changes.changes
+        hero_changes = first_changes if hero_first else second_changes
+        enemy_changes = second_changes if hero_first else first_changes
+        for change in hero_changes:
+            new_hp = change.new_hp
+            change.current_hp = math.floor(100*((new_hp))/hero_hp)
+        for change in enemy_changes:
+            new_hp = change.new_hp
+            change.new_hp = None
+            change.current_hp = math.floor(100*((new_hp))/enemy_hp)
         return values

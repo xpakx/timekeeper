@@ -438,7 +438,9 @@ def apply_poison_damage(hero: UserHero) -> PostTurnEffects:
     hero.damage = hero.damage + damage
     if hp <= hero.damage:
         hero.fainted = True
-    return PostTurnEffects(reason=StatusEffect.poisoned, hp_change=damage)
+    hero_hp = battle_mech.calculate_hp(hero)
+    new_hp = hero_hp - hero.damage
+    return PostTurnEffects(reason=StatusEffect.poisoned, new_hp=new_hp)
 
 
 def apply_burn_status(hero: UserHero) -> StatusChangeEffect:
