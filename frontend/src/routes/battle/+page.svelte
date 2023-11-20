@@ -321,7 +321,7 @@
             } else if (result.skill.effectiveness > 1) {
                 addBattleMessage("It's super effective!");
             }
-            // apply result.skill.damage;
+            // apply result.skill.current_hp;
             for (let status of result.skill.secondary_status_changes) {
                 applyEffect(secondName, status, true);
             }

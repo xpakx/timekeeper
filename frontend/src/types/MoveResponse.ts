@@ -14,7 +14,8 @@ export type SkillStatus = {
 }
 
 export type SkillDamage = {
-    damage: number,
+    new_hp?: number,
+    current_hp: number,
     critical: boolean,
     effectiveness: number,
     secondary_status_changes: StatusChange[],
@@ -38,7 +39,8 @@ export type SkillResult = {
 
 export type PostTurnEffect = {
     reason: String,
-    hp_change: number,
+    new_hp?: number,
+    current_hp: number,
     status_end: boolean 
 }
 
