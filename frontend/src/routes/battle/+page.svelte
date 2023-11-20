@@ -236,49 +236,10 @@
     }
 
     function applyChanges(changes: MoveResponse) {
-        if (changes.hero_first) {
-            applyTurn(
-                changes.turn.first,
-                battle.hero.hero.name,
-                battle.enemy.hero.name
-            );
-            applyPostTurn(
-                changes.turn.first_changes,
-                battle.hero.hero.name,
-                battle.enemy.hero.name
-            );
-            applyTurn(
-                changes.turn.second,
-                battle.enemy.hero.name,
-                battle.hero.hero.name
-            );
-            applyPostTurn(
-                changes.turn.second_changes,
-                battle.enemy.hero.name,
-                battle.hero.hero.name
-            );
-        } else {
-            applyTurn(
-                changes.turn.first,
-                battle.enemy.hero.name,
-                battle.hero.hero.name
-            );
-            applyPostTurn(
-                changes.turn.first_changes,
-                battle.enemy.hero.name,
-                battle.hero.hero.name
-            );
-            applyTurn(
-                changes.turn.second,
-                battle.hero.hero.name,
-                battle.enemy.hero.name
-            );
-            applyPostTurn(
-                changes.turn.second_changes,
-                battle.hero.hero.name,
-                battle.enemy.hero.name
-            );
-        }
+        applyTurn(changes.turn.first, changes.hero_first);
+        applyPostTurn(changes.turn.first_changes, changes.hero_first);
+        applyTurn(changes.turn.second, changes.hero_first);
+        applyPostTurn(changes.turn.second_changes, changes.hero_first);
     }
 
     function addBattleMessage(
@@ -291,15 +252,26 @@
         });
     }
 
-    function applyTurn(
-        result: SkillResult,
-        firstName: String,
-        secondName: String
-    ) {
+    function getFirstName(hero_first: boolean): String {
+        if (hero_first) {
+            return battle.hero.hero.name;
+        } else {
+            return battle.enemy.hero.name;
+        }
+    }
+
+    function getSecondName(hero_first: boolean): String {
+        return getFirstName(!hero_first);
+    }
+
+    function applyTurn(result: SkillResult, hero_first: boolean) {
+        let firstName = getFirstName(hero_first);
+        let secondName = getSecondName(hero_first);
+
         if (!result.skill && !result.status_skill) {
             return;
         }
-        
+
         let damage: number | undefined = undefined;
         if (result.skill) {
             damage = result.skill.current_hp;
@@ -399,13 +371,12 @@
         }
     }
 
-    function applyPostTurn(
-        result: PostTurn,
-        firstName: String,
-        secondName: String
-    ) {
+    function applyPostTurn(result: PostTurn, hero_first: boolean) {
+        let firstName = getFirstName(hero_first);
+        let secondName = getSecondName(hero_first);
+
         for (let effect of result.changes) {
-            applyPostEffect(firstName, effect);
+            applyPostEffect(hero_first, effect);
         }
         if (result.fainted) {
             addBattleMessage(`${firstName} fainted!`);
@@ -415,7 +386,9 @@
         }
     }
 
-    function applyPostEffect(name: String, effect: PostTurnEffect) {
+    function applyPostEffect(hero_first: boolean, effect: PostTurnEffect) {
+        let name = getFirstName(hero_first);
+
         let damage: number = effect.current_hp;
         if (effect.reason == "asleep" && effect.status_end) {
             addBattleMessage(`${name} woke up!`);
@@ -426,7 +399,10 @@
         } else if (effect.reason == "burn") {
             addBattleMessage(`${name} is hurt by its burn!`, damage);
         } else if (effect.reason == "leech seed") {
-            addBattleMessage(`The ${name}'s health is sapped by leech seed!`, damage);
+            addBattleMessage(
+                `The ${name}'s health is sapped by leech seed!`,
+                damage
+            );
         }
     }
 </script>
