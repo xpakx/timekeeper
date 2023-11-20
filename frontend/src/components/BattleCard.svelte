@@ -39,8 +39,16 @@
     }
 
     function closeMessage() {
-        battleMessages.shift();
+        let message = battleMessages.shift();
         battleMessages = battleMessages;
+        if (message && message.new_current_hp != undefined) {
+            if (message.target == 'hero' && message.new_hp) {
+                battle.hero.current_hp = message.new_current_hp;
+                battle.hero.hp = message.new_hp;
+            } else {
+                battle.enemy.current_hp = message.new_current_hp;
+            }
+        }
     }
 </script>
 

@@ -242,13 +242,21 @@
         applyPostTurn(changes.turn.second_changes, changes.hero_first);
     }
 
-    function addBattleMessage(
+    function addBattleMessage(message: String) {
+        battleMessages.push({ message: message });
+    }
+
+    function addHPBattleMessage(
         message: String,
-        hp: number | undefined = undefined
+        new_hp: number | undefined,
+        new_current_hp: number | undefined,
+        hero_target: boolean
     ) {
         battleMessages.push({
             message: message,
-            new_hp: hp,
+            new_hp: new_hp,
+            new_current_hp: new_current_hp,
+            target: hero_target ? "hero" : "enemy",
         });
     }
 
@@ -272,11 +280,18 @@
             return;
         }
 
-        let damage: number | undefined = undefined;
+        let current_hp: number | undefined = undefined;
+        let hp: number | undefined = undefined;
         if (result.skill) {
-            damage = result.skill.current_hp;
+            current_hp = result.skill.current_hp;
+            hp = result.skill.new_hp;
         }
-        addBattleMessage(`${firstName} used ${result.name}.`, damage);
+        addHPBattleMessage(
+            `${firstName} used ${result.name}.`,
+            hp,
+            current_hp,
+            !hero_first
+        );
 
         if (!result.able.able) {
             if (result.able.reason == "paralyzed") {
@@ -389,19 +404,30 @@
     function applyPostEffect(hero_first: boolean, effect: PostTurnEffect) {
         let name = getFirstName(hero_first);
 
-        let damage: number = effect.current_hp;
         if (effect.reason == "asleep" && effect.status_end) {
             addBattleMessage(`${name} woke up!`);
         } else if (effect.reason == "frozen" && effect.status_end) {
             addBattleMessage(`${name} thawed out!`);
         } else if (effect.reason == "poisoned") {
-            addBattleMessage(`${name} is hurt by poison!`, damage);
+            addHPBattleMessage(
+                `${name} is hurt by poison!`,
+                effect.new_hp,
+                effect.current_hp,
+                hero_first
+            );
         } else if (effect.reason == "burn") {
-            addBattleMessage(`${name} is hurt by its burn!`, damage);
+            addHPBattleMessage(
+                `${name} is hurt by its burn!`,
+                effect.new_hp,
+                effect.current_hp,
+                hero_first
+            );
         } else if (effect.reason == "leech seed") {
-            addBattleMessage(
+            addHPBattleMessage(
                 `The ${name}'s health is sapped by leech seed!`,
-                damage
+                effect.new_hp,
+                effect.current_hp,
+                hero_first
             );
         }
     }
