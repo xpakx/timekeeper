@@ -6,6 +6,7 @@
     import type {
         MoveResponse,
         PostTurn,
+        PostTurnEffect,
         SkillResult,
         StageChange,
         StatusChange,
@@ -280,9 +281,13 @@
         }
     }
 
-    function addBattleMessage(message: String) {
+    function addBattleMessage(
+        message: String,
+        hp: number | undefined = undefined
+    ) {
         battleMessages.push({
             message: message,
+            new_hp: hp,
         });
     }
 
@@ -294,11 +299,16 @@
         if (!result.skill && !result.status_skill) {
             return;
         }
-        addBattleMessage(`${firstName} used ${result.name}.`);
+        
+        let damage: number | undefined = undefined;
+        if (result.skill) {
+            damage = result.skill.current_hp;
+        }
+        addBattleMessage(`${firstName} used ${result.name}.`, damage);
 
         if (!result.able.able) {
             if (result.able.reason == "paralyzed") {
-                addBattleMessage( `${firstName} is paralyzed! It can't move!`);
+                addBattleMessage(`${firstName} is paralyzed! It can't move!`);
             } else if (result.able.reason == "asleep") {
                 addBattleMessage(`${firstName} is fast asleep!`);
             } else if (result.able.reason == "frozen") {
@@ -321,7 +331,6 @@
             } else if (result.skill.effectiveness > 1) {
                 addBattleMessage("It's super effective!");
             }
-            // apply result.skill.current_hp;
             for (let status of result.skill.secondary_status_changes) {
                 applyEffect(secondName, status, true);
             }
@@ -396,7 +405,7 @@
         secondName: String
     ) {
         for (let effect of result.changes) {
-            applyPostEffect(firstName, effect.reason, effect.status_end);
+            applyPostEffect(firstName, effect);
         }
         if (result.fainted) {
             addBattleMessage(`${firstName} fainted!`);
@@ -406,21 +415,18 @@
         }
     }
 
-    function applyPostEffect(
-        name: String,
-        status: String,
-        status_end: boolean
-    ) {
-        if (status == "asleep" && status_end) {
+    function applyPostEffect(name: String, effect: PostTurnEffect) {
+        let damage: number = effect.current_hp;
+        if (effect.reason == "asleep" && effect.status_end) {
             addBattleMessage(`${name} woke up!`);
-        } else if (status == "frozen" && status_end) {
+        } else if (effect.reason == "frozen" && effect.status_end) {
             addBattleMessage(`${name} thawed out!`);
-        } else if (status == "poisoned") {
-            addBattleMessage(`${name} is hurt by poison!`);
-        } else if (status == "burn") {
-            addBattleMessage(`${name} is hurt by its burn!`);
-        } else if (status == "leech seed") {
-            addBattleMessage(`The ${name}'s health is sapped by leech seed!`);
+        } else if (effect.reason == "poisoned") {
+            addBattleMessage(`${name} is hurt by poison!`, damage);
+        } else if (effect.reason == "burn") {
+            addBattleMessage(`${name} is hurt by its burn!`, damage);
+        } else if (effect.reason == "leech seed") {
+            addBattleMessage(`The ${name}'s health is sapped by leech seed!`, damage);
         }
     }
 </script>
