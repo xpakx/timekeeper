@@ -274,5 +274,21 @@ def test_fleeing(hero: UserHero, hero_mods: HeroMods, enemy: UserHero, enemy_mod
     if hero_modified_speed >= enemy_modified_speed:
         return True
     odds = (math.floor((hero_speed*128)/enemy_speed) + 30*attempts) % 256
-    rand = random.randint(85, 101)
+    rand = random.randint(0, 256)
     return rand < odds
+
+
+def test_catching(hero: UserHero, hero_mods: HeroMods, ball_bonus: int) -> bool:
+    hp = calculate_hp(hero)
+    current_hp = hp - hero.damage
+    capture_rate = hero.hero.capture_rate
+    status_bonus = 1.0
+    if hero.asleep or hero.froze:
+        status_bonus = 2.0
+    elif hero.poisoned or hero.paralyzed or hero.burned:
+        status_bonus = 1.5
+    catch_rate = math.floor((3*hp - 2*current_hp)*(capture_rate*ball_bonus)/(3*hp))*status_bonus
+    if catch_rate < 1:
+        catch_rate = 1
+    rand = random.randint(0, 256)
+    return rand < catch_rate

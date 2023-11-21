@@ -147,6 +147,7 @@ class Hero(Base):
     base_speed = Column(Integer)
     base_special_defense = Column(Integer)
     base_special_attack = Column(Integer)
+    capture_rate = Column(Integer)
     rarity = Column(Enum(ItemRarity))
     hero_type = Column(Enum(HeroType))
     secondary_hero_type = Column(Enum(HeroType))
