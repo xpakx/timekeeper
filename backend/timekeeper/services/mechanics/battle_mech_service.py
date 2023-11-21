@@ -263,3 +263,16 @@ def calculate_stab_factor(hero: UserHero, move: Skill) -> float:
     if (test_hero_move_type(hero, move)):
         return 1.5
     return 1
+
+
+def test_fleeing(hero: UserHero, hero_mods: HeroMods, enemy: UserHero, enemy_mods: HeroMods) -> bool:
+    hero_speed = calculate_speed(hero)
+    hero_modified_speed = hero_speed * stage_to_modifier(hero_mods.speed)
+    enemy_speed = calculate_speed(enemy)
+    enemy_modified_speed = enemy_speed * stage_to_modifier(enemy_mods.speed)
+    attempts = hero_mods.flee_attempts + 1
+    if hero_modified_speed >= enemy_modified_speed:
+        return True
+    odds = (math.floor((hero_speed*128)/enemy_speed) + 30*attempts) % 256
+    rand = random.randint(85, 101)
+    return rand < odds
