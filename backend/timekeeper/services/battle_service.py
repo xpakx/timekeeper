@@ -17,7 +17,9 @@ from ..db.models import (
         Skill,
         StatusEffect,
         StageEffect,
-        MoveCategory)
+        MoveCategory,
+        EquipmentEntry,
+        Item)
 from .model.battle_model import (
         StatusChangeEffect,
         StatusChangeResult,
@@ -176,6 +178,7 @@ def make_move(
     flee = move.move == MoveType.flee
     switch = False
     skill = get_current_skill(move, hero)
+    item = get_item(move, user_id, db)
     enemy_skill = get_enemy_skill(enemy)
     player_first = battle_mech.calculate_if_player_moves_first(
             hero,
@@ -615,3 +618,13 @@ def is_hero_able_to_move(hero: UserHero) -> MovementTestResult:
     if hero.asleep:
         return MovementTestResult(reason=StatusEffect.asleep)
     return MovementTestResult(able=True)
+
+
+def get_item(move: MoveRequest, user_id: int, db: Session) -> Optional[Item]:
+    if move.move != MoveType.item:
+        return None
+    item: EquipmentEntry = equipment_repo.get_item_entry(move.id, user_id, db)
+    if item.amount < 1:
+        return None  # TODO
+    item.amount = item.amount - 1
+    return item.item
