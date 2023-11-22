@@ -265,7 +265,11 @@ def calculate_stab_factor(hero: UserHero, move: Skill) -> float:
     return 1
 
 
-def test_fleeing(hero: UserHero, hero_mods: HeroMods, enemy: UserHero, enemy_mods: HeroMods) -> bool:
+def test_fleeing(
+        hero: UserHero,
+        hero_mods: HeroMods,
+        enemy: UserHero,
+        enemy_mods: HeroMods) -> bool:
     hero_speed = calculate_speed(hero)
     hero_modified_speed = hero_speed * stage_to_modifier(hero_mods.speed)
     enemy_speed = calculate_speed(enemy)
@@ -278,7 +282,10 @@ def test_fleeing(hero: UserHero, hero_mods: HeroMods, enemy: UserHero, enemy_mod
     return rand < odds
 
 
-def test_catching(hero: UserHero, hero_mods: HeroMods, ball_bonus: int) -> bool:
+def test_catching(
+        hero: UserHero,
+        hero_mods: HeroMods,
+        ball_bonus: int) -> bool:
     hp = calculate_hp(hero)
     current_hp = hp - hero.damage
     capture_rate = hero.hero.capture_rate

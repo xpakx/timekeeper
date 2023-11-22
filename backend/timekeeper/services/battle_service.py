@@ -188,9 +188,9 @@ def make_move(
             switch)
     turn = None
     if player_first:
-        turn = battle_turn(hero, hero_mods, skill, enemy, enemy_mods, enemy_skill)
+        turn = battle_turn(hero, hero_mods, skill, enemy, enemy_mods, enemy_skill, flee, False)
     else:
-        turn = battle_turn(enemy, enemy_mods, enemy_skill, hero, hero_mods, skill)
+        turn = battle_turn(enemy, enemy_mods, enemy_skill, hero, hero_mods, skill, False, flee)
     battle.turn = battle.turn + 1
     db.commit()
     hero_hp = battle_mech.calculate_hp(hero)
@@ -235,11 +235,17 @@ def battle_turn(
         skill: Optional[Skill],
         other_hero: UserHero,
         other_mods: HeroMods,
-        other_skill: Optional[Skill]) -> MoveResult:
+        other_skill: Optional[Skill],
+        flee: bool,
+        other_flee: bool) -> MoveResult:
+    if flee and test_flee(hero, hero_mods, other_hero, other_mods):
+        return MoveResult(first_fled=True)
     first = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
     first_changes = apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
     if other_hero.fainted:
         return MoveResult(first=first)
+    if other_flee and test_flee(other_hero, other_mods, hero, hero_mods):
+        return MoveResult(second_fled=True, first=first, first_changes=first_changes)
     second = hero_turn(
             other_hero,
             other_mods,
@@ -253,6 +259,12 @@ def battle_turn(
             second=second,
             second_changes=second_changes)
     return result
+
+
+def test_flee(hero: UserHero, hero_mods: HeroMods, other_hero: UserHero, other_mods: HeroMods) -> bool:
+    fled = battle_mech.test_fleeing(hero, hero_mods, other_hero, other_mods)
+    hero_mods.flee_attempts = hero_mods.flee_attempts + 1
+    return fled
 
 
 def hero_turn(
