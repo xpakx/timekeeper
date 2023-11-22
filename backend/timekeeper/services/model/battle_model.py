@@ -73,10 +73,12 @@ class PostTurnResult(BaseModel):
 
 
 class MoveResult(BaseModel):
-    first: SkillResult
-    first_changes: PostTurnResult
-    second: SkillResult
-    second_changes: PostTurnResult
+    first: Optional[SkillResult]
+    first_changes: PostTurnResult = []
+    first_fled: bool = False
+    second: Optional[SkillResult]
+    second_changes: PostTurnResult = []
+    second_fled: bool = False
 
 
 class BattleResult(BaseModel):
@@ -90,8 +92,8 @@ class BattleResult(BaseModel):
         turn = values.get('turn')
         if not turn:
             return values
-        first_skill = turn.first.skill
-        second_skill = turn.second.skill
+        first_skill = turn.first.skill if turn.first else None
+        second_skill = turn.second.skill if turn.second else None
         hero_first = values.get('hero_first')
         hero_skill = first_skill if hero_first else second_skill
         hero_hp = values.pop('hero_hp')
