@@ -106,8 +106,8 @@ class BattleResult(BaseModel):
             new_hp = enemy_skill.new_hp
             enemy_skill.new_hp = None
             enemy_skill.current_hp = math.floor(100*((new_hp))/enemy_hp)
-        first_changes = turn.first_changes.changes
-        second_changes = turn.second_changes.changes
+        first_changes = turn.first_changes.changes if turn.first_changes else []
+        second_changes = turn.second_changes.changes if turn.second_changes else []
         hero_changes = first_changes if hero_first else second_changes
         enemy_changes = second_changes if hero_first else first_changes
         for change in hero_changes:
