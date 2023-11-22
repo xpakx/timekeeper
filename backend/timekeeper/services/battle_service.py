@@ -188,14 +188,38 @@ def make_move(
             switch)
     turn = None
     if player_first:
-        turn = battle_turn(hero, hero_mods, skill, enemy, enemy_mods, enemy_skill, flee, False)
+        turn = battle_turn(
+                hero,
+                hero_mods,
+                skill,
+                enemy,
+                enemy_mods,
+                enemy_skill,
+                flee,
+                False)
     else:
-        turn = battle_turn(enemy, enemy_mods, enemy_skill, hero, hero_mods, skill, False, flee)
+        turn = battle_turn(
+                enemy,
+                enemy_mods,
+                enemy_skill,
+                hero,
+                hero_mods,
+                skill,
+                False,
+                flee)
     battle.turn = battle.turn + 1
+    if enemy.fainted:
+        battle.finished = True
+    if turn.first_fled or turn.second_fled:
+        battle.finished = True
     db.commit()
     hero_hp = battle_mech.calculate_hp(hero)
     enemy_hp = battle_mech.calculate_hp(enemy)
-    result = BattleResult(turn=turn, hero_first=player_first, hero_hp=hero_hp, enemy_hp=enemy_hp)
+    result = BattleResult(
+            turn=turn,
+            hero_first=player_first,
+            hero_hp=hero_hp,
+            enemy_hp=enemy_hp)
     return result
 
 
