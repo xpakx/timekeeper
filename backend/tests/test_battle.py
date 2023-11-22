@@ -180,7 +180,8 @@ def create_battle(
             defense=0,
             special_attack=0,
             special_defense=0,
-            speed=0)
+            speed=0,
+            flee_attempts=100)
     enemy = HeroMods(
             accuracy=0,
             evasion=0,
@@ -188,7 +189,8 @@ def create_battle(
             defense=0,
             special_attack=0,
             special_defense=0,
-            speed=0)
+            speed=0,
+            flee_attempts=100)
     item = Battle(
             turn=1,
             enemies=1,
