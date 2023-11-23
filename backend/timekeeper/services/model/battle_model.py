@@ -74,11 +74,12 @@ class PostTurnResult(BaseModel):
 
 class MoveResult(BaseModel):
     first: Optional[SkillResult]
-    first_changes: PostTurnResult = []
+    first_changes: Optional[PostTurnResult]
     first_fled: bool = False
     second: Optional[SkillResult]
-    second_changes: PostTurnResult = []
+    second_changes: Optional[PostTurnResult]
     second_fled: bool = False
+    catched: Optional[bool]
 
 
 class BattleResult(BaseModel):

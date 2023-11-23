@@ -82,6 +82,8 @@ class ItemType(enum.Enum):
     incubator = "incubator"
     battle_ticket = "battle ticket"
     skill = "skill"
+    battle_item = "battle item"
+    pokeball = "pokeball"
 
 
 class Item(Base):
