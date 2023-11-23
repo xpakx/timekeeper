@@ -217,7 +217,7 @@ def make_move(
     battle.turn = battle.turn + 1
     if enemy.fainted:
         battle.finished = True
-    if turn.first_fled or turn.second_fled:
+    if turn.first_fled or turn.second_fled or turn.catched:
         battle.finished = True
     db.commit()
     hero_hp = battle_mech.calculate_hp(hero)
