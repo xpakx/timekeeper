@@ -199,7 +199,9 @@ def make_move(
                 enemy_mods,
                 enemy_skill,
                 flee,
-                False)
+                False,
+                item,
+                None)
     else:
         turn = battle_turn(
                 enemy,
@@ -209,7 +211,9 @@ def make_move(
                 hero_mods,
                 skill,
                 False,
-                flee)
+                flee,
+                None,
+                item)
     battle.turn = battle.turn + 1
     if enemy.fainted:
         battle.finished = True
@@ -264,15 +268,28 @@ def battle_turn(
         other_mods: HeroMods,
         other_skill: Optional[Skill],
         flee: bool,
-        other_flee: bool) -> MoveResult:
+        other_flee: bool,
+        item: Optional[Item],
+        other_item: Optional[Item]) -> MoveResult:
     if flee and test_flee(hero, hero_mods, other_hero, other_mods):
         return MoveResult(first_fled=True)
+    catched = None
+    if item and item.item_type == ItemType.pokeball:
+        catched = battle_mech.test_catching(other_hero, other_mods, 1)
+        if catched:
+            return MoveResult(catched=True)
     first = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
     first_changes = apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
+    if catched is not None:
+        return MoveResult(catched=catched, first=first, first_changes=first_changes)
     if other_hero.fainted:
-        return MoveResult(first=first)
+        return MoveResult(first=first, first_changes=first_changes)
     if other_flee and test_flee(other_hero, other_mods, hero, hero_mods):
         return MoveResult(second_fled=True, first=first, first_changes=first_changes)
+    if other_item and other_item.item_type == ItemType.pokeball:
+        catched = battle_mech.test_catching(hero, hero_mods, 1)
+        if catched:
+            return MoveResult(catched=True, first=first, first_changes=first_changes)
     second = hero_turn(
             other_hero,
             other_mods,
@@ -284,7 +301,8 @@ def battle_turn(
             first=first,
             first_changes=first_changes,
             second=second,
-            second_changes=second_changes)
+            second_changes=second_changes,
+            catched=catched)
     return result
 
 
@@ -625,6 +643,8 @@ def get_item(move: MoveRequest, user_id: int, db: Session) -> Optional[Item]:
         return None
     item: EquipmentEntry = equipment_repo.get_item_entry(move.id, user_id, db)
     if item.amount < 1:
-        return None  # TODO
+        return None
+    if item.item.item_type not in [ItemType.battle_item, ItemType.pokeball]:
+        return None
     item.amount = item.amount - 1
     return item.item
