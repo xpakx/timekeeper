@@ -674,5 +674,11 @@ def switch_hero(
     if hero.id == battle.hero_id:
         return None
     battle.hero = hero
-    #  TODO clean hero_mods
+    mods: HeroMods = battle.hero_mods
+    mods.speed = 0
+    mods.attack = 0
+    mods.defense = 0
+    mods.evasion = 0
+    mods.accuracy = 0
+    mods.leech_seed = False
     return hero
