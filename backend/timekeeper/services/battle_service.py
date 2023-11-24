@@ -671,7 +671,7 @@ def switch_hero(
         hero = team.hero_6
     if hero is None:
         return None
-    if hero.id == battle.hero_id:
+    if hero.id == battle.hero_id or hero.fainted:
         return None
     battle.hero = hero
     mods: HeroMods = battle.hero_mods
