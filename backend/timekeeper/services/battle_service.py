@@ -648,3 +648,31 @@ def get_item(move: MoveRequest, user_id: int, db: Session) -> Optional[Item]:
         return None
     item.amount = item.amount - 1
     return item.item
+
+
+def switch_hero(
+        battle: Battle,
+        num: int,
+        user_id: int,
+        db: Session) -> Optional[UserHero]:
+    team = team_repo.get_team(user_id, db)
+    hero = None
+    if num == 1:
+        hero = team.hero_1
+    elif num == 2:
+        hero = team.hero_2
+    elif num == 3:
+        hero = team.hero_3
+    elif num == 4:
+        hero = team.hero_4
+    elif num == 5:
+        hero = team.hero_5
+    elif num == 6:
+        hero = team.hero_6
+    if hero is None:
+        return None
+    if hero.id == battle.hero_id:
+        return None
+    battle.hero = hero
+    #  TODO clean hero_mods
+    return hero
