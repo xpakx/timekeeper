@@ -181,9 +181,6 @@ def make_move(
     item = get_item(move, user_id, db)
     enemy_skill = get_enemy_skill(enemy)
     switch = move.move == MoveType.switch
-    hero_to_switch = None
-    if switch:
-        hero_to_switch = switch_hero(battle, move.id, db)
     player_first = battle_mech.calculate_if_player_moves_first(
             hero,
             hero_mods,
@@ -193,6 +190,8 @@ def make_move(
             enemy_skill,
             flee,
             switch)
+    if switch and player_first:
+        hero = switch_hero(battle, move.id, db)
     turn = None
     if player_first:
         turn = battle_turn(
@@ -218,6 +217,8 @@ def make_move(
                 flee,
                 None,
                 item)
+    if switch and not player_first:
+        hero = switch_hero(battle, move.id, db)
     battle.turn = battle.turn + 1
     if enemy.fainted:
         battle.finished = True
