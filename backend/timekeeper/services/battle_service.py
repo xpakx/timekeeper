@@ -282,10 +282,9 @@ def battle_turn(
         catched = battle_mech.test_catching(other_hero, other_mods, 1)
         if catched:
             return MoveResult(catched=True)
-    first = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
+    if catched is None:
+        first = hero_turn(hero, hero_mods, skill, other_hero, other_mods)
     first_changes = apply_post_movement_statuses(hero, hero_mods, skill, other_hero)
-    if catched is not None:
-        return MoveResult(catched=catched, first=first, first_changes=first_changes)
     if other_hero.fainted:
         return MoveResult(first=first, first_changes=first_changes)
     if other_flee and test_flee(other_hero, other_mods, hero, hero_mods):
