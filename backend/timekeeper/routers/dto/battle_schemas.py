@@ -71,6 +71,7 @@ class MoveType(enum.Enum):
     flee = "flee"
     skill = "skill"
     item = "item"
+    switch = "switch"
 
 
 class MoveRequest(BaseModel):

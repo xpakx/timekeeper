@@ -180,6 +180,10 @@ def make_move(
     skill = get_current_skill(move, hero)
     item = get_item(move, user_id, db)
     enemy_skill = get_enemy_skill(enemy)
+    switch = move.move == MoveType.switch
+    hero_to_switch = None
+    if switch:
+        hero_to_switch = switch_hero(battle, move.id, db)
     player_first = battle_mech.calculate_if_player_moves_first(
             hero,
             hero_mods,
