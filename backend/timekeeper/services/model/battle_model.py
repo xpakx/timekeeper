@@ -86,6 +86,7 @@ class BattleResult(BaseModel):
     turn: MoveResult
     hero_first: bool
     hero_hp: int
+    switch_hp: Optional[int]
     enemy_hp: int
 
     @root_validator()
@@ -100,22 +101,35 @@ class BattleResult(BaseModel):
         hero_hp = values.pop('hero_hp')
         enemy_skill = second_skill if hero_first else first_skill
         enemy_hp = values.pop('enemy_hp')
+        switch_hp = values.pop('switch_hp')
         if hero_skill:
+            hp = hero_hp
+            if hero_first and switch_hp:
+                hp = switch_hp
             new_hp = hero_skill.new_hp
-            hero_skill.current_hp = math.floor(100*((new_hp))/hero_hp)
+            hero_skill.current_hp = math.floor(100*((new_hp))/hp)
         if enemy_skill:
+            hp = enemy_hp
+            if not hero_first and switch_hp:
+                hp = switch_hp
             new_hp = enemy_skill.new_hp
             enemy_skill.new_hp = None
-            enemy_skill.current_hp = math.floor(100*((new_hp))/enemy_hp)
+            enemy_skill.current_hp = math.floor(100*((new_hp))/hp)
         first_changes = turn.first_changes.changes if turn.first_changes else []
         second_changes = turn.second_changes.changes if turn.second_changes else []
         hero_changes = first_changes if hero_first else second_changes
         enemy_changes = second_changes if hero_first else first_changes
         for change in hero_changes:
+            hp = hero_hp
+            if hero_first and switch_hp:
+                hp = switch_hp
             new_hp = change.new_hp
-            change.current_hp = math.floor(100*((new_hp))/hero_hp)
+            change.current_hp = math.floor(100*((new_hp))/hp)
         for change in enemy_changes:
+            hp = enemy_hp
+            if not hero_first and switch_hp:
+                hp = switch_hp
             new_hp = change.new_hp
             change.new_hp = None
-            change.current_hp = math.floor(100*((new_hp))/enemy_hp)
+            change.current_hp = math.floor(100*((new_hp))/hp)
         return values

@@ -217,7 +217,9 @@ def make_move(
                 flee,
                 None,
                 item)
+    switch_hp = None
     if switch and not player_first:
+        switch_hp = battle_mech.calculate_hp(hero)
         hero = switch_hero(battle, move.id, db)
     battle.turn = battle.turn + 1
     if enemy.fainted:
@@ -231,7 +233,8 @@ def make_move(
             turn=turn,
             hero_first=player_first,
             hero_hp=hero_hp,
-            enemy_hp=enemy_hp)
+            enemy_hp=enemy_hp,
+            switch_hp=switch_hp)
     return result
 
 
