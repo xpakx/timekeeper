@@ -67,3 +67,19 @@ def get_current_battle(user_id: int, db: Session) -> Optional[Battle]:
                         )
                     )\
         .first()
+
+
+def in_battle(user_id: int, db: Session) -> bool:
+    entry = db\
+        .query(Battle)\
+        .where(
+                    and_(
+                        Battle.owner_id == user_id,
+                        Battle.finished == false()
+                        )
+                    )\
+        .first()
+    if entry:
+        return True
+    else:
+        return False

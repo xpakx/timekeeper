@@ -1,4 +1,4 @@
-from ..db import user_hero_repo, team_repo
+from ..db import user_hero_repo, team_repo, battle_repo
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..db.models import Team, UserHero
@@ -14,6 +14,8 @@ def get_team(user_id: int, db: Session) -> TeamResponse:
 
 
 def change_team(user_id: int, request: TeamRequest, db: Session) -> Team:
+    if battle_repo.in_battle(user_id, db):
+        raise in_battle_exception()
     if request.action == TeamAction.add:
         return add_hero(user_id, request, db)
     elif request.action == TeamAction.switch:
@@ -139,6 +141,13 @@ def gap_in_team_exception():
     return HTTPException(
         status_code=400,
         detail="Team cannot have gaps!",
+    )
+
+
+def in_battle_exception():
+    return HTTPException(
+        status_code=400,
+        detail="Cannot modify the team while in battle!",
     )
 
 
