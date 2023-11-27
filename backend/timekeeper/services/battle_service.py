@@ -226,6 +226,8 @@ def make_move(
         battle.finished = True
     if turn.first_fled or turn.second_fled or turn.catched:
         battle.finished = True
+    if hero.fainted and test_if_whole_team_fainted(user_id, db):
+        battle.finished = True
     db.commit()
     hero_hp = battle_mech.calculate_hp(hero)
     enemy_hp = battle_mech.calculate_hp(enemy)
@@ -689,3 +691,20 @@ def switch_hero(
     mods.accuracy = 0
     mods.leech_seed = False
     return hero
+
+
+def test_if_whole_team_fainted(user_id, db: Session) -> bool:
+    team = team_repo.get_team(user_id, db)
+    if team.hero_1 and not team.hero_1.fainted:
+        return False
+    if team.hero_2 and not team.hero_2.fainted:
+        return False
+    if team.hero_3 and not team.hero_3.fainted:
+        return False
+    if team.hero_4 and not team.hero_4.fainted:
+        return False
+    if team.hero_5 and not team.hero_5.fainted:
+        return False
+    if team.hero_6 and not team.hero_6.fainted:
+        return False
+    return True
