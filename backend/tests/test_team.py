@@ -11,7 +11,8 @@ from timekeeper.db.models import (
         Hero,
         UserHero,
         ItemRarity,
-        Team)
+        Team,
+        Battle)
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 
@@ -139,6 +140,17 @@ def create_user_hero(
     db.refresh(item)
     db.close()
     return item.id
+
+
+def create_battle(user_id: int):
+    db = TestingSessionLocal()
+    item = Battle(
+            owner_id=user_id,
+            finished=False,
+            )
+    db.add(item)
+    db.commit()
+    db.close()
 
 
 def get_token() -> str:
@@ -857,3 +869,53 @@ def test_closing_gap_while_deleting_hero(test_db):
     db.close()
     assert team.hero_1_id == hero_id
     assert team.hero_2_id == hero_3_id
+
+
+def test_deleting_hero_while_in_battle(test_db):
+    user_id = create_user_and_return_id()
+    create_battle(user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "action": "delete",
+                               "num": 1
+                               }
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "battle" in error['detail'].lower()
+
+
+def test_adding_hero_while_in_battle(test_db):
+    user_id = create_user_and_return_id()
+    create_battle(user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "action": "add",
+                               "num": 1,
+                               "hero_id": 1
+                               }
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "battle" in error['detail'].lower()
+
+
+def test_moving_hero_while_in_battle(test_db):
+    user_id = create_user_and_return_id()
+    create_battle(user_id)
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    response = client.post("/teams",
+                           headers=headers,
+                           json={
+                               "action": "switch",
+                               "num": 1,
+                               "switch_num": 2
+                               }
+                           )
+    assert response.status_code == 400
+    error = response.json()
+    assert "battle" in error['detail'].lower()
