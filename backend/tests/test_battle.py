@@ -829,3 +829,23 @@ def test_finishing_battle_after_enemy_fainted(test_db):
     db.close()
     assert battle.finished
     assert enemy.fainted
+
+
+@patch('random.randint', Mock(return_value=0))
+def test_finishing_battle_after_fleeing(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'flee',
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    battle = db.query(Battle).where(Battle.id == battle_id).first()
+    db.close()
+    assert battle.finished
