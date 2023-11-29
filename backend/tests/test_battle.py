@@ -808,6 +808,7 @@ def test_making_damage_by_enemy(test_db):
     assert hero.damage > 0
 
 
+# finishing battle
 def test_finishing_battle_after_enemy_fainted(test_db):
     user_id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
@@ -849,3 +850,27 @@ def test_finishing_battle_after_fleeing(test_db):
     battle = db.query(Battle).where(Battle.id == battle_id).first()
     db.close()
     assert battle.finished
+
+
+def test_finishing_battle_after_hero_fainted_and_team_is_empty(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    create_team(user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    teach_skill(enemy_id, create_skill(power=1000000))
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'skill',
+                               'id': 1
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    battle = db.query(Battle).where(Battle.id == battle_id).first()
+    hero = db.query(UserHero).where(UserHero.id == hero_id).first()
+    db.close()
+    assert battle.finished
+    assert hero.fainted
