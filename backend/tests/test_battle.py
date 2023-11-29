@@ -126,7 +126,8 @@ def create_charmander() -> int:
             base_speed=65,
             base_special_attack=60,
             base_special_defense=50,
-            exp_group=ExpGroup.medium_slow
+            exp_group=ExpGroup.medium_slow,
+            capture_rate=255
             )
     db.add(item)
     db.commit()
@@ -230,6 +231,22 @@ def create_equipment_item(item_id: int, user_id: int, amount: int = 1):
             item_id=item_id,
             owner_id=user_id,
             amount=amount
+            )
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    db.close()
+    return item.id
+
+
+def create_pokeball() -> int:
+    db = TestingSessionLocal()
+    item = Item(
+            num=ITEM_NUM,
+            name="Pokeball",
+            description="",
+            rarity=ItemRarity.common,
+            item_type=ItemType.pokeball
             )
     db.add(item)
     db.commit()
@@ -760,6 +777,7 @@ def test_making_damage_while_using_skill(test_db):
                                'id': 1
                                }
                            )
+    print(response)
     assert response.status_code == 200
     db = TestingSessionLocal()
     enemy = db.query(UserHero).where(UserHero.id == enemy_id).first()
@@ -801,6 +819,7 @@ def test_making_damage_by_enemy(test_db):
                                'id': 1
                                }
                            )
+    print(response)
     assert response.status_code == 200
     db = TestingSessionLocal()
     hero = db.query(UserHero).where(UserHero.id == hero_id).first()
@@ -874,3 +893,25 @@ def test_finishing_battle_after_hero_fainted_and_team_is_empty(test_db):
     db.close()
     assert battle.finished
     assert hero.fainted
+
+
+@patch('random.randint', Mock(return_value=0))
+def test_finishing_battle_after_catching(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    create_equipment_item(create_pokeball(), user_id, 1)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'item',
+                               'id': ITEM_NUM
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    battle = db.query(Battle).where(Battle.id == battle_id).first()
+    db.close()
+    assert battle.finished
