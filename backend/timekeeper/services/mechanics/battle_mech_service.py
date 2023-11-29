@@ -290,7 +290,7 @@ def test_catching(
     current_hp = hp - hero.damage
     capture_rate = hero.hero.capture_rate
     status_bonus = 1.0
-    if hero.asleep or hero.froze:
+    if hero.asleep or hero.frozen:
         status_bonus = 2.0
     elif hero.poisoned or hero.paralyzed or hero.burned:
         status_bonus = 1.5
