@@ -777,7 +777,6 @@ def test_making_damage_while_using_skill(test_db):
                                'id': 1
                                }
                            )
-    print(response)
     assert response.status_code == 200
     db = TestingSessionLocal()
     enemy = db.query(UserHero).where(UserHero.id == enemy_id).first()
@@ -808,8 +807,8 @@ def test_making_damage_while_fleeing(test_db):
 def test_making_damage_by_enemy(test_db):
     user_id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
-    hero_id = create_user_hero(create_bulbasaur(), user_id)
-    enemy_id = create_user_hero(create_charmander(), None)
+    hero_id = create_user_hero(create_charmander(), user_id)
+    enemy_id = create_user_hero(create_bulbasaur(), None)
     teach_skill(enemy_id, create_skill())
     battle_id = create_battle(user_id, hero_id, enemy_id)
     response = client.post(f"/battles/{battle_id}",
@@ -819,7 +818,6 @@ def test_making_damage_by_enemy(test_db):
                                'id': 1
                                }
                            )
-    print(response)
     assert response.status_code == 200
     db = TestingSessionLocal()
     hero = db.query(UserHero).where(UserHero.id == hero_id).first()
