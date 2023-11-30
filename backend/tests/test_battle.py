@@ -25,6 +25,7 @@ from timekeeper.db.manager import get_db
 from bcrypt import hashpw, gensalt
 from timekeeper.services.user_service import create_token
 from unittest.mock import patch, Mock
+from typing import Optional
 
 url = URL.create(
         "postgresql",
@@ -136,13 +137,13 @@ def create_charmander() -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int, skillset: bool = True):
+def create_user_hero(hero_id: int, user_id: int, skillset: bool = True, fainted: bool = False):
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
             owner_id=user_id,
             incubated=False,
-            fainted=False,
+            fainted=fainted,
             hp=0,
             attack=0,
             defense=0,
@@ -255,10 +256,11 @@ def create_pokeball() -> int:
     return item.id
 
 
-def create_team(user_id: int) -> int:
+def create_team(user_id: int, hero_id: Optional[int] = None) -> int:
     db = TestingSessionLocal()
     team = Team(
-            user_id=user_id
+            user_id=user_id,
+            hero_1_id=hero_id
             )
     db.add(team)
     db.commit()
@@ -913,3 +915,53 @@ def test_finishing_battle_after_catching(test_db):
     battle = db.query(Battle).where(Battle.id == battle_id).first()
     db.close()
     assert battle.finished
+
+
+def test_finishing_battle_after_hero_fainted_and_whole_team_is_fainted(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_hero_id = create_user_hero(create_charmander(), user_id, fainted=True)
+    create_team(user_id, team_hero_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    teach_skill(enemy_id, create_skill(power=1000000))
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'skill',
+                               'id': 1
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    battle = db.query(Battle).where(Battle.id == battle_id).first()
+    hero = db.query(UserHero).where(UserHero.id == hero_id).first()
+    db.close()
+    assert battle.finished
+    assert hero.fainted
+
+
+def test_finishing_battle_after_hero_fainted_but_not_all_heroes_in_team_fainted(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_hero_id = create_user_hero(create_charmander(), user_id, fainted=False)
+    create_team(user_id, team_hero_id)
+    enemy_id = create_user_hero(create_charmander(), None)
+    teach_skill(enemy_id, create_skill(power=1000000))
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'skill',
+                               'id': 1
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    battle = db.query(Battle).where(Battle.id == battle_id).first()
+    hero = db.query(UserHero).where(UserHero.id == hero_id).first()
+    db.close()
+    assert not battle.finished
+    assert hero.fainted
