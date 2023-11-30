@@ -103,17 +103,17 @@ class BattleResult(BaseModel):
         enemy_hp = values.pop('enemy_hp')
         switch_hp = values.pop('switch_hp')
         if hero_skill:
-            hp = hero_hp
+            hp = enemy_hp
             if hero_first and switch_hp:
                 hp = switch_hp
             new_hp = hero_skill.new_hp
+            hero_skill.new_hp = None
             hero_skill.current_hp = math.floor(100*((new_hp))/hp)
         if enemy_skill:
-            hp = enemy_hp
+            hp = hero_hp
             if not hero_first and switch_hp:
                 hp = switch_hp
             new_hp = enemy_skill.new_hp
-            enemy_skill.new_hp = None
             enemy_skill.current_hp = math.floor(100*((new_hp))/hp)
         first_changes = turn.first_changes.changes if turn.first_changes else []
         second_changes = turn.second_changes.changes if turn.second_changes else []
