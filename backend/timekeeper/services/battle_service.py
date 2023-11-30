@@ -228,6 +228,8 @@ def make_move(
         battle.finished = True
     if hero.fainted and test_if_whole_team_fainted(user_id, db):
         battle.finished = True
+    if turn.catched:
+        enemy.owner_id = user_id
     db.commit()
     hero_hp = battle_mech.calculate_hp(hero)
     enemy_hp = battle_mech.calculate_hp(enemy)
