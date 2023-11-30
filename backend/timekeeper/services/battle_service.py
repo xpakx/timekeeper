@@ -410,19 +410,21 @@ def apply_status_skill(
         hero: UserHero,
         hero_mods: HeroMods,
         skill: Skill) -> StatusSkillResults:
-    result = StatusSkillResults()
+    status = []
+    stage = []
     if skill.status_effect:
         change = apply_status_change(hero, hero_mods, skill.status_effect)
-        result.append(change)
+        status.append(change)
     if skill.stage_effect:
-        change = apply_stage_change(hero_mods, skill.stage_change, skill.mod)
-        result.append(change)
+        change = apply_stage_change(hero_mods, skill.stage_effect, skill.mod)
+        stage.append(change)
     if skill.secondary_stage_effect:
         change = apply_stage_change(
                 hero_mods,
                 skill.secondary_stage_change,
                 skill.secondary_mod)
-        result.append(change)
+        stage.append(change)
+    return StatusSkillResults(status_changes=status, stage_changes=stage)
 
 
 def apply_stage_change(
