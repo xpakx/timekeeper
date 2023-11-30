@@ -10,6 +10,7 @@ from timekeeper.db.models import (
         Skill,
         ItemRarity,
         MoveCategory,
+        StageEffect,
         Team)
 from fastapi.testclient import TestClient
 import pytest
@@ -255,16 +256,18 @@ def teach_skill(hero_id: int, skill_id: int, num: int = 1):
     db.close()
 
 
-def create_tackle() -> int:
+def create_growl() -> int:
     db = TestingSessionLocal()
     skill = Skill(
-            accuracy=95,
-            power=35,
-            priority=0,
+            accuracy=100,
+            power=0,
+            priority=40,
             move_type=HeroType.normal,
             max_usages=35,
-            name="Tackle",
-            move_category=MoveCategory.physical
+            name="Growl",
+            move_category=MoveCategory.status,
+            mod=-1,
+            stage_effect=StageEffect.attack
             )
     db.add(skill)
     db.commit()
@@ -285,38 +288,13 @@ app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 
-@patch('timekeeper.services.mechanics.battle_mech_service.test_accuracy', Mock(return_value=True))
-def test_using_tackle(test_db):
+def test_growl_damage(test_db):
     user_id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
     hero_id = create_user_hero(create_bulbasaur(), user_id)
     team_id = create_team(user_id)
     add_to_team(team_id, hero_id, 1)
-    teach_skill(hero_id, create_tackle())
-    enemy_id = create_user_hero(create_charmander(), None)
-    battle_id = create_battle(user_id, hero_id, enemy_id)
-    response = client.post(f"/battles/{battle_id}",
-                           headers=headers,
-                           json={
-                               'move': 'skill',
-                               'id': 1
-                               }
-                           )
-    assert response.status_code == 200
-    db = TestingSessionLocal()
-    enemy: UserHero = db.query(UserHero).where(UserHero.id == enemy_id).first()
-    db.close()
-    assert enemy.damage > 0
-
-
-@patch('timekeeper.services.mechanics.battle_mech_service.test_accuracy', Mock(return_value=False))
-def test_miss(test_db):
-    user_id = create_user_and_return_id()
-    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
-    hero_id = create_user_hero(create_bulbasaur(), user_id)
-    team_id = create_team(user_id)
-    add_to_team(team_id, hero_id, 1)
-    teach_skill(hero_id, create_tackle())
+    teach_skill(hero_id, create_growl())
     enemy_id = create_user_hero(create_charmander(), None)
     battle_id = create_battle(user_id, hero_id, enemy_id)
     response = client.post(f"/battles/{battle_id}",
@@ -331,3 +309,27 @@ def test_miss(test_db):
     enemy: UserHero = db.query(UserHero).where(UserHero.id == enemy_id).first()
     db.close()
     assert enemy.damage == 0
+
+
+def test_changing_stage(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_id = create_team(user_id)
+    add_to_team(team_id, hero_id, 1)
+    teach_skill(hero_id, create_growl())
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'skill',
+                               'id': 1
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    battle: Battle = db.query(Battle).where(Battle.id == battle_id).first()
+    mods = battle.enemy_mods
+    db.close()
+    assert mods.attack == -1
