@@ -8,9 +8,10 @@ import math
 
 
 class StatusChangeEffect(Enum):
-    immune = 1
-    success = 2
-    already_present = 3
+    immune = 'immune'
+    success = 'success'
+    already_present = 'affected'
+    missed = 'missed'
 
 
 class StageChangeResult(BaseModel):
@@ -21,13 +22,6 @@ class StageChangeResult(BaseModel):
 class StatusChangeResult(BaseModel):
     status: StatusEffect
     effect: StatusChangeEffect
-
-
-class StatusChangeEffect(Enum):
-    immune = 'immune'
-    success = 'success'
-    already_present = 'affected'
-    missed = 'missed'
 
 
 class StatusSkillResults(BaseModel):
