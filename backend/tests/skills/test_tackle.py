@@ -37,7 +37,6 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(autocommit=False,
                                    autoflush=False,
                                    bind=engine)
-ITEM_NUM = 123
 
 
 def override_get_db():
@@ -310,6 +309,7 @@ def test_using_tackle(test_db):
 
 
 @patch('timekeeper.services.mechanics.battle_mech_service.test_accuracy', Mock(return_value=False))
+@patch('timekeeper.services.mechanics.battle_mech_service.calculate_if_player_moves_first', Mock(return_value=True))
 def test_miss(test_db):
     user_id = create_user_and_return_id()
     headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
@@ -327,6 +327,8 @@ def test_miss(test_db):
                                }
                            )
     assert response.status_code == 200
+    result = response.json()
+    assert result['turn']['first']['missed']
     db = TestingSessionLocal()
     enemy: UserHero = db.query(UserHero).where(UserHero.id == enemy_id).first()
     db.close()
