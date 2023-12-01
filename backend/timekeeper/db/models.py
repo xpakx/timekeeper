@@ -154,6 +154,7 @@ class Hero(Base):
     hero_type = Column(Enum(HeroType))
     secondary_hero_type = Column(Enum(HeroType))
     exp_group = Column(Enum(ExpGroup))
+    base_exp = Column(Integer)
 
 
 class MoveCategory(enum.Enum):

@@ -104,7 +104,8 @@ def create_bulbasaur() -> int:
             base_speed=45,
             base_special_attack=65,
             base_special_defense=65,
-            exp_group=ExpGroup.medium_slow
+            exp_group=ExpGroup.medium_slow,
+            base_exp=64
             )
     db.add(item)
     db.commit()
@@ -128,7 +129,8 @@ def create_charmander() -> int:
             base_special_attack=60,
             base_special_defense=50,
             exp_group=ExpGroup.medium_slow,
-            capture_rate=255
+            capture_rate=255,
+            base_exp=62
             )
     db.add(item)
     db.commit()
@@ -151,7 +153,8 @@ def create_user_hero(hero_id: int, user_id: int, skillset: bool = True, fainted:
             special_attack=0,
             special_defense=0,
             level=1,
-            damage=0
+            damage=0,
+            experience=0
             )
     db.add(item)
     if skillset:

@@ -227,7 +227,7 @@ def make_move(
     if enemy.fainted:
         battle.finished = True
         #  TODO distribute exp between battle participants
-        points = math.floor((100 * enemy.level)/7)
+        points = math.floor((enemy.hero.base_exp * enemy.level)/7)
         hero.experience = hero.experience + points
         hero.level = battle_mech.check_level_change(hero)
     if turn.first_fled or turn.second_fled or turn.catched:
