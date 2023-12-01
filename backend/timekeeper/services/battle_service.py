@@ -620,7 +620,7 @@ def apply_status_change(
     if status == StatusEffect.poisoned:
         effect = apply_poison_status(hero)
         result.append(StatusChangeResult(status=StatusEffect.poisoned, effect=effect))
-    if status == StatusEffect.burn:
+    if status == StatusEffect.burned:
         effect = apply_burn_status(hero)
         result.append(StatusChangeResult(status=StatusEffect.burn, effect=effect))
     if status == StatusEffect.paralyzed:
