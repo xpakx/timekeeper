@@ -417,8 +417,7 @@ def apply_status_skill(
     status = []
     stage = []
     if skill.status_effect:
-        change = apply_status_change(hero, hero_mods, skill.status_effect)
-        status.append(change)
+        status = apply_status_change(hero, hero_mods, skill.status_effect)
     if skill.stage_effect:
         change = apply_stage_change(hero_mods, skill.stage_effect, skill.mod)
         stage.append(change)
