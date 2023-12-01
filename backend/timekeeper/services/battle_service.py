@@ -222,8 +222,14 @@ def make_move(
         switch_hp = battle_mech.calculate_hp(hero)
         hero = switch_hero(battle, move.id, db)
     battle.turn = battle.turn + 1
+    hero_hp = battle_mech.calculate_hp(hero)
+    enemy_hp = battle_mech.calculate_hp(enemy)
     if enemy.fainted:
         battle.finished = True
+        #  TODO distribute exp between battle participants
+        points = math.floor((100 * enemy.level)/7)
+        hero.experience = hero.experience + points
+        hero.level = battle_mech.check_level_change(hero)
     if turn.first_fled or turn.second_fled or turn.catched:
         battle.finished = True
     if hero.fainted and test_if_whole_team_fainted(user_id, db):
@@ -231,8 +237,6 @@ def make_move(
     if turn.catched:
         enemy.owner_id = user_id
     db.commit()
-    hero_hp = battle_mech.calculate_hp(hero)
-    enemy_hp = battle_mech.calculate_hp(enemy)
     result = BattleResult(
             turn=turn,
             hero_first=player_first,
