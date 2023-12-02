@@ -135,7 +135,7 @@ def create_charmander() -> int:
     return item.id
 
 
-def create_user_hero(hero_id: int, user_id: int, skillset: bool = True, fainted: bool = False):
+def create_user_hero(hero_id: int, user_id: int, skillset: bool = True, fainted: bool = False, damage: int = 0):
     db = TestingSessionLocal()
     item = UserHero(
             hero_id=hero_id,
@@ -149,7 +149,7 @@ def create_user_hero(hero_id: int, user_id: int, skillset: bool = True, fainted:
             special_attack=0,
             special_defense=0,
             level=1,
-            damage=0
+            damage=damage
             )
     db.add(item)
     if skillset:
@@ -171,7 +171,8 @@ def create_battle(
         user_id: int,
         hero_id: int,
         enemy_id: int,
-        finished: bool = False):
+        finished: bool = False,
+        seeded: bool = False):
     db = TestingSessionLocal()
     hero = HeroMods(
             accuracy=0,
@@ -190,7 +191,8 @@ def create_battle(
             special_attack=0,
             special_defense=0,
             speed=0,
-            flee_attempts=100)
+            flee_attempts=100,
+            leech_seed=seeded)
     item = Battle(
             turn=1,
             enemies=1,
@@ -339,3 +341,50 @@ def test_miss(test_db):
     mods: HeroMods = battle.enemy_mods
     db.close()
     assert not mods.leech_seed
+
+
+def test_leech_seed_damage(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id)
+    team_id = create_team(user_id)
+    add_to_team(team_id, hero_id, 1)
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id, seeded=True)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'skill',
+                               'id': 1
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    battle: Battle = db.query(Battle).where(Battle.id == battle_id).first()
+    enemy: UserHero = db.query(UserHero).where(UserHero.id == enemy_id).first()
+    mods: HeroMods = battle.enemy_mods
+    db.close()
+    assert mods.leech_seed
+    assert enemy.damage > 0
+
+
+def test_leech_seed_heal(test_db):
+    user_id = create_user_and_return_id()
+    headers = {"Authorization": f"Bearer {get_token_for(user_id)}"}
+    hero_id = create_user_hero(create_bulbasaur(), user_id, damage=10)
+    team_id = create_team(user_id)
+    add_to_team(team_id, hero_id, 1)
+    enemy_id = create_user_hero(create_charmander(), None)
+    battle_id = create_battle(user_id, hero_id, enemy_id, seeded=True)
+    response = client.post(f"/battles/{battle_id}",
+                           headers=headers,
+                           json={
+                               'move': 'skill',
+                               'id': 1
+                               }
+                           )
+    assert response.status_code == 200
+    db = TestingSessionLocal()
+    hero: UserHero = db.query(UserHero).where(UserHero.id == hero_id).first()
+    db.close()
+    assert hero.damage < 10
