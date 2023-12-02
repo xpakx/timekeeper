@@ -533,7 +533,7 @@ def apply_burn_damage(hero: UserHero) -> PostTurnEffects:
     hero.damage = hero.damage + damage
     if hp <= hero.damage:
         hero.fainted = True
-    return PostTurnEffects(reason=StatusEffect.burned, hp_change=damage)
+    return PostTurnEffects(reason=StatusEffect.burned, new_hp=damage)
 
 
 def apply_frozen_status(hero: UserHero) -> StatusChangeEffect:
@@ -557,7 +557,7 @@ def apply_leech_seed(hero: UserHero, other_hero: UserHero) -> PostTurnEffects:
     hero.damage = hero.damage - damage
     if hp <= other_hero.damage:
         other_hero.fainted = True
-    return PostTurnEffects(reason=StatusEffect.leech_seed, hp_change=damage)
+    return PostTurnEffects(reason=StatusEffect.leech_seed, new_hp=damage)
 
 
 def apply_paralyzed_status(hero: UserHero) -> StatusChangeEffect:
