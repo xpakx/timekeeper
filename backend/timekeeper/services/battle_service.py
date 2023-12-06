@@ -582,7 +582,7 @@ def apply_asleep_changes(hero: UserHero) -> None:
     hero.sleep_counter = hero.sleep_counter - 1
     if hero.sleep_counter == 0:
         hero.asleep = False
-    return PostTurnEffects(reason=StatusEffect.asleep, status_end=hero.frozen)
+    return PostTurnEffects(reason=StatusEffect.asleep, status_end=hero.asleep)
 
 
 def apply_post_movement_statuses(
@@ -632,9 +632,9 @@ def apply_status_change(
             effect=StatusChangeEffect.success))
     if status == StatusEffect.asleep:
         hero.sleep_counter = random.randint(1, 6)
-        hero_mods.asleep = True
+        hero.asleep = True
         result.append(StatusChangeResult
-                      (status=StatusEffect.sleep,
+                      (status=StatusEffect.asleep,
                        effect=StatusChangeEffect.success))
     if status == StatusEffect.frozen:
         effect = apply_frozen_status(hero)
