@@ -118,12 +118,14 @@ class BattleResult(BaseModel):
             if hero_first and switch_hp:
                 hp = switch_hp
             new_hp = change.new_hp
-            change.current_hp = math.floor(100*((new_hp))/hp)
+            if new_hp:
+                change.current_hp = math.floor(100*((new_hp))/hp)
         for change in enemy_changes:
             hp = enemy_hp
             if not hero_first and switch_hp:
                 hp = switch_hp
             new_hp = change.new_hp
             change.new_hp = None
-            change.current_hp = math.floor(100*((new_hp))/hp)
+            if new_hp:
+                change.current_hp = math.floor(100*((new_hp))/hp)
         return values
