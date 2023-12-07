@@ -424,7 +424,7 @@ def apply_status_skill(
     if skill.secondary_stage_effect:
         change = apply_stage_change(
                 hero_mods,
-                skill.secondary_stage_change,
+                skill.secondary_stage_effect,
                 skill.secondary_mod)
         stage.append(change)
     return StatusSkillResults(status_changes=status, stage_changes=stage)
